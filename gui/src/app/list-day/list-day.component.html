@@ -1,0 +1,28 @@
+<h2 style="margin: auto;align-content: center">Report</h2>
+<div class="container content">
+  <div class="row">
+    <div class="col-md-4">
+    <ul>
+      <li *ngFor="let day of myDay">
+        <a a [routerLink]="" (click)="dayClick(day.id)">{{day.name}}</a>
+      </li>
+    </ul>
+    </div>
+    <div class="col-md-8">
+      <table class="table table-striped table-dark">
+        <thead>
+          <th>Name</th>
+          <th>USD</th>
+          <th>VND</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of myData">
+            <td>{{data.name}}</td>
+            <td>{{data.totalInVND}}</td>
+            <td>{{data.totalInUSD}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "gui": {
+    "my-dream-app": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/gui",
+            "outputPath": "dist/my-dream-app",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -26,11 +26,7 @@
               "src/styles.css",
               "node_modules/bootstrap/dist/css/bootstrap.min.css"
             ],
-            "scripts": [
-              "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/bootstrap/dist/js/bootstrap.min.js"
-            ],
-            "es5BrowserSupport": true
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -62,18 +58,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "gui:build"
+            "browserTarget": "my-dream-app:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "gui:build:production"
+              "browserTarget": "my-dream-app:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "gui:build"
+            "browserTarget": "my-dream-app:build"
           }
         },
         "test": {
@@ -107,7 +103,7 @@
         }
       }
     },
-    "gui-e2e": {
+    "my-dream-app-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "prefix": "",
@@ -116,11 +112,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "gui:serve"
+            "devServerTarget": "my-dream-app:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "gui:serve:production"
+              "devServerTarget": "my-dream-app:serve:production"
             }
           }
         },
@@ -136,5 +132,5 @@
       }
     }
   },
-  "defaultProject": "gui"
+  "defaultProject": "my-dream-app"
 }
