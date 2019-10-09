@@ -10,7 +10,7 @@ import {routing} from "./app.routing";
 import { ListUserComponent } from './list-day/list-day.component';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 
-const config: SocketIoConfig = { url: 'http://localhost:4444', options: {} };
+// const config: SocketIoConfig = { url: 'https://manage.vw3.cc:2083/accountant', options: {} };
 
 @NgModule({
   declarations: [
@@ -22,8 +22,8 @@ const config: SocketIoConfig = { url: 'http://localhost:4444', options: {} };
     BrowserModule,
     routing,
     ReactiveFormsModule,
-    HttpClientModule,
-    SocketIoModule.forRoot(config)
+    HttpClientModule
+    // SocketIoModule.forRoot(config)
   ],
   providers: [ApiService],
   bootstrap: [AppComponent]

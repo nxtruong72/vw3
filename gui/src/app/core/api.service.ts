@@ -2,11 +2,22 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import {Observable} from "rxjs/index";
 import { Socket } from 'ngx-socket-io';
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import * as io from 'socket.io-client';
 
-@Injectable()
+const config: SocketIoConfig = { url: 'https://manage.vw3.cc:2083/', options: {} };
+
+@Injectable({
+  providedIn: 'root'
+})
 export class ApiService {
+  private url = "https://manage.vw3.cc:2083/";
+  private socket: any;
+  //socket: Socket;
 
-  constructor(private http: HttpClient, private socket: Socket) { }
+  constructor(private http: HttpClient) { 
+    
+  }
 
   baseUrl: string = 'https://manage.vw3.cc/';
   loginHeaders = new HttpHeaders({'Content-type': 'application/x-www-form-urlencoded'});
@@ -36,8 +47,21 @@ export class ApiService {
     return this.http.post(this.baseUrl + 'report_detail/get_cycle_page', body, {headers});
   }
 
+  initSocket() {
+    // this.socket = io(this.url, {
+    //   query: {
+    //     refresh_token: JSON.parse(window.sessionStorage.getItem('token')).refresh_token
+    //   }
+    // });
+    // this.socket = io(this.url);
+    this.socket = new Socket(config);
+    this.socket.ioSocket.nsp = "/accountant";
+  }
+
   // test for socket
-  getDocument(id: string) {
-    this.socket.emit('getDoc', id);
+  testSocket() {
+    console.log("XXX");
+    
+    this.socket.emit("message");
   }
 }

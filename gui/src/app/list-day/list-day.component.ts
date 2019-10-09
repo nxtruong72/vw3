@@ -35,15 +35,16 @@ export class ListUserComponent implements OnInit {
     }
     this.myDay = [];
     this.myData = [];
-    this.apiService.getCyclePage(1, 10).subscribe(response => {
-      let data = JSON.parse(JSON.stringify(response)).res.data;
-      Object.keys(data).forEach(element => {
-        let tmp: MyDayList = {id : data[element].id, name: data[element].name};
-        this.myDay.push(tmp);
-      });
-    }, error => {
-      alert(error.error.error_description);
-    })
+    // this.apiService.getCyclePage(1, 10).subscribe(response => {
+    //   let data = JSON.parse(JSON.stringify(response)).res.data;
+    //   Object.keys(data).forEach(element => {
+    //     let tmp: MyDayList = {id : data[element].id, name: data[element].name};
+    //     this.myDay.push(tmp);
+    //   });
+    // }, error => {
+    //   alert(error.error.error_description);
+    // })
+    this.apiService.initSocket();
   }
 
   dayClick(id: string): void {
@@ -65,5 +66,9 @@ export class ListUserComponent implements OnInit {
     }, error => {
       console.log(error.error.error_description);
     });
+  }
+
+  onClickMe(): void {
+    this.apiService.testSocket();
   }
 }
