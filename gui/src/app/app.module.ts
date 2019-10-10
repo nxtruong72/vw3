@@ -8,9 +8,6 @@ import {HttpClientModule} from "@angular/common/http";
 import {ReactiveFormsModule} from "@angular/forms";
 import {routing} from "./app.routing";
 import { ListUserComponent } from './list-day/list-day.component';
-import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
-
-// const config: SocketIoConfig = { url: 'https://manage.vw3.cc:2083/accountant', options: {} };
 
 @NgModule({
   declarations: [
@@ -23,7 +20,6 @@ import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
     routing,
     ReactiveFormsModule,
     HttpClientModule
-    // SocketIoModule.forRoot(config)
   ],
   providers: [ApiService],
   bootstrap: [AppComponent]

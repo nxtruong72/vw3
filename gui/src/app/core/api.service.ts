@@ -1,23 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import {Observable} from "rxjs/index";
-import { Socket } from 'ngx-socket-io';
-import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import * as io from 'socket.io-client';
 
-const config: SocketIoConfig = { url: 'https://manage.vw3.cc:2083/', options: {} };
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class ApiService {
-  private url = "https://manage.vw3.cc:2083/";
+  private socket_url = "https://manage.vw3.cc:2083/accountant";
   private socket: any;
-  //socket: Socket;
+  private connected: boolean;
 
-  constructor(private http: HttpClient) { 
-    
-  }
+  constructor(private http: HttpClient) {}
 
   baseUrl: string = 'https://manage.vw3.cc/';
   loginHeaders = new HttpHeaders({'Content-type': 'application/x-www-form-urlencoded'});
@@ -48,20 +39,35 @@ export class ApiService {
   }
 
   initSocket() {
-    // this.socket = io(this.url, {
-    //   query: {
-    //     refresh_token: JSON.parse(window.sessionStorage.getItem('token')).refresh_token
-    //   }
-    // });
-    // this.socket = io(this.url);
-    this.socket = new Socket(config);
-    this.socket.ioSocket.nsp = "/accountant";
+    this.socket = io(this.socket_url, { query: 'refresh_token=' + JSON.parse(window.sessionStorage.getItem('token')).refresh_token });
+    this.register_base_event();
+    this.socket.connect();
+  }
+
+  register_base_event() {
+    this.socket.on('connect', () => {
+      this.connected = true;
+      console.log('>>> Connecting success');
+    });
+    this.socket.on('connect_error', () => {
+      console.log('>>> Can not connect to server');
+    });
+    this.socket.on('disconnect', () => {
+      this.connected = false;
+      console.log('>>> Disconnect from server');
+    });
+    this.socket.on('connect', (err) => {
+      console.log('>>> Error response from server: ', err);
+    });
+    this.socket.on('message', (message) => {
+      console.log(message);
+    });
   }
 
   // test for socket
   testSocket() {
     console.log("XXX");
-    
-    this.socket.emit("message");
+
+    this.socket.emit('init', "message");
   }
 }
