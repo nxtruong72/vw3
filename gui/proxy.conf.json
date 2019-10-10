@@ -1,0 +1,6 @@
+{
+    "/api": {
+      "target": "https://manage.vw3.cc:2083",
+      "secure": false
+    }
+  }
