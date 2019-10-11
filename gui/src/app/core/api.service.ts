@@ -43,6 +43,7 @@ export class ApiService {
     this.socket = io(this.socket_url, { query: 'refresh_token=' + JSON.parse(window.sessionStorage.getItem('token')).refresh_token });
     this.register_base_event();
     this.socket.connect();
+    // this.socket.emit('init', 'AV5533');
   }
 
   register_base_event() {
@@ -60,9 +61,13 @@ export class ApiService {
     this.socket.on('error', (err) => {
       console.log('>>> Error response from server: ', err);
     });
-    this.socket.on('message', (message) => {
-      console.log(message);
+    this.socket.on('message', (msg) => {
+      console.log("AFDSFDSF");
+      console.log(msg);
     });
+    this.socket.once('ready', () => {
+      console.log("READY!!!");
+    })
   }
 
   sendInitEvent() {
