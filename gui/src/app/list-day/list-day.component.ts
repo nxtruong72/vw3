@@ -45,6 +45,7 @@ export class ListUserComponent implements OnInit {
     //   alert(error.error.error_description);
     // })
     this.apiService.initSocket();
+    this.apiService.sendInitEvent();
   }
 
   dayClick(id: string): void {

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import * as io from 'socket.io-client';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class ApiService {
@@ -56,7 +57,7 @@ export class ApiService {
       this.connected = false;
       console.log('>>> Disconnect from server');
     });
-    this.socket.on('connect', (err) => {
+    this.socket.on('error', (err) => {
       console.log('>>> Error response from server: ', err);
     });
     this.socket.on('message', (message) => {
@@ -64,10 +65,22 @@ export class ApiService {
     });
   }
 
+  sendInitEvent() {
+    let newUUID = uuid();
+    let args = {username: "av5533"};
+    this.socket.on(newUUID, (type, data) => {
+      console.log(type);
+      console.log(data);
+    });
+    this.socket.send({ ___Send: true, event: 'init', uuid: newUUID, args: args});
+  }
+
   // test for socket
   testSocket() {
     console.log("XXX");
+    //{ ___Send: true, event: 'init', uuid: "uuid", args: {username: "av5533" }
 
-    this.socket.emit('init', "message");
+
+    this.socket.send('init', {username: "av5533"});
   }
 }
