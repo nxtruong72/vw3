@@ -10,7 +10,6 @@ import {HttpParams} from "@angular/common/http";
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-
   loginForm: FormGroup;
   invalidLogin: boolean = false;
   constructor(private formBuilder: FormBuilder, private router: Router, private apiService: ApiService) { }
@@ -19,19 +18,8 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.invalid) {
       return;
     }
-    const body = new HttpParams()
-      .set('username', this.loginForm.controls.username.value)
-      .set('password', this.loginForm.controls.password.value)
-      .set('client_id', '1')
-      .set('client_secret', 'jashdfjkh1#!$%#^2342@#$@35')
-      .set('grant_type', 'password');
-
-    this.apiService.login(body.toString()).subscribe(data => {
-      window.sessionStorage.setItem('token', JSON.stringify(data));
-      this.router.navigate(['list-day']);
-    }, error => {
-        alert(error.error.error_description)
-    });
+    let loginData = {username: this.loginForm.controls.username.value, password: this.loginForm.controls.password.value};
+    this.apiService.login(loginData);
   }
 
   ngOnInit() {

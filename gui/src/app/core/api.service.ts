@@ -2,41 +2,82 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import * as io from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class ApiService {
   private socket_url = "https://manage.vw3.cc:2083/accountant";
   private socket: any;
   private connected: boolean;
+  private isReady: boolean = false;
+  private headers: HttpHeaders;
 
-  constructor(private http: HttpClient) {}
+  constructor(private router: Router, private http: HttpClient) {}
 
   baseUrl: string = 'https://manage.vw3.cc/';
-  loginHeaders = new HttpHeaders({'Content-type': 'application/x-www-form-urlencoded'});
+  
   requestHeaders = new HttpHeaders();
 
-  login(loginPayload) {
-    return this.http.post(this.baseUrl + 'oauth2/token', loginPayload, {headers: this.loginHeaders});
+  login(loginData) {
+    let loginHeaders = new HttpHeaders({'Content-type': 'application/x-www-form-urlencoded'});
+    const body = new HttpParams()
+      .set('username', loginData.username)
+      .set('password', loginData.password)
+      .set('client_id', '1')
+      .set('client_secret', 'jashdfjkh1#!$%#^2342@#$@35')
+      .set('grant_type', 'password');
+    
+    this.http.post(this.baseUrl + 'oauth2/token', body, {headers: loginHeaders}).subscribe(data => {
+      window.sessionStorage.setItem('token', JSON.stringify(data));
+      this.headers = new HttpHeaders({
+        'Authorization': 'Bearer ' + JSON.parse(window.sessionStorage.getItem('token')).access_token,
+        'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      })
+      this.checkSecure();
+      this.router.navigate(['list-day']);
+    }, error => {
+        alert(error.error.error_description);
+    });
+  }
+
+  checkSecure() {
+    const body = new HttpParams({})
+      .set('code', 'vi');
+    this.http.post(this.baseUrl + 'language/get', body, {headers: this.headers})
+        .subscribe(data => {
+          let isCheckSecure = JSON.parse(JSON.stringify(data)).res.data.userInfo.isCheckSecure;
+          if (!isCheckSecure) {
+            this.applySecureCode();
+          } else {
+            console.log("Don't need to check secure");
+          }
+        }, error => alert(error.error.error_description));
+  }
+
+  applySecureCode() {
+    let secureCode = ['-1', '6', '8', '6', '8', '6', '8'];
+    this.http.post(this.baseUrl + 'secure/get', null, {headers: this.headers})
+        .subscribe(response => {
+          let json = JSON.parse(JSON.stringify(response));
+          let code1 = json.res.data.code1;
+          let code2 = json.res.data.code2;
+          const body = new HttpParams({}).set('value1', secureCode[code1]).set('value2', secureCode[code2]);
+          this.http.post(this.baseUrl + 'secure/check', body, {headers: this.headers})
+              .subscribe(response => {
+                console.log("Check secure response: " + JSON.parse(JSON.stringify(response)));
+              }, error => alert(error.error.error_description));
+        }, error => alert(error.error.error_description));
   }
 
   getReport(body) {
-    const headers = {
-      'Authorization': 'Bearer ' + JSON.parse(window.sessionStorage.getItem('token')).access_token,
-      'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-    }
-    return this.http.post(this.baseUrl + 'report_detail/get_report', body, {headers});
+    return this.http.post(this.baseUrl + 'report_detail/get_report', {header: this.headers, body: body});
   }
 
   getCyclePage(currPage: number, itemPerPage: number) {
     const body = new HttpParams()
                 .set('currentPage', String(currPage))
                 .set('itemPerPage', String(itemPerPage));
-    
-    const headers = {
-      'Authorization': 'Bearer ' + JSON.parse(window.sessionStorage.getItem('token')).access_token,
-      'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-    }
-    return this.http.post(this.baseUrl + 'report_detail/get_cycle_page', body, {headers});
+    return this.http.post(this.baseUrl + 'report_detail/get_cycle_page', {header: this.headers, body: body});
   }
 
   initSocket() {
@@ -67,17 +108,19 @@ export class ApiService {
     });
     this.socket.once('ready', () => {
       console.log("READY!!!");
+      this.isReady = true;
+      this.sendInitEvent();
     })
   }
 
   sendInitEvent() {
     let newUUID = uuid();
-    let args = {username: "av5533"};
+    let args = [{username: "av5533"}];
     this.socket.on(newUUID, (type, data) => {
       console.log(type);
       console.log(data);
     });
-    this.socket.send({ ___Send: true, event: 'init', uuid: newUUID, args: args});
+    this.socket.send({___Send: true, event: 'init', uuid: newUUID, args: args});
   }
 
   // test for socket
