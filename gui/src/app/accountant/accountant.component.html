@@ -1,7 +1,7 @@
 <h2 style="margin: auto;align-content: center">Report</h2>
 <div class="container content">
   <button (click)="onClickMe()">Click me!</button>
-  <div class="row">
+  <!-- <div class="row">
     <div class="col-md-4">
     <ul>
       <li *ngFor="let day of myDay">
@@ -25,5 +25,13 @@
         </tbody>
       </table>
     </div>
-  </div>
+  </div> -->
+  <div style="background-color:rgb(72, 29, 141)" *ngFor="let entry of bankerMap | keyvalue">
+      {{entry.value.name | uppercase}}
+      
+        <div style="background-color:rgb(122, 195, 219)" *ngFor="let child of entry.value.children">
+          {{child.name | uppercase}}
+        </div>
+      
+  <div>
 </div>

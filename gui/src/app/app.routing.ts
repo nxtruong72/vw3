@@ -1,10 +1,10 @@
 import { RouterModule, Routes } from '@angular/router';
 import {LoginComponent} from "./login/login.component";
-import { ListUserComponent } from './list-day/list-day.component';
+import { AccountantComponent } from './accountant/accountant.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'list-day', component: ListUserComponent },
+  { path: 'accountant', component: AccountantComponent },
   {path : '', component : LoginComponent}
 ];
 

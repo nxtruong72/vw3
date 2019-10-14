@@ -34,7 +34,7 @@ export class ApiService {
         'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
       })
       this.checkSecure();
-      this.router.navigate(['list-day']);
+      this.router.navigate(['accountant']);
     }, error => {
         alert(error.error.error_description);
     });
@@ -123,12 +123,11 @@ export class ApiService {
     this.socket.send({___Send: true, event: 'init', uuid: newUUID, args: args});
   }
 
-  // test for socket
-  testSocket() {
-    console.log("XXX");
-    //{ ___Send: true, event: 'init', uuid: "uuid", args: {username: "av5533" }
+  getInitData() {
+    return this.http.get('http://localhost:8080/file/test');
+  }
 
-
-    this.socket.send('init', {username: "av5533"});
+  getDetailData() {
+    return this.http.get('http://localhost:8080/file/detail');
   }
 }

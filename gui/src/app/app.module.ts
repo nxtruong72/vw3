@@ -7,13 +7,13 @@ import {ApiService} from "./core/api.service";
 import {HttpClientModule} from "@angular/common/http";
 import {ReactiveFormsModule} from "@angular/forms";
 import {routing} from "./app.routing";
-import { ListUserComponent } from './list-day/list-day.component';
+import { AccountantComponent } from './accountant/accountant.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    ListUserComponent
+    AccountantComponent
   ],
   imports: [
     BrowserModule,
