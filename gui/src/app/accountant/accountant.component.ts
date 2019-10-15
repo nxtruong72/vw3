@@ -30,6 +30,7 @@ export class AccountantComponent implements OnInit {
 
   myDay: MyDayList[] = [];
   myData: MyData[] = [];
+  model;
 
   ngOnInit() {
     // if(!window.sessionStorage.getItem('token')) {
@@ -71,8 +72,10 @@ export class AccountantComponent implements OnInit {
   }
 
   onClickMe(): void {
-    // this.apiService.initSocket();
+    this.apiService.initSocket();
+  }
 
+  parseData() {
     this.apiService.getInitData().subscribe(response => {
       let bankerMap = JSON.parse(JSON.stringify(response)).data.bankerMap;
       let scanAccMap = JSON.parse(JSON.stringify(response)).data.scanAccMap;
@@ -122,10 +125,8 @@ export class AccountantComponent implements OnInit {
 
           // update back to bankerMap
           this.bankerMap.set(banker.id, banker);
-
-          console.log(this.bankerMap.get(banker.id));
         }
       })
-    });    
+    }); 
   }
 }
