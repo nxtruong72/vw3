@@ -1,11 +1,18 @@
-import { Account } from "./account";
-
 export class Accountant {
     id: string;
     bankerId: string;
     name: string;
     note: string;
-    tunerOver: number;
+    turnOver: number;
     gross_common: number;
-    children: Array<Account> = [];
+    children: Map<string, Accountant>;
+
+    constructor(id, json) {
+        this.id = id;
+        this.children = new Map();
+        if (json != undefined) {
+            this.name = json.acc_name;
+            this.note = json.note;
+        }
+    }
 }

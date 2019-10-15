@@ -18,8 +18,11 @@ import java.util.Map;
 @Controller
 @RequestMapping(path = "/file")
 public class FileController {
-    private static String FILE_NAME = "D:\\project\\spring-group\\gui\\temp-message.json";
-    private static String FILE_SCAN_NAME = "D:\\project\\spring-group\\gui\\scan.json";
+//    private static String FILE_NAME = "D:\\project\\spring-group\\gui\\temp-message.json";
+//    private static String FILE_SCAN_NAME = "D:\\project\\spring-group\\gui\\scan.json";
+    private static String FILE_NAME = "/home/nxuantruong/Source/vw3/vw3/gui/temp-message.json";
+    private static String FILE_SCAN_NAME = "/home/nxuantruong/Source/vw3/vw3/gui/scan.json";
+
     @Autowired
     CsvService csvService;
 

@@ -22,8 +22,8 @@ public class DemoApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		File file = new File("C:\\Users\\Admin\\Downloads\\export.csv");
-		List<Report> reports = csvService.convertFromInputStream(new FileInputStream(file));
-		System.out.println("OK");
+//		File file = new File("C:\\Users\\Admin\\Downloads\\export.csv");
+//		List<Report> reports = csvService.convertFromInputStream(new FileInputStream(file));
+//		System.out.println("OK");
 	}
 }

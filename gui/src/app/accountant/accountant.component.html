@@ -26,12 +26,10 @@
       </table>
     </div>
   </div> -->
-  <div style="background-color:rgb(72, 29, 141)" *ngFor="let entry of bankerMap | keyvalue">
+  <div style="background-color:rgb(158, 209, 151)" *ngFor="let entry of bankerMap | keyvalue">
       {{entry.value.name | uppercase}}
-      
-        <div style="background-color:rgb(122, 195, 219)" *ngFor="let child of entry.value.children">
-          {{child.name | uppercase}}
+        <div style="background-color:rgb(122, 195, 219)" *ngFor="let child of entry.value.children | keyvalue">
+          {{child.value.name | uppercase}}
         </div>
-      
   <div>
 </div>

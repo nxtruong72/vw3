@@ -1,363 +1,343 @@
 {
-   "data":{
-      "id":"5c31b30a79282518c59f7e11",
-      "from_date":"10/14/2019",
-      "to_date":"10/14/2019",
-      "more_post":{
-         "login_name":"av5533"
-      },
-      "accountant":[
-         {
-            "level":0,
-            "username":"64HU",
-            "data":{
-               "sb":{
-                  "turnover":"2051",
-                  "gross_comm":"4.18",
-                  "member_comm":"4.17",
-                  "win_loss":"-256.50"
-               }
+  "data": {
+    "id": "5c31b30a79282518c59f7e11",
+    "from_date": "10/14/2019",
+    "to_date": "10/14/2019",
+    "more_post": {
+      "login_name": "av5533"
+    },
+    "accountant": [
+      {
+        "level": 0,
+        "username": "64HU",
+        "data": {
+          "sb": {
+            "turnover": "2051",
+            "gross_comm": "4.18",
+            "member_comm": "4.17",
+            "win_loss": "-256.50"
+          }
+        },
+        "filter": false,
+        "child": [
+          {
+            "username": "64HU60",
+            "data": {
+              "sb": {
+                "turnover": "5",
+                "gross_comm": "0.01",
+                "member_comm": "0.00",
+                "win_loss": "-5.00"
+              }
             },
-            "filter":false,
-            "child":[
-               {
-                  "username":"64HU60",
-                  "data":{
-                     "sb":{
-                        "turnover":"5",
-                        "gross_comm":"0.01",
-                        "member_comm":"0.00",
-                        "win_loss":"-5.00"
-                     }
-                  },
-                  "filter":{
-                     "detail_downLine":false,
-                     "downLine":{
-                        "userID":"64HU",
-                        "role":"ag",
-                        "userName":"64hu60"
-                     },
-                     "parent":[
-                        "64hu60"
-                     ]
-                  },
-                  "level":1,
-                  "child":[
-
-                  ],
-                  "noExist":true,
-                  "noFormula":true,
-                  "reportAccountant":[
-                     {
-                        "reportType":"sb",
-                        "reportData":{
-                           "turnover":"5",
-                           "gross_comm":"0.01",
-                           "member_comm":"0.00",
-                           "win_loss":"-5.00"
-                        },
-                        "resultList":[
-
-                        ]
-                     }
-                  ]
-               },
-               {
-                  "username":"64HU66",
-                  "data":{
-                     "sb":{
-                        "turnover":"2046",
-                        "gross_comm":"4.17",
-                        "member_comm":"4.17",
-                        "win_loss":"-251.50"
-                     }
-                  },
-                  "filter":{
-                     "detail_downLine":false,
-                     "downLine":{
-                        "userID":"64HU",
-                        "role":"ag",
-                        "userName":"64hu66"
-                     },
-                     "parent":[
-                        "64hu66"
-                     ]
-                  },
-                  "level":1,
-                  "child":[
-
-                  ],
-                  "noExist":true,
-                  "noFormula":true,
-                  "reportAccountant":[
-                     {
-                        "reportType":"sb",
-                        "reportData":{
-                           "turnover":"2046",
-                           "gross_comm":"4.17",
-                           "member_comm":"4.17",
-                           "win_loss":"-251.50"
-                        },
-                        "resultList":[
-
-                        ]
-                     }
-                  ]
-               }
-            ],
-            "accInfo":{
-               "id":"5c31b30a79282518c59f7e11",
-               "acc_name":"64hu",
-               "acc_parent_id":null,
-               "banker":"56850ba0097802b9f23929b4",
-               "book_id":"56850ba0097802b9f23929ad"
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "userID": "64HU",
+                "role": "ag",
+                "userName": "64hu60"
+              },
+              "parent": [
+                "64hu60"
+              ]
             },
-            "noFormula":false,
-            "reportAccountant":[
-               {
-                  "reportType":"sb",
-                  "reportData":{
-                     "turnover":"2051",
-                     "gross_comm":"4.18",
-                     "member_comm":"4.17",
-                     "win_loss":"-256.50"
-                  },
-                  "resultList":[
-                     {
-                        "ctt_id":"5d22c7a43222dc6043006f64",
-                        "formulaName":"332BET-VND-3-1.5-A",
-                        "memberName":"w50",
-                        "currencyName":"VND",
-                        "formatName":"Sportbook-All",
-                        "PRText":"pay",
-                        "he_so":"1.5",
-                        "gia_thau":"3",
-                        "value":-750.6899999999999,
-                        "valueRounded":-750,
-                        "formulaDetail":{
-                           "f_format_id":"56850ba7097802b9f23934e3",
-                           "f_pattern_id":"5d1e2439ef400554d3240382",
-                           "tenct":"332BET-VND-3-1.5-A",
-                           "giaonhan":1,
-                           "fieldList":[
-                              {
-                                 "dis":"he_so",
-                                 "value":"1.5",
-                                 "index":2
-                              },
-                              {
-                                 "dis":"gia_thau",
-                                 "value":"3",
-                                 "index":1
-                              }
-                           ]
-                        }
-                     },
-                     {
-                        "ctt_id":"5d1e24f8dfbd3d606e049c14",
-                        "formulaName":"332BET-USD-0.103-1-A-(-1)",
-                        "memberName":". cty ww",
-                        "currencyName":"USD",
-                        "formatName":"Sportbook-All",
-                        "PRText":"rec",
-                        "he_so":"1",
-                        "gia_thau":"0.103",
-                        "value":25.98896,
-                        "valueRounded":26,
-                        "formulaDetail":{
-                           "f_format_id":"56850ba7097802b9f23934e3",
-                           "f_pattern_id":"5d1b5882ef400554d323f51d",
-                           "tenct":"332BET-USD-0.103-1-A-(-1)",
-                           "giaonhan":-1,
-                           "fieldList":[
-                              {
-                                 "dis":"he_so",
-                                 "value":"1",
-                                 "index":2
-                              },
-                              {
-                                 "dis":"gia_thau",
-                                 "value":"0.103",
-                                 "index":1
-                              }
-                           ]
-                        }
-                     }
-                  ]
-               }
+            "level": 1,
+            "child": [],
+            "noExist": true,
+            "noFormula": true,
+            "reportAccountant": [
+              {
+                "reportType": "sb",
+                "reportData": {
+                  "turnover": "5",
+                  "gross_comm": "0.01",
+                  "member_comm": "0.00",
+                  "win_loss": "-5.00"
+                },
+                "resultList": []
+              }
             ]
-         }
-      ],
-      "reportSave":{
-         "account_root_name":"64HU",
-         "reportSaveList":[
-            {
-               "book_id":"56850ba0097802b9f23929ad",
-               "id_user":"5c396de579282518c59f92a9",
-               "account_id":"5c31b30a79282518c59f7e11",
-               "dv_tien_te_id":"588091467104d911641f1855",
-               "customer_name":"w50",
-               "account_name":"64HU",
-               "account_parent_name":[
-
-               ],
-               "account_root_name":"",
-               "dv_tien_te":"VND",
-               "flag":"sb",
-               "report_data":{
-                  "turnover":"2051",
-                  "gross_comm":"4.18",
-                  "member_comm":"4.17",
-                  "win_loss":"-256.50"
-               },
-               "formula_detail":"{\"f_format_id\":\"56850ba7097802b9f23934e3\",\"f_pattern_id\":\"5d1e2439ef400554d3240382\",\"tenct\":\"332BET-VND-3-1.5-A\",\"giaonhan\":1,\"fieldList\":[{\"dis\":\"he_so\",\"value\":\"1.5\",\"index\":2},{\"dis\":\"gia_thau\",\"value\":\"3\",\"index\":1}]}",
-               "result":-750
+          },
+          {
+            "username": "64HU66",
+            "data": {
+              "sb": {
+                "turnover": "2046",
+                "gross_comm": "4.17",
+                "member_comm": "4.17",
+                "win_loss": "-251.50"
+              }
             },
-            {
-               "book_id":"56850ba0097802b9f23929ad",
-               "id_user":"5c3b2c7279282518c59f96d5",
-               "account_id":"5c31b30a79282518c59f7e11",
-               "dv_tien_te_id":"5947c6cded885dade0107fa7",
-               "customer_name":". cty ww",
-               "account_name":"64HU",
-               "account_parent_name":[
-
-               ],
-               "account_root_name":"",
-               "dv_tien_te":"USD",
-               "flag":"sb",
-               "report_data":{
-                  "turnover":"2051",
-                  "gross_comm":"4.18",
-                  "member_comm":"4.17",
-                  "win_loss":"-256.50"
-               },
-               "formula_detail":"{\"f_format_id\":\"56850ba7097802b9f23934e3\",\"f_pattern_id\":\"5d1b5882ef400554d323f51d\",\"tenct\":\"332BET-USD-0.103-1-A-(-1)\",\"giaonhan\":-1,\"fieldList\":[{\"dis\":\"he_so\",\"value\":\"1\",\"index\":2},{\"dis\":\"gia_thau\",\"value\":\"0.103\",\"index\":1}]}",
-               "result":26
-            }
-         ]
-      },
-      "dataFieldList":[
-         "turnover",
-         "gross_comm",
-         "member_comm",
-         "win_loss"
-      ],
-      "formulaFieldList":[
-         {
-            "dis":"he_so",
-            "value":"56850ba7097802b9f23934d5",
-            "index":2
-         },
-         {
-            "dis":"gia_thau",
-            "value":"56850ba7097802b9f23934d6",
-            "index":1
-         }
-      ],
-      "scanData":{
-         "sb":{
-            "level":0,
-            "username":"64HU",
-            "data":{
-               "sb":{
-                  "turnover":{
-                     "text":"2,051"
-                  },
-                  "gross_comm":{
-                     "text":"4.18"
-                  },
-                  "member_comm":{
-                     "text":"4.17"
-                  },
-                  "win_loss":{
-                     "text":"-256.50"
-                  }
-               }
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "userID": "64HU",
+                "role": "ag",
+                "userName": "64hu66"
+              },
+              "parent": [
+                "64hu66"
+              ]
             },
-            "filter":false,
-            "child":[
-               {
-                  "username":"64hu60",
-                  "data":{
-                     "sb":{
-                        "turnover":{
-                           "text":"5"
-                        },
-                        "gross_comm":{
-                           "text":"0.01"
-                        },
-                        "member_comm":{
-                           "text":"0.00"
-                        },
-                        "win_loss":{
-                           "text":"-5.00"
-                        }
-                     }
-                  },
-                  "filter":{
-                     "detail_downLine":false,
-                     "downLine":{
-                        "userID":"64HU",
-                        "role":"ag",
-                        "userName":"64hu60"
-                     },
-                     "parent":[
-                        "64hu60"
-                     ]
-                  },
-                  "level":1,
-                  "child":[
-
-                  ]
-               },
-               {
-                  "username":"64hu66",
-                  "data":{
-                     "sb":{
-                        "turnover":{
-                           "text":"2,046"
-                        },
-                        "gross_comm":{
-                           "text":"4.17"
-                        },
-                        "member_comm":{
-                           "text":"4.17"
-                        },
-                        "win_loss":{
-                           "text":"-251.50"
-                        }
-                     }
-                  },
-                  "filter":{
-                     "detail_downLine":false,
-                     "downLine":{
-                        "userID":"64HU",
-                        "role":"ag",
-                        "userName":"64hu66"
-                     },
-                     "parent":[
-                        "64hu66"
-                     ]
-                  },
-                  "level":1,
-                  "child":[
-
-                  ]
-               }
+            "level": 1,
+            "child": [],
+            "noExist": true,
+            "noFormula": true,
+            "reportAccountant": [
+              {
+                "reportType": "sb",
+                "reportData": {
+                  "turnover": "2046",
+                  "gross_comm": "4.17",
+                  "member_comm": "4.17",
+                  "win_loss": "-251.50"
+                },
+                "resultList": []
+              }
             ]
-         },
-         "csn":{
-            "level":0,
-            "username":"root",
-            "data":{
-
+          }
+        ],
+        "accInfo": {
+          "id": "5c31b30a79282518c59f7e11",
+          "acc_name": "64hu",
+          "acc_parent_id": null,
+          "banker": "56850ba0097802b9f23929b4",
+          "book_id": "56850ba0097802b9f23929ad"
+        },
+        "noFormula": false,
+        "reportAccountant": [
+          {
+            "reportType": "sb",
+            "reportData": {
+              "turnover": "2051",
+              "gross_comm": "4.18",
+              "member_comm": "4.17",
+              "win_loss": "-256.50"
             },
-            "filter":false,
-            "child":[
-
+            "resultList": [
+              {
+                "ctt_id": "5d22c7a43222dc6043006f64",
+                "formulaName": "332BET-VND-3-1.5-A",
+                "memberName": "w50",
+                "currencyName": "VND",
+                "formatName": "Sportbook-All",
+                "PRText": "pay",
+                "he_so": "1.5",
+                "gia_thau": "3",
+                "value": -750.6899999999999,
+                "valueRounded": -750,
+                "formulaDetail": {
+                  "f_format_id": "56850ba7097802b9f23934e3",
+                  "f_pattern_id": "5d1e2439ef400554d3240382",
+                  "tenct": "332BET-VND-3-1.5-A",
+                  "giaonhan": 1,
+                  "fieldList": [
+                    {
+                      "dis": "he_so",
+                      "value": "1.5",
+                      "index": 2
+                    },
+                    {
+                      "dis": "gia_thau",
+                      "value": "3",
+                      "index": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "ctt_id": "5d1e24f8dfbd3d606e049c14",
+                "formulaName": "332BET-USD-0.103-1-A-(-1)",
+                "memberName": ". cty ww",
+                "currencyName": "USD",
+                "formatName": "Sportbook-All",
+                "PRText": "rec",
+                "he_so": "1",
+                "gia_thau": "0.103",
+                "value": 25.98896,
+                "valueRounded": 26,
+                "formulaDetail": {
+                  "f_format_id": "56850ba7097802b9f23934e3",
+                  "f_pattern_id": "5d1b5882ef400554d323f51d",
+                  "tenct": "332BET-USD-0.103-1-A-(-1)",
+                  "giaonhan": -1,
+                  "fieldList": [
+                    {
+                      "dis": "he_so",
+                      "value": "1",
+                      "index": 2
+                    },
+                    {
+                      "dis": "gia_thau",
+                      "value": "0.103",
+                      "index": 1
+                    }
+                  ]
+                }
+              }
             ]
-         }
+          }
+        ]
       }
-   }
+    ],
+    "reportSave": {
+      "account_root_name": "64HU",
+      "reportSaveList": [
+        {
+          "book_id": "56850ba0097802b9f23929ad",
+          "id_user": "5c396de579282518c59f92a9",
+          "account_id": "5c31b30a79282518c59f7e11",
+          "dv_tien_te_id": "588091467104d911641f1855",
+          "customer_name": "w50",
+          "account_name": "64HU",
+          "account_parent_name": [],
+          "account_root_name": "",
+          "dv_tien_te": "VND",
+          "flag": "sb",
+          "report_data": {
+            "turnover": "2051",
+            "gross_comm": "4.18",
+            "member_comm": "4.17",
+            "win_loss": "-256.50"
+          },
+          "formula_detail": "{\"f_format_id\":\"56850ba7097802b9f23934e3\",\"f_pattern_id\":\"5d1e2439ef400554d3240382\",\"tenct\":\"332BET-VND-3-1.5-A\",\"giaonhan\":1,\"fieldList\":[{\"dis\":\"he_so\",\"value\":\"1.5\",\"index\":2},{\"dis\":\"gia_thau\",\"value\":\"3\",\"index\":1}]}",
+          "result": -750
+        },
+        {
+          "book_id": "56850ba0097802b9f23929ad",
+          "id_user": "5c3b2c7279282518c59f96d5",
+          "account_id": "5c31b30a79282518c59f7e11",
+          "dv_tien_te_id": "5947c6cded885dade0107fa7",
+          "customer_name": ". cty ww",
+          "account_name": "64HU",
+          "account_parent_name": [],
+          "account_root_name": "",
+          "dv_tien_te": "USD",
+          "flag": "sb",
+          "report_data": {
+            "turnover": "2051",
+            "gross_comm": "4.18",
+            "member_comm": "4.17",
+            "win_loss": "-256.50"
+          },
+          "formula_detail": "{\"f_format_id\":\"56850ba7097802b9f23934e3\",\"f_pattern_id\":\"5d1b5882ef400554d323f51d\",\"tenct\":\"332BET-USD-0.103-1-A-(-1)\",\"giaonhan\":-1,\"fieldList\":[{\"dis\":\"he_so\",\"value\":\"1\",\"index\":2},{\"dis\":\"gia_thau\",\"value\":\"0.103\",\"index\":1}]}",
+          "result": 26
+        }
+      ]
+    },
+    "dataFieldList": [
+      "turnover",
+      "gross_comm",
+      "member_comm",
+      "win_loss"
+    ],
+    "formulaFieldList": [
+      {
+        "dis": "he_so",
+        "value": "56850ba7097802b9f23934d5",
+        "index": 2
+      },
+      {
+        "dis": "gia_thau",
+        "value": "56850ba7097802b9f23934d6",
+        "index": 1
+      }
+    ],
+    "scanData": {
+      "sb": {
+        "level": 0,
+        "username": "64HU",
+        "data": {
+          "sb": {
+            "turnover": {
+              "text": "2,051"
+            },
+            "gross_comm": {
+              "text": "4.18"
+            },
+            "member_comm": {
+              "text": "4.17"
+            },
+            "win_loss": {
+              "text": "-256.50"
+            }
+          }
+        },
+        "filter": false,
+        "child": [
+          {
+            "username": "64hu60",
+            "data": {
+              "sb": {
+                "turnover": {
+                  "text": "5"
+                },
+                "gross_comm": {
+                  "text": "0.01"
+                },
+                "member_comm": {
+                  "text": "0.00"
+                },
+                "win_loss": {
+                  "text": "-5.00"
+                }
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "userID": "64HU",
+                "role": "ag",
+                "userName": "64hu60"
+              },
+              "parent": [
+                "64hu60"
+              ]
+            },
+            "level": 1,
+            "child": []
+          },
+          {
+            "username": "64hu66",
+            "data": {
+              "sb": {
+                "turnover": {
+                  "text": "2,046"
+                },
+                "gross_comm": {
+                  "text": "4.17"
+                },
+                "member_comm": {
+                  "text": "4.17"
+                },
+                "win_loss": {
+                  "text": "-251.50"
+                }
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "userID": "64HU",
+                "role": "ag",
+                "userName": "64hu66"
+              },
+              "parent": [
+                "64hu66"
+              ]
+            },
+            "level": 1,
+            "child": []
+          }
+        ]
+      },
+      "csn": {
+        "level": 0,
+        "username": "root",
+        "data": {},
+        "filter": false,
+        "child": []
+      }
+    }
+  }
 }

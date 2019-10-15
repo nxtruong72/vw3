@@ -4,7 +4,6 @@ import {ApiService} from "../core/api.service";
 import { HttpParams } from '@angular/common/http';
 import { Banker } from '../core/banker';
 import { Accountant } from '../core/accountant';
-import { Account } from '../core/account';
 
 interface MyDayList {
   name: string;
@@ -74,49 +73,58 @@ export class AccountantComponent implements OnInit {
   onClickMe(): void {
     // this.apiService.initSocket();
 
-    // Get banker and accountant info
     this.apiService.getInitData().subscribe(response => {
       let bankerMap = JSON.parse(JSON.stringify(response)).data.bankerMap;
       let scanAccMap = JSON.parse(JSON.stringify(response)).data.scanAccMap;
+
+      // Get banker info
       Object.keys(bankerMap).forEach(bankerId => {
         let banker = new Banker();
         banker.id = bankerId;
         banker.name = bankerMap[bankerId].name;
         this.bankerMap.set(bankerId, banker);
       })
+
+      // Get accountant info
       Object.keys(scanAccMap).forEach(accountId => {
         let bankerId = scanAccMap[accountId].banker;
         let banker = this.bankerMap.get(bankerId);
-        let account: Accountant = new Accountant();
-        account.id = accountId;
-        account.name = scanAccMap[accountId].acc_name;
-        account.note = scanAccMap[accountId].note;
-        banker.children.push(account);
+        let account: Accountant = new Accountant(accountId, scanAccMap[accountId]);
+        banker.children.set(accountId,account);
         this.bankerMap.set(bankerId, banker);
       });
 
-      // get account info
+      // Get account info
       this.apiService.getDetailData().subscribe(response => {
-        let data = JSON.parse(JSON.stringify(response)).data;
-        let accId = data.id;
-        let accountant: Accountant;
-        let banker: Banker;
-        let account: Account;
+        let data = JSON.parse(JSON.stringify(response)).data.accountant[0];
+        let accId = data.accInfo.id;
+        let banker = this.bankerMap.get(data.accInfo.banker);
 
-        console.log(accId);
-        this.bankerMap.forEach((value: Banker, key: string) => {
-          let account = value.children.find(child => child.id == accId);
-          let accountIndex: number;
+        console.log(data);
+        if (banker != undefined) {
+          let account = banker.children.get(accId);
 
-          if (account != undefined) {
-            accountIndex = value.children.indexOf(account);
+          // update its info
+          account.turnOver = data.data.sb.turnover;
+          account.gross_common = data.data.sb.gross_comm;
 
-            console.log(value.name + ' ' + accountIndex);
-          }
-          // if (value.name == '332bet')
-          //   console.log(value.children);
-        });
-        //account.accountantId = accId;
+          // update its child
+          data.child.forEach(element => {
+            let accountant: Accountant = new Accountant(element.username, null);
+            accountant.name = element.username;
+            accountant.turnOver = element.data.sb.turnover;
+            accountant.gross_common = element.data.sb.gross_comm;
+            account.children.set(accountant.id, accountant);
+          });
+
+          // update back to banker
+          banker.children.set(accId, account);
+
+          // update back to bankerMap
+          this.bankerMap.set(banker.id, banker);
+
+          console.log(this.bankerMap.get(banker.id));
+        }
       })
     });    
   }
