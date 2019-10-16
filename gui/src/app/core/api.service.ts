@@ -4,7 +4,9 @@ import * as io from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
 import { Router } from '@angular/router';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ApiService {
   private socket_url = "https://manage.vw3.cc:2083/accountant";
   private socket: any;

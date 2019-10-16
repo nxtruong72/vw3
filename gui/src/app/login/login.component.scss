@@ -1,0 +1,18 @@
+.app-toolbar {
+  position: sticky;
+  position: -webkit-sticky; /* For macOS/iOS Safari */
+  top: 0; /* Sets the sticky toolbar to be on top */
+  z-index: 1000; /* Ensure that your app's content doesn't overlap the toolbar */
+}
+.toolbar-flex {
+  flex: 1 0.5 auto;
+}
+
+.main-div {
+  position: fixed;
+  margin: auto;
+  margin-top: 10%;
+  margin-left: 40%;
+  justify-content: center;
+  align-items: center;
+}

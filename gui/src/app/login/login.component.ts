@@ -7,19 +7,21 @@ import {HttpParams} from "@angular/common/http";
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
+  username: string;
+  password: string;
   invalidLogin: boolean = false;
   constructor(private formBuilder: FormBuilder, private router: Router, private apiService: ApiService) { }
 
   onSubmit() {
-    if (this.loginForm.invalid) {
-      return;
-    }
-    let loginData = {username: this.loginForm.controls.username.value, password: this.loginForm.controls.password.value};
-    this.apiService.login(loginData);
+    // if (this.loginForm.invalid) {
+    //   return;
+    // }
+    // let loginData = {username: this.loginForm.controls.username.value, password: this.loginForm.controls.password.value};
+    // this.apiService.login(loginData);
   }
 
   ngOnInit() {
@@ -28,5 +30,10 @@ export class LoginComponent implements OnInit {
       username: ['', Validators.compose([Validators.required])],
       password: ['', Validators.required]
     });
+  }
+
+  login() : void {
+    let loginData = {username: this.loginForm.controls.username.value, password: this.loginForm.controls.password.value};
+    this.apiService.login(loginData);
   }
 }
