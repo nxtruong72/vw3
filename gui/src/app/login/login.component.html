@@ -22,64 +22,25 @@
 
 <div class="row">
   <div>
-    <mat-toolbar class="app-toolbar" color="primary">
-      <mat-toolbar-row>
-        <span>My First App</span>
-        <!-- <span class="example-fill-remaining-space"></span>
-    <span class="align-center"></span>
-    <span class="example-spacer"></span> -->
-        <span class="toolbar-flex"></span>
-        <button mat-button>About</button>
-        <button mat-button>Contact</button>
-        <button mat-icon-button [matMenuTriggerFor]="menu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item>
-            <mat-icon>dialpad</mat-icon>
-            <span>Redial</span>
-          </button>
-          <button mat-menu-item disabled>
-            <mat-icon>voicemail</mat-icon>
-            <span>Check voicemail</span>
-          </button>
-          <button mat-menu-item>
-            <mat-icon>notifications_off</mat-icon>
-            <span>Disable alerts</span>
-          </button>
-        </mat-menu>
-      </mat-toolbar-row>
-    </mat-toolbar>
-  </div>
-
-  <div class="main-div">
     <mat-card>
-      <!-- <mat-card-header>
-        <mat-card-title>Login</mat-card-title>
-      </mat-card-header> -->
+      <mat-card-title>Login</mat-card-title>
       <mat-card-content>
         <form [formGroup]="loginForm">
-          <table cellspacing="0">
-            <tr>
-              <td>
-                <mat-form-field>
-                  <input matInput formControlName="username" placeholder="Username" name="username" required>
-                </mat-form-field>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <mat-form-field>
-                  <input matInput formControlName="password" placeholder="Password" type="password" name="password"
-                    required>
-                </mat-form-field>
-              </td>
-            </tr>
-          </table>
+          <div>
+              <mat-form-field>
+                  <!-- <mat-placeholder class="myclass">Select data</mat-placeholder> -->
+                <input matInput formControlName="username" placeholder="Username" name="username" required>
+              </mat-form-field>
+          </div>
+          <div>
+              <mat-form-field>
+                <input matInput formControlName="password" placeholder="Password" type="password" name="password" required>
+              </mat-form-field>
+          </div>
         </form>
         <mat-spinner [style.display]="showSpinner ? 'block' : 'none'"></mat-spinner>
       </mat-card-content>
-      <mat-card-actions align="center">
+      <mat-card-actions align="right">
         <button mat-raised-button [disabled]="loginForm.invalid" (click)="login()" color="primary">Login</button>
       </mat-card-actions>
     </mat-card>

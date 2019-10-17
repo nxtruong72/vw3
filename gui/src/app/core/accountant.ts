@@ -5,6 +5,7 @@ export class Accountant {
     note: string;
     turnOver: number;
     gross_common: number;
+    isChecked: boolean = true;
     children: Map<string, Accountant>;
 
     constructor(id, json) {

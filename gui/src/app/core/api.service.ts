@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import * as io from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
 import { Router } from '@angular/router';
+import {Subject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,7 @@ export class ApiService {
   private connected: boolean;
   private isReady: boolean = false;
   private headers: HttpHeaders;
+  receiveMsgEvent = new Subject();
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -105,8 +107,10 @@ export class ApiService {
       console.log('>>> Error response from server: ', err);
     });
     this.socket.on('message', (msg) => {
-      console.log("AFDSFDSF");
       console.log(msg);
+      if (msg.___Bind) {
+        this.receiveMsgEvent.next(msg);
+      }
     });
     this.socket.once('ready', () => {
       console.log("READY!!!");

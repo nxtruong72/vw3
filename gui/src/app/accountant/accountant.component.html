@@ -1,6 +1,31 @@
 <h2 style="margin: auto;align-content: center">Report</h2>
+<div class="row">
+  <div class="col-md-2"><button (click)="onClickMe()">Click me!</button></div>
+  <div class="col-md-4">
+    <mat-form-field>
+      <input matInput [matDatepicker]="from" placeholder="From date" [formControl]="fromDate">
+      <mat-datepicker-toggle matSuffix [for]="from"></mat-datepicker-toggle>
+      <mat-datepicker #from></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="col-md-4">
+    <mat-form-field>
+      <input matInput [matDatepicker]="to" placeholder="To date" [formControl]="toDate">
+      <mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
+      <mat-datepicker #to></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="col-md-2"><button (click)="onClickScan()">Scan</button></div>
+</div>
+
 <div class="container content">
-  <button (click)="onClickMe()">Click me!</button>
+  <!-- <mat-card>
+      <mat-card-content>
+
+      </mat-card-content>
+  </mat-card> -->
+
+
   <!-- <form class="form-inline">
       <div class="form-group">
         <div class="input-group">
@@ -38,25 +63,29 @@
     </div>
   </div> -->
   <div style="background-color:rgb(158, 209, 151); margin-bottom: 2rem;" *ngFor="let entry of bankerMap | keyvalue">
-      {{entry.value.name | uppercase}}
-        <div style="background-color:rgb(122, 195, 219)" *ngFor="let accountant of entry.value.children | keyvalue">
-          {{accountant.value.name | uppercase}}
-          <div style="background-color:rgb(202, 223, 230)" *ngIf="accountant.value.children.size > 0">
-            <table class="table table-striped table-dark">
-              <thead>
-                <th>Account</th>
-                <th>Turn over</th>
-                <th>Gross comm</th>
-              </thead>
-              <tbody>
-                <tr *ngFor="let account of accountant.value.children | keyvalue">
-                  <td>{{account.value.name}}</td>
-                  <td>{{account.value.turnOver}}</td>
-                  <td>{{account.value.gross_common}}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-  <div>
-</div>
+    <section class="tp-section">
+      <mat-checkbox class="tp-margin" [(ngModel)]="entry.value.isChecked" (change)="onCheckBoxChange(entry.value)">{{entry.value.name | uppercase}}</mat-checkbox>
+    </section>
+    <div style="background-color:rgb(122, 195, 219); padding-left: 2rem" *ngFor="let accountant of entry.value.children | keyvalue">
+      <section class="tp-section">
+        <mat-checkbox class="tp-margin" [(ngModel)]="accountant.value.isChecked" (change)="onCheckBoxChange(accountant.value)">{{accountant.value.name | uppercase}}</mat-checkbox>
+      </section>
+      
+      <div style="background-color:rgb(202, 223, 230)" *ngIf="accountant.value.children.size > 0">
+        <table class="table table-striped table-dark">
+          <thead>
+            <th>Account</th>
+            <th>Turn over</th>
+            <th>Gross comm</th>
+          </thead>
+          <tbody>
+            <tr *ngFor="let account of accountant.value.children | keyvalue">
+              <td>{{account.value.name}}</td>
+              <td>{{account.value.turnOver}}</td>
+              <td>{{account.value.gross_common}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>

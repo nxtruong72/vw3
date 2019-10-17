@@ -1,21 +1,10 @@
-import { Component, OnInit , Inject} from '@angular/core';
-import {Router} from "@angular/router";
-import {ApiService} from "../core/api.service";
-import { HttpParams } from '@angular/common/http';
+import { Component, OnInit, Inject } from '@angular/core';
+import { Router } from "@angular/router";
+import { ApiService } from "../core/api.service";
 import { Banker } from '../core/banker';
 import { Accountant } from '../core/accountant';
-
-interface MyDayList {
-  name: string;
-  id: string;
-}
-
-interface MyData {
-  id: string;
-  name: string;
-  totalInVND: string;
-  totalInUSD: string;
-}
+import {FormControl} from '@angular/forms';
+import { DatePipe } from '@angular/common'
 
 @Component({
   selector: 'accountant',
@@ -24,61 +13,78 @@ interface MyData {
 })
 
 export class AccountantComponent implements OnInit {
-  constructor(private router: Router, private apiService: ApiService) { }
-
   private bankerMap: Map<string, Banker> = new Map<string, Banker>();
+  private fromDate = new FormControl();
+  private toDate = new FormControl();
+  private datePipe = new DatePipe('en-US');
 
-  myDay: MyDayList[] = [];
-  myData: MyData[] = [];
-  model;
+  constructor(private router: Router, private apiService: ApiService) { }
 
   ngOnInit() {
     // if(!window.sessionStorage.getItem('token')) {
     //   this.router.navigate(['login']);
     //   return;
     // }
-    this.myDay = [];
-    this.myData = [];
-    // this.apiService.getCyclePage(1, 10).subscribe(response => {
-    //   let data = JSON.parse(JSON.stringify(response)).res.data;
-    //   Object.keys(data).forEach(element => {
-    //     let tmp: MyDayList = {id : data[element].id, name: data[element].name};
-    //     this.myDay.push(tmp);
-    //   });
-    // }, error => {
-    //   alert(error.error.error_description);
-    // })
+
+    // listen evet from apiservice
+    this.apiService.receiveMsgEvent.subscribe(message => {
+      console.log("Receive from component:");
+      console.log(message);
+      this.parseInitData(message);
+    })
   }
 
-  dayClick(id: string): void {
-    const body = new HttpParams({})
-      .set('chuky_id', id);
-    
-    this.myData = [];
-    this.apiService.getReport(body.toString()).subscribe(response => {
-      let data = JSON.parse(JSON.stringify(response)).res.data;
-      let money : string[] = [];
-      Object.keys(data).forEach(element => {
-        Object.keys(data[element].total).forEach(total => {
-          money = [];
-          money.push(data[element].total[total].result);
-        });
-        let value : MyData = {id: data[element].id, name: data[element].name, totalInUSD: money[0], totalInVND: money[1]?money[1]:'0'};
-        this.myData.push(value);
-      });
-    }, error => {
-      console.log(error.error.error_description);
-    });
+  onClickScan() {
+    let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
+    console.log(this.fromDate.value);
+    console.log(from);
+  }
+
+  onCheckBoxChange(item) {
+    console.log(item);
   }
 
   onClickMe(): void {
-    this.apiService.initSocket();
+    // this.apiService.initSocket();
+    this.parseData();
+  }
+
+  parseInitData(message) {
+    let bankerMap = JSON.parse(JSON.stringify(message)).data.bankerMap;
+    let scanAccMap = JSON.parse(JSON.stringify(message)).data.scanAccMap;
+    let dateInfo = JSON.parse(JSON.stringify(message)).data.dateInfo;
+
+    // get date info
+    this.fromDate = new FormControl(new Date(dateInfo.today.from_date));
+    this.toDate = new FormControl(new Date(dateInfo.today.to_date));
+
+    // Get banker info
+    Object.keys(bankerMap).forEach(bankerId => {
+      let banker = new Banker();
+      banker.id = bankerId;
+      banker.name = bankerMap[bankerId].name;
+      this.bankerMap.set(bankerId, banker);
+    })
+
+    // Get accountant info
+    Object.keys(scanAccMap).forEach(accountId => {
+      let bankerId = scanAccMap[accountId].banker;
+      let banker = this.bankerMap.get(bankerId);
+      let account: Accountant = new Accountant(accountId, scanAccMap[accountId]);
+      banker.children.set(accountId, account);
+      this.bankerMap.set(bankerId, banker);
+    });
   }
 
   parseData() {
     this.apiService.getInitData().subscribe(response => {
       let bankerMap = JSON.parse(JSON.stringify(response)).data.bankerMap;
       let scanAccMap = JSON.parse(JSON.stringify(response)).data.scanAccMap;
+      let dateInfo = JSON.parse(JSON.stringify(response)).data.dateInfo;
+
+      // get date info
+      this.fromDate = new FormControl(new Date(dateInfo.today.from_date));
+      this.toDate = new FormControl(new Date(dateInfo.today.to_date));
 
       // Get banker info
       Object.keys(bankerMap).forEach(bankerId => {
@@ -93,7 +99,7 @@ export class AccountantComponent implements OnInit {
         let bankerId = scanAccMap[accountId].banker;
         let banker = this.bankerMap.get(bankerId);
         let account: Accountant = new Accountant(accountId, scanAccMap[accountId]);
-        banker.children.set(accountId,account);
+        banker.children.set(accountId, account);
         this.bankerMap.set(bankerId, banker);
       });
 
@@ -127,6 +133,6 @@ export class AccountantComponent implements OnInit {
           this.bankerMap.set(banker.id, banker);
         }
       })
-    }); 
+    });
   }
 }
