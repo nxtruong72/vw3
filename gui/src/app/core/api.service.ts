@@ -73,17 +73,6 @@ export class ApiService {
         }, error => alert(error.error.error_description));
   }
 
-  getReport(body) {
-    return this.http.post(this.baseUrl + 'report_detail/get_report', {header: this.headers, body: body});
-  }
-
-  getCyclePage(currPage: number, itemPerPage: number) {
-    const body = new HttpParams()
-                .set('currentPage', String(currPage))
-                .set('itemPerPage', String(itemPerPage));
-    return this.http.post(this.baseUrl + 'report_detail/get_cycle_page', {header: this.headers, body: body});
-  }
-
   initSocket() {
     this.socket = io(this.socket_url, { query: 'refresh_token=' + JSON.parse(window.sessionStorage.getItem('token')).refresh_token });
     this.register_base_event();
@@ -107,8 +96,9 @@ export class ApiService {
       console.log('>>> Error response from server: ', err);
     });
     this.socket.on('message', (msg) => {
-      console.log(msg);
-      if (msg.___Bind) {
+      
+      if (msg.___Bind && msg.type == "resolve") {
+        console.log(msg);
         this.receiveMsgEvent.next(msg);
       }
     });
@@ -120,13 +110,18 @@ export class ApiService {
   }
 
   sendInitEvent() {
-    let newUUID = uuid();
     let args = [{username: "av5533"}];
-    this.socket.on(newUUID, (type, data) => {
-      console.log(type);
-      console.log(data);
-    });
-    this.socket.send({___Send: true, event: 'init', uuid: newUUID, args: args});
+    this.socket.send({___Send: true, event: 'init', args: args});
+  }
+
+  sendSocketEvent(event, args): string {
+    let newUUID = uuid();
+    // this.socket.on(newUUID, (type, data) => {
+    //   console.log(type);
+    //   console.log(data);
+    // });
+    this.socket.send({___Send: true, event: event, uuid: newUUID, args: args});
+    return newUUID;
   }
 
   getInitData() {

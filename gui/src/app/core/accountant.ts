@@ -2,9 +2,9 @@ export class Accountant {
     id: string;
     bankerId: string;
     name: string;
-    note: string;
-    turnOver: number;
-    gross_common: number;
+    note: any;
+    turnOver: number = -1;
+    gross_common: number = -1;
     isChecked: boolean = true;
     children: Map<string, Accountant>;
 
