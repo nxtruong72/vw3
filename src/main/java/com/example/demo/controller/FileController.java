@@ -32,7 +32,7 @@ public class FileController {
         return csvService.analyzeReport(file.getInputStream());
     }
 
-    @GetMapping(path = "/test")
+    @GetMapping(path = "/test", produces = "application/json; charset=utf-8")
     @ResponseBody
     public String getText() throws IOException {
         List<String> lines = Files.readAllLines(Paths.get(FILE_NAME), StandardCharsets.UTF_8);
