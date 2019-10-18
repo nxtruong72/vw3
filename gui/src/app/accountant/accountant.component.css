@@ -12,3 +12,15 @@ a.hover {
 a.hover:hover {
   text-decoration: underline;
 }
+
+.data-div {
+  /* background-color:rgb(158, 209, 151); */
+  margin-bottom: 1rem;
+  /* border: 1px groove blue; */
+}
+
+.data-children {
+  /* background-color:rgb(122, 195, 219); */
+  margin-bottom: 0.5rem;
+  /* border: 1px groove blue; */
+}

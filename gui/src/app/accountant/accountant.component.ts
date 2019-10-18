@@ -86,8 +86,8 @@ export class AccountantComponent implements OnInit {
   }
 
   onClickMe(): void {
-    this.apiService.initSocket();
-    // this.parseData();
+    // this.apiService.initSocket();
+    this.parseData();
   }
 
   parseInitData(message) {

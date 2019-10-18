@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import {
   MatButtonModule, MatCardModule, MatDialogModule, MatInputModule, MatTableModule,
   MatToolbarModule, MatMenuModule,MatIconModule, MatProgressSpinnerModule, MatDatepickerModule, MatNativeDateModule, 
-  MatCheckboxModule, MatRadioModule 
+  MatCheckboxModule, MatRadioModule, MatExpansionModule
 } from '@angular/material';
 @NgModule({
   imports: [
@@ -20,7 +20,8 @@ import {
   MatDatepickerModule,
   MatNativeDateModule,
   MatCheckboxModule,
-  MatRadioModule 
+  MatRadioModule,
+  MatExpansionModule
   ],
   exports: [
   CommonModule,
@@ -36,7 +37,8 @@ import {
    MatDatepickerModule,
    MatNativeDateModule,
    MatCheckboxModule,
-   MatRadioModule
+   MatRadioModule,
+   MatExpansionModule
    ],
 })
 export class CustomMaterialModule { }
