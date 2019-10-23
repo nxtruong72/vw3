@@ -4,6 +4,7 @@ import * as io from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
 import { Router } from '@angular/router';
 import {Subject} from 'rxjs';
+import { Banker } from './banker';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,9 @@ export class ApiService {
   private connected: boolean;
   private isReady: boolean = false;
   private headers: HttpHeaders;
+  
   receiveMsgEvent = new Subject();
+  sharedData: Map<String, Banker>;
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -130,5 +133,13 @@ export class ApiService {
 
   getDetailData() {
     return this.http.get('http://localhost:8080/file/detail');
+  }
+
+  getDetailGaData() {
+    return this.http.get('http://localhost:8080/file/detail_ga');
+  }
+
+  getDetailLotoData() {
+    return this.http.get('http://localhost:8080/file/detail_loto');
   }
 }

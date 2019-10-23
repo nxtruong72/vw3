@@ -21,7 +21,9 @@ public class FileController {
 //    private static String FILE_NAME = "D:\\project\\spring-group\\gui\\temp-message.json";
 //    private static String FILE_SCAN_NAME = "D:\\project\\spring-group\\gui\\scan.json";
     private static String FILE_NAME = "/home/nxuantruong/Source/vw3/vw3/gui/temp-message.json";
-    private static String FILE_SCAN_NAME = "/home/nxuantruong/Source/vw3/vw3/gui/scan.json";
+    private static String FILE_SCAN_NAME_SB = "/home/nxuantruong/Source/vw3/vw3/gui/scan.json";
+    private static String FILE_SCAN_NAME_GA = "/home/nxuantruong/Source/vw3/vw3/gui/scan_ga.json";
+    private static String FILE_SCAN_NAME_LOTO = "/home/nxuantruong/Source/vw3/vw3/gui/scan_loto.json";
 
     @Autowired
     CsvService csvService;
@@ -41,8 +43,22 @@ public class FileController {
 
     @GetMapping(path = "/detail")
     @ResponseBody
-    public String getDetail() throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(FILE_SCAN_NAME), StandardCharsets.UTF_8);
+    public String getDetailSb() throws IOException {
+        List<String> lines = Files.readAllLines(Paths.get(FILE_SCAN_NAME_SB), StandardCharsets.UTF_8);
+        return String.join(System.lineSeparator(), lines);
+    }
+
+    @GetMapping(path = "/detail_ga")
+    @ResponseBody
+    public String getDetailGa() throws IOException {
+        List<String> lines = Files.readAllLines(Paths.get(FILE_SCAN_NAME_GA), StandardCharsets.UTF_8);
+        return String.join(System.lineSeparator(), lines);
+    }
+
+    @GetMapping(path = "/detail_loto")
+    @ResponseBody
+    public String getDetailLoto() throws IOException {
+        List<String> lines = Files.readAllLines(Paths.get(FILE_SCAN_NAME_LOTO), StandardCharsets.UTF_8);
         return String.join(System.lineSeparator(), lines);
     }
 }

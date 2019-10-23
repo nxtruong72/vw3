@@ -1,0 +1,323 @@
+{
+  "data": {
+    "id": "5a92430a66532955a0c5964d",
+    "from_date": "10/22/2019",
+    "to_date": "10/22/2019",
+    "more_post": {
+      "login_name": "av5533"
+    },
+    "accountant": [
+      {
+        "level": 0,
+        "username": "VIF2SUB11",
+        "data": {
+          "cf": {
+            "turnover": "560.00",
+            "gross_comm": "1.40",
+            "win_loss": "87.75"
+          }
+        },
+        "filter": false,
+        "child": [
+          {
+            "username": "VIF2Z0",
+            "data": {
+              "cf": {
+                "turnover": "450.00",
+                "gross_comm": "1.13",
+                "win_loss": "-13.45"
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": "win_loss_report_v.aspx?id=27008&s=22%2f10%2f2019&e=22%2f10%2f2019",
+              "parent": [
+                "VIF2Z0"
+              ]
+            },
+            "level": 1,
+            "child": [],
+            "noExist": true,
+            "noFormula": true,
+            "reportAccountant": [
+              {
+                "reportType": "cf",
+                "reportData": {
+                  "turnover": "450.00",
+                  "gross_comm": "1.13",
+                  "win_loss": "-13.45"
+                },
+                "resultList": []
+              }
+            ]
+          },
+          {
+            "username": "VIF2Z1",
+            "data": {
+              "cf": {
+                "turnover": "110.00",
+                "gross_comm": "0.28",
+                "win_loss": "101.20"
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": "win_loss_report_v.aspx?id=38166&s=22%2f10%2f2019&e=22%2f10%2f2019",
+              "parent": [
+                "VIF2Z1"
+              ]
+            },
+            "level": 1,
+            "child": [],
+            "noExist": true,
+            "noFormula": true,
+            "reportAccountant": [
+              {
+                "reportType": "cf",
+                "reportData": {
+                  "turnover": "110.00",
+                  "gross_comm": "0.28",
+                  "win_loss": "101.20"
+                },
+                "resultList": []
+              }
+            ]
+          }
+        ],
+        "accInfo": {
+          "id": "5a92430a66532955a0c5964d",
+          "acc_name": "vif2sub11",
+          "acc_parent_id": null,
+          "banker": "571dbfc806499fb0896fe5b9",
+          "book_id": "56850ba0097802b9f23929ae"
+        },
+        "noFormula": false,
+        "reportAccountant": [
+          {
+            "reportType": "cf",
+            "reportData": {
+              "turnover": "560.00",
+              "gross_comm": "1.40",
+              "win_loss": "87.75"
+            },
+            "resultList": [
+              {
+                "ctt_id": "5daabd3aa13e61e37423e9b3",
+                "formulaName": "S1288-USD-0.205-2-OCC-(-1)",
+                "memberName": ".cty kk",
+                "currencyName": "USD",
+                "formatName": "Other-Com-CockFight",
+                "PRText": "rec",
+                "he_so": "2",
+                "gia_thau": "0.205",
+                "value": -18.562749999999998,
+                "valueRounded": -19,
+                "formulaDetail": {
+                  "f_format_id": "5b88f7a68778190555312413",
+                  "f_pattern_id": "5daabd38008bb19f66328a0d",
+                  "tenct": "S1288-USD-0.205-2-OCC-(-1)",
+                  "giaonhan": -1,
+                  "fieldList": [
+                    {
+                      "dis": "he_so",
+                      "value": "2",
+                      "index": 2
+                    },
+                    {
+                      "dis": "gia_thau",
+                      "value": "0.205",
+                      "index": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "ctt_id": "5daabdd051d0d1fa755b79aa",
+                "formulaName": "S1288-VND-7-3-OCC",
+                "memberName": "k27 - r06 (21/10/2019)",
+                "currencyName": "VND",
+                "formatName": "Other-Com-CockFight",
+                "PRText": "pay",
+                "he_so": "3",
+                "gia_thau": "7",
+                "value": 643.65,
+                "valueRounded": 640,
+                "formulaDetail": {
+                  "f_format_id": "5b88f7a68778190555312413",
+                  "f_pattern_id": "5daabdcf008bb19f66328a11",
+                  "tenct": "S1288-VND-7-3-OCC",
+                  "giaonhan": 1,
+                  "fieldList": [
+                    {
+                      "dis": "he_so",
+                      "value": "3",
+                      "index": 2
+                    },
+                    {
+                      "dis": "gia_thau",
+                      "value": "7",
+                      "index": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "reportSave": {
+      "account_root_name": "VIF2SUB11",
+      "reportSaveList": [
+        {
+          "book_id": "56850ba0097802b9f23929ae",
+          "id_user": "588091467104d911641f1843",
+          "account_id": "5a92430a66532955a0c5964d",
+          "dv_tien_te_id": "5947c6cded885dade0107fa7",
+          "customer_name": ".cty kk",
+          "account_name": "VIF2SUB11",
+          "account_parent_name": [],
+          "account_root_name": "",
+          "dv_tien_te": "USD",
+          "flag": "cf",
+          "report_data": {
+            "turnover": "560.00",
+            "gross_comm": "1.40",
+            "win_loss": "87.75"
+          },
+          "formula_detail": "{\"f_format_id\":\"5b88f7a68778190555312413\",\"f_pattern_id\":\"5daabd38008bb19f66328a0d\",\"tenct\":\"S1288-USD-0.205-2-OCC-(-1)\",\"giaonhan\":-1,\"fieldList\":[{\"dis\":\"he_so\",\"value\":\"2\",\"index\":2},{\"dis\":\"gia_thau\",\"value\":\"0.205\",\"index\":1}]}",
+          "result": -19
+        },
+        {
+          "book_id": "56850ba0097802b9f23929ae",
+          "id_user": "5b50c2a2787dcb61d7282682",
+          "account_id": "5a92430a66532955a0c5964d",
+          "dv_tien_te_id": "588091467104d911641f1855",
+          "customer_name": "k27 - r06 (21/10/2019)",
+          "account_name": "VIF2SUB11",
+          "account_parent_name": [],
+          "account_root_name": "",
+          "dv_tien_te": "VND",
+          "flag": "cf",
+          "report_data": {
+            "turnover": "560.00",
+            "gross_comm": "1.40",
+            "win_loss": "87.75"
+          },
+          "formula_detail": "{\"f_format_id\":\"5b88f7a68778190555312413\",\"f_pattern_id\":\"5daabdcf008bb19f66328a11\",\"tenct\":\"S1288-VND-7-3-OCC\",\"giaonhan\":1,\"fieldList\":[{\"dis\":\"he_so\",\"value\":\"3\",\"index\":2},{\"dis\":\"gia_thau\",\"value\":\"7\",\"index\":1}]}",
+          "result": 640
+        }
+      ]
+    },
+    "dataFieldList": [
+      "turnover",
+      "gross_comm",
+      "win_loss"
+    ],
+    "formulaFieldList": [
+      {
+        "dis": "he_so",
+        "value": "56850ba7097802b9f23934d5",
+        "index": 2
+      },
+      {
+        "dis": "gia_thau",
+        "value": "56850ba7097802b9f23934d6",
+        "index": 1
+      }
+    ],
+    "scanData": {
+      "cf": {
+        "level": 0,
+        "username": "vif2sub11",
+        "data": {
+          "cf": {
+            "turnover": {
+              "text": "560.00"
+            },
+            "gross_comm": {
+              "text": "1.40"
+            },
+            "win_loss": {
+              "text": "87.75"
+            }
+          }
+        },
+        "filter": false,
+        "child": [
+          {
+            "username": "VIF2Z0",
+            "data": {
+              "cf": {
+                "turnover": {
+                  "text": "450.00"
+                },
+                "gross_comm": {
+                  "text": "1.13"
+                },
+                "win_loss": {
+                  "text": "-13.45"
+                }
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": "win_loss_report_v.aspx?id=27008&s=22%2f10%2f2019&e=22%2f10%2f2019",
+              "parent": [
+                "VIF2Z0"
+              ]
+            },
+            "level": 1,
+            "child": []
+          },
+          {
+            "username": "VIF2Z1",
+            "data": {
+              "cf": {
+                "turnover": {
+                  "text": "110.00"
+                },
+                "gross_comm": {
+                  "text": "0.28"
+                },
+                "win_loss": {
+                  "text": "101.20"
+                }
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": "win_loss_report_v.aspx?id=38166&s=22%2f10%2f2019&e=22%2f10%2f2019",
+              "parent": [
+                "VIF2Z1"
+              ]
+            },
+            "level": 1,
+            "child": []
+          }
+        ]
+      },
+      "csn": {
+        "level": 0,
+        "username": "root",
+        "data": {},
+        "filter": false,
+        "child": []
+      },
+      "racing": {
+        "level": 0,
+        "username": "root",
+        "data": {},
+        "filter": false,
+        "child": []
+      },
+      "mma": {
+        "level": 0,
+        "username": "root",
+        "data": {},
+        "filter": false,
+        "child": []
+      }
+    }
+  }
+}

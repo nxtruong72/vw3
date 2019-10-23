@@ -1,84 +1,167 @@
-<h1 style="margin: auto;align-content: center">Report</h1>
-<div class="row">
-  <div class="col-md-4"></div>
-  <div class="col-md-8">
-    <mat-radio-group [(ngModel)]="chosenItem" (change)="onRadioButtonChange()">
-      <mat-radio-button style="margin-right: 20px;" value='today'>Today</mat-radio-button>
-      <mat-radio-button style="margin-right: 20px;" value='yesterday'>Yesterday</mat-radio-button>
-      <mat-radio-button style="margin-right: 20px;" value='this_week'>This week</mat-radio-button>
-      <mat-radio-button style="margin-right: 20px;" value='last_week'>Last week</mat-radio-button>
-    </mat-radio-group>
-  </div>
+<!-- <h1 style="margin: auto;align-content: center">Report</h1> -->
+<mat-tab-group>
+  <mat-tab label="Accountant">
+    <div class="row" style="margin-top: 2rem">
+      <div class="col-md-4"></div>
+      <div class="col-md-8">
+        <mat-radio-group [(ngModel)]="chosenItem" (change)="onRadioButtonChange()">
+          <mat-radio-button style="margin-right: 20px;" value='today'>Today</mat-radio-button>
+          <mat-radio-button style="margin-right: 20px;" value='yesterday'>Yesterday</mat-radio-button>
+          <mat-radio-button style="margin-right: 20px;" value='this_week'>This week</mat-radio-button>
+          <mat-radio-button style="margin-right: 20px;" value='last_week'>Last week</mat-radio-button>
+        </mat-radio-group>
+      </div>
 
-  <div class="col-md-4"><button mat-raised-button color="primary" (click)="onClickMe()">Click me!</button></div>
-  <div class="col-md-8">
-    <mat-form-field style="margin-right: 20px;">
-      <input matInput [matDatepicker]="from" placeholder="From date" [formControl]="fromDate">
-      <mat-datepicker-toggle matSuffix [for]="from"></mat-datepicker-toggle>
-      <mat-datepicker #from></mat-datepicker>
-    </mat-form-field>
-    <mat-form-field style="margin-right: 20px;">
-      <input matInput [matDatepicker]="to" placeholder="To date" [formControl]="toDate">
-      <mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
-      <mat-datepicker #to></mat-datepicker>
-    </mat-form-field>
-    <button mat-raised-button color="primary" (click)="onClickScan()">Scan</button>
-  </div>
-</div>
+      <div class="col-md-4"></div>
+      <div class="col-md-8">
+        <mat-form-field style="margin-right: 20px;">
+          <input matInput [matDatepicker]="from" placeholder="From date" [formControl]="fromDate">
+          <mat-datepicker-toggle matSuffix [for]="from"></mat-datepicker-toggle>
+          <mat-datepicker #from></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field style="margin-right: 20px;">
+          <input matInput [matDatepicker]="to" placeholder="To date" [formControl]="toDate">
+          <mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
+          <mat-datepicker #to></mat-datepicker>
+        </mat-form-field>
+        <button mat-raised-button color="primary" style="margin-right: 20px;" (click)="onClickScan()">Scan</button>
+        <button mat-raised-button color="primary" (click)="onClickReport()">Report</button>
+      </div>
+    </div>
 
-<div class="container content">
-  <div *ngIf="bankerMap.size > 0">
-    <mat-checkbox class="tp-margin" [(ngModel)]="isCheckAll" (change)="onCheckAll()">Check all</mat-checkbox>
-  </div>
+    <div class="container content">
+      <div *ngIf="bankerMap.size > 0">
+        <mat-checkbox class="tp-margin" [(ngModel)]="isCheckAll" (change)="onCheckAll()">Check all</mat-checkbox>
+      </div>
 
-  <mat-accordion>
-    <div class="data-div" *ngFor="let entry of bankerMap | keyvalue">
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <section class="tp-section">
-              <mat-checkbox class="tp-margin" [(ngModel)]="entry.value.isChecked"
-                (change)="onCheckBoxChange(entry.value)">{{entry.value.name | uppercase}}
-              </mat-checkbox>
-            </section>
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-
-        <div class="data-children" *ngFor="let accountant of entry.value.children | keyvalue">
+      <mat-accordion>
+        <div class="data-div" *ngFor="let entry of bankerMap | keyvalue">
           <mat-expansion-panel>
             <mat-expansion-panel-header>
               <mat-panel-title>
                 <section class="tp-section">
-                  <mat-checkbox class="tp-margin" [(ngModel)]="accountant.value.isChecked"
-                    (change)="onCheckBoxChange(accountant.value)">
-                    {{accountant.value.name | uppercase}}
+                  <mat-checkbox class="tp-margin" [(ngModel)]="entry.value.isChecked"
+                    (change)="onCheckBoxChange(entry.value)">{{entry.value.name | uppercase}}
                   </mat-checkbox>
                 </section>
               </mat-panel-title>
-              <mat-panel-description>
-                {{accountant.value.note | uppercase}}
-              </mat-panel-description>
             </mat-expansion-panel-header>
 
-            <div style="background-color:rgb(202, 223, 230)" *ngIf="accountant.value.children.size > 0">
-              <table class="table table-striped table-dark">
-                <thead>
-                  <th>Account</th>
-                  <th>Turn over</th>
-                  <th>Gross comm</th>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let account of accountant.value.children | keyvalue">
-                    <td>{{account.value.name}}</td>
-                    <td>{{account.value.turnOver}}</td>
-                    <td>{{account.value.gross_common}}</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="data-children" *ngFor="let accountant of entry.value.children | keyvalue">
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <section class="tp-section">
+                      <mat-checkbox class="tp-margin" [(ngModel)]="accountant.value.isChecked"
+                        (change)="onCheckBoxChange(accountant.value)">
+                        {{accountant.value.name | uppercase}}
+                      </mat-checkbox>
+                    </section>
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    {{accountant.value.note | uppercase}}
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <div style="background-color:rgb(202, 223, 230)" *ngIf="accountant.value.children.size > 0">
+                  <table class="table table-striped table-dark">
+                    <thead>
+                      <th>Account</th>
+                      <th>Type</th>
+                      <th>Turn over</th>
+                      <th *ngIf="entry.value.book_name != 'loto'">Gross comm</th>
+                      <th *ngIf="entry.value.book_name == 'loto'">Payout</th>
+                    </thead>
+                    <tbody>
+                      <!-- sport book -->
+                      <ng-container *ngFor="let account of accountant.value.children | keyvalue">
+                        <!-- <p>{{account.value.name}}</p>
+                      <p>{{account.value.sb}}</p>
+                      <p>{{account.value.cf}}</p>
+                      <p>{{account.value.loto}}</p> -->
+                        <tr *ngIf="account.value.sb !== undefined">
+                          <td>{{account.value.name}}</td>
+                          <td>SB</td>
+                          <td>{{account.value.sb.turnover}}</td>
+                          <td>{{account.value.sb.gross_comm}}</td>
+                        </tr>
+                        <!-- ga -->
+                        <tr *ngIf="account.value.cf !== undefined">
+                          <td>{{account.value.name}}</td>
+                          <td>CF</td>
+                          <td>{{account.value.cf.turnover}}</td>
+                          <td>{{account.value.cf.gross_comm}}</td>
+                        </tr>
+                        <!-- loto -->
+                        <tr *ngIf="account.value.loto != undefined">
+                          <td>{{account.value.name}}</td>
+                          <td>LOTO</td>
+                          <td>{{account.value.loto.turnover | number:0}}</td>
+                          <td>{{account.value.loto.payout | number:0}}</td>
+                        </tr>
+                      </ng-container>
+                    </tbody>
+                  </table>
+                </div>
+              </mat-expansion-panel>
             </div>
           </mat-expansion-panel>
         </div>
-      </mat-expansion-panel>
+      </mat-accordion>
     </div>
-  </mat-accordion>
-</div>
+  </mat-tab>
+
+  <!-- Report tab -->
+  <mat-tab label="Report">
+    <div class="container content" style="margin-top: 2rem">
+      <div style="text-align: center; border: 1px solid black;">
+        Icon goes here {{bankerMap}}
+      </div>
+
+      <table class="table table-bordered">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col" colspan="3">BẢNG THỐNG KÊ ĐẠI LÝ</th>
+            <th scope="col">TỶ GIÁ $ 23200</th>
+          </tr>
+          <tr>
+            <th scope="col">LOẠI</th>
+            <th scope="col">CÔNG TY</th>
+            <th scope="col">TURNOVER</th>
+            <th scope="col">TÀI KHOẢN HOẠT ĐỘNG</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td rowspan="3">SPORTBOOK</td>
+            <td>SPORTBOOK1</td>
+            <td>123</td>
+            <td>123</td>
+          </tr>
+          <tr>
+            <td>SPORTBOOK2</td>
+            <td>123</td>
+            <td>123</td>
+          </tr>
+          <tr>
+            <td>SPORTBOOK3</td>
+            <td>123</td>
+            <td>123</td>
+          </tr>
+          <tr>
+            <td rowspan="2">CASINO</td>
+            <td>CASINO1</td>
+            <td>123</td>
+            <td>123</td>
+          </tr>
+          <tr>
+            <td>CASINO1</td>
+            <td>123</td>
+            <td>123</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </mat-tab>
+</mat-tab-group>

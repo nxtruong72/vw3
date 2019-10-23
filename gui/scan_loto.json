@@ -1,0 +1,444 @@
+{
+  "data": {
+    "id": "5c8e47c5b5e0b8e9e7f67585",
+    "from_date": "10/14/2019",
+    "to_date": "10/20/2019",
+    "more_post": {
+      "login_name": "av5533"
+    },
+    "accountant": [
+      {
+        "level": 0,
+        "username": "LD01SUBAA",
+        "data": {
+          "loto": {
+            "payout": "-2102501448",
+            "company": "-2102501448",
+            "turnover": "4188687620"
+          }
+        },
+        "filter": false,
+        "child": [
+          {
+            "username": "LD0150",
+            "data": {
+              "loto": {
+                "payout": "-58363441",
+                "company": "-58363441",
+                "turnover": "1598916443"
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "href": "index.php?op=List&SGid=&layer=3&layerid=3945&RType="
+              },
+              "parent": [
+                "LD0150"
+              ]
+            },
+            "level": 1,
+            "child": [],
+            "noExist": true,
+            "noFormula": true,
+            "reportAccountant": [
+              {
+                "reportType": "loto",
+                "reportData": {
+                  "payout": "-58363441",
+                  "company": "-58363441",
+                  "turnover": "1598916443"
+                },
+                "resultList": []
+              }
+            ]
+          },
+          {
+            "username": "LD01P3",
+            "data": {
+              "loto": {
+                "payout": "-35606260",
+                "company": "-35606260",
+                "turnover": "45206260"
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "href": "index.php?op=List&SGid=&layer=3&layerid=5003&RType="
+              },
+              "parent": [
+                "LD01P3"
+              ]
+            },
+            "level": 1,
+            "child": [],
+            "noExist": true,
+            "noFormula": true,
+            "reportAccountant": [
+              {
+                "reportType": "loto",
+                "reportData": {
+                  "payout": "-35606260",
+                  "company": "-35606260",
+                  "turnover": "45206260"
+                },
+                "resultList": []
+              }
+            ]
+          },
+          {
+            "username": "LD01E7",
+            "data": {
+              "loto": {
+                "payout": "86060000",
+                "company": "86060000",
+                "turnover": "63940000"
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "href": "index.php?op=List&SGid=&layer=3&layerid=6084&RType="
+              },
+              "parent": [
+                "LD01E7"
+              ]
+            },
+            "level": 1,
+            "child": [],
+            "noExist": true,
+            "noFormula": true,
+            "reportAccountant": [
+              {
+                "reportType": "loto",
+                "reportData": {
+                  "payout": "86060000",
+                  "company": "86060000",
+                  "turnover": "63940000"
+                },
+                "resultList": []
+              }
+            ]
+          },
+          {
+            "username": "LD01Q0",
+            "data": {
+              "loto": {
+                "payout": "-1949856250",
+                "company": "-1949856250",
+                "turnover": "1949856250"
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "href": "index.php?op=List&SGid=&layer=3&layerid=6380&RType="
+              },
+              "parent": [
+                "LD01Q0"
+              ]
+            },
+            "level": 1,
+            "child": [],
+            "noExist": true,
+            "noFormula": true,
+            "reportAccountant": [
+              {
+                "reportType": "loto",
+                "reportData": {
+                  "payout": "-1949856250",
+                  "company": "-1949856250",
+                  "turnover": "1949856250"
+                },
+                "resultList": []
+              }
+            ]
+          },
+          {
+            "username": "LD01P8",
+            "data": {
+              "loto": {
+                "payout": "-99655767",
+                "company": "-99655767",
+                "turnover": "299656967"
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "href": "index.php?op=List&SGid=&layer=3&layerid=6745&RType="
+              },
+              "parent": [
+                "LD01P8"
+              ]
+            },
+            "level": 1,
+            "child": [],
+            "noExist": true,
+            "noFormula": true,
+            "reportAccountant": [
+              {
+                "reportType": "loto",
+                "reportData": {
+                  "payout": "-99655767",
+                  "company": "-99655767",
+                  "turnover": "299656967"
+                },
+                "resultList": []
+              }
+            ]
+          },
+          {
+            "username": "LD01P9",
+            "data": {
+              "loto": {
+                "payout": "-45079730",
+                "company": "-45079730",
+                "turnover": "231111700"
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "href": "index.php?op=List&SGid=&layer=3&layerid=6794&RType="
+              },
+              "parent": [
+                "LD01P9"
+              ]
+            },
+            "level": 1,
+            "child": [],
+            "noExist": true,
+            "noFormula": true,
+            "reportAccountant": [
+              {
+                "reportType": "loto",
+                "reportData": {
+                  "payout": "-45079730",
+                  "company": "-45079730",
+                  "turnover": "231111700"
+                },
+                "resultList": []
+              }
+            ]
+          }
+        ],
+        "accInfo": {
+          "id": "5c8e47c5b5e0b8e9e7f67585",
+          "acc_name": "ld01subaa",
+          "acc_parent_id": null,
+          "banker": "5913c714b0e6c7ca64ce5320",
+          "book_id": "56850ba0097802b9f23929b0"
+        },
+        "noFormula": true,
+        "reportAccountant": [
+          {
+            "reportType": "loto",
+            "reportData": {
+              "payout": "-2102501448",
+              "company": "-2102501448",
+              "turnover": "4188687620"
+            },
+            "resultList": [],
+            "noFormula": true
+          }
+        ]
+      }
+    ],
+    "reportSave": {
+      "account_root_name": "LD01SUBAA",
+      "reportSaveList": []
+    },
+    "dataFieldList": [
+      "turnover",
+      "payout",
+      "company"
+    ],
+    "formulaFieldList": [],
+    "scanData": {
+      "loto": {
+        "level": 0,
+        "username": "LD01subAA",
+        "data": {
+          "loto": {
+            "payout": {
+              "text": "-2,102,501,448"
+            },
+            "company": {
+              "text": "-2,102,501,448"
+            },
+            "turnover": {
+              "text": "4,188,687,620"
+            }
+          }
+        },
+        "filter": false,
+        "child": [
+          {
+            "username": "LD0150",
+            "data": {
+              "loto": {
+                "payout": {
+                  "text": "-58,363,441"
+                },
+                "company": {
+                  "text": "-58,363,441"
+                },
+                "turnover": {
+                  "text": "1,598,916,443"
+                }
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "href": "index.php?op=List&SGid=&layer=3&layerid=3945&RType="
+              },
+              "parent": [
+                "LD0150"
+              ]
+            },
+            "level": 1,
+            "child": []
+          },
+          {
+            "username": "LD01P3",
+            "data": {
+              "loto": {
+                "payout": {
+                  "text": "-35,606,260"
+                },
+                "company": {
+                  "text": "-35,606,260"
+                },
+                "turnover": {
+                  "text": "45,206,260"
+                }
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "href": "index.php?op=List&SGid=&layer=3&layerid=5003&RType="
+              },
+              "parent": [
+                "LD01P3"
+              ]
+            },
+            "level": 1,
+            "child": []
+          },
+          {
+            "username": "LD01E7",
+            "data": {
+              "loto": {
+                "payout": {
+                  "text": "86,060,000"
+                },
+                "company": {
+                  "text": "86,060,000"
+                },
+                "turnover": {
+                  "text": "63,940,000"
+                }
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "href": "index.php?op=List&SGid=&layer=3&layerid=6084&RType="
+              },
+              "parent": [
+                "LD01E7"
+              ]
+            },
+            "level": 1,
+            "child": []
+          },
+          {
+            "username": "LD01Q0",
+            "data": {
+              "loto": {
+                "payout": {
+                  "text": "-1,949,856,250"
+                },
+                "company": {
+                  "text": "-1,949,856,250"
+                },
+                "turnover": {
+                  "text": "1,949,856,250"
+                }
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "href": "index.php?op=List&SGid=&layer=3&layerid=6380&RType="
+              },
+              "parent": [
+                "LD01Q0"
+              ]
+            },
+            "level": 1,
+            "child": []
+          },
+          {
+            "username": "LD01P8",
+            "data": {
+              "loto": {
+                "payout": {
+                  "text": "-99,655,767"
+                },
+                "company": {
+                  "text": "-99,655,767"
+                },
+                "turnover": {
+                  "text": "299,656,967"
+                }
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "href": "index.php?op=List&SGid=&layer=3&layerid=6745&RType="
+              },
+              "parent": [
+                "LD01P8"
+              ]
+            },
+            "level": 1,
+            "child": []
+          },
+          {
+            "username": "LD01P9",
+            "data": {
+              "loto": {
+                "payout": {
+                  "text": "-45,079,730"
+                },
+                "company": {
+                  "text": "-45,079,730"
+                },
+                "turnover": {
+                  "text": "231,111,700"
+                }
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "href": "index.php?op=List&SGid=&layer=3&layerid=6794&RType="
+              },
+              "parent": [
+                "LD01P9"
+              ]
+            },
+            "level": 1,
+            "child": []
+          }
+        ]
+      }
+    }
+  }
+}

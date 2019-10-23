@@ -39,7 +39,11 @@ export class AccountantComponent implements OnInit {
         this.parseInitData(message);
       else
         this.parseScanData(message);
-    })
+    });
+
+    // fetching data
+    // this.apiService.initSocket();
+    this.parseData();
   }
 
   onClickScan() {
@@ -60,6 +64,12 @@ export class AccountantComponent implements OnInit {
         }
       });
     });
+  }
+
+  onClickReport() {
+    this.apiService.sharedData = this.bankerMap;
+    this.router.navigate(['report']);
+    // window.open('report');
   }
 
   onRadioButtonChange() {
@@ -85,11 +95,6 @@ export class AccountantComponent implements OnInit {
     });
   }
 
-  onClickMe(): void {
-    // this.apiService.initSocket();
-    this.parseData();
-  }
-
   parseInitData(message) {
     let bankerMap = JSON.parse(JSON.stringify(message)).data.bankerMap;
     let scanAccMap = JSON.parse(JSON.stringify(message)).data.scanAccMap;
@@ -102,15 +107,13 @@ export class AccountantComponent implements OnInit {
     this.dateInfo.set('last_week', dateInfo.last_week);
     this.chosenItem = 'today';
     this.onRadioButtonChange();
-    
+
 
     // Get banker info
     Object.keys(bankerMap).forEach(bankerId => {
-      let banker = new Banker();
-      banker.id = bankerId;
-      banker.name = bankerMap[bankerId].name;
+      let banker = new Banker(bankerMap[bankerId]);
       this.bankerMap.set(bankerId, banker);
-    })
+    });
 
     // Get accountant info
     Object.keys(scanAccMap).forEach(accountId => {
@@ -131,19 +134,17 @@ export class AccountantComponent implements OnInit {
       let account = banker.children.get(accId);
 
       // update its info
-      if (data.data.sb != undefined) {
-        account.turnOver = data.data.sb.turnover;
-        account.gross_common = data.data.sb.gross_comm;
-      }
+      account.sb = data.data.sb;
+      account.cf = data.data.cf;
+      account.loto = data.data.loto;
 
       // update its child
       data.child.forEach(element => {
         let accountant: Accountant = new Accountant(element.username, null);
         accountant.name = element.username;
-        if (element.data.sb != undefined) {
-          accountant.turnOver = element.data.sb.turnover;
-          accountant.gross_common = element.data.sb.gross_comm;
-        }
+        account.sb = element.data.sb;
+        account.cf = element.data.cf;
+        account.loto = element.data.loto;
         account.children.set(accountant.id, accountant);
       });
 
@@ -160,7 +161,7 @@ export class AccountantComponent implements OnInit {
       let bankerMap = JSON.parse(JSON.stringify(response)).data.bankerMap;
       let scanAccMap = JSON.parse(JSON.stringify(response)).data.scanAccMap;
       let dateInfo = JSON.parse(JSON.stringify(response)).data.dateInfo;
-      
+
 
       // get date info
       this.dateInfo.set('today', dateInfo.today);
@@ -171,9 +172,7 @@ export class AccountantComponent implements OnInit {
 
       // Get banker info
       Object.keys(bankerMap).forEach(bankerId => {
-        let banker = new Banker();
-        banker.id = bankerId;
-        banker.name = bankerMap[bankerId].name;
+        let banker = new Banker(bankerMap[bankerId]);
         this.bankerMap.set(bankerId, banker);
       })
 
@@ -188,34 +187,43 @@ export class AccountantComponent implements OnInit {
 
       // Get account info
       this.apiService.getDetailData().subscribe(response => {
-        let data = JSON.parse(JSON.stringify(response)).data.accountant[0];
-        let accId = data.accInfo.id;
-        let banker = this.bankerMap.get(data.accInfo.banker);
-
-        console.log(data);
-        if (banker != undefined) {
-          let account = banker.children.get(accId);
-
-          // update its info
-          account.turnOver = data.data.sb.turnover;
-          account.gross_common = data.data.sb.gross_comm;
-
-          // update its child
-          data.child.forEach(element => {
-            let accountant: Accountant = new Accountant(element.username, null);
-            accountant.name = element.username;
-            accountant.turnOver = element.data.sb.turnover;
-            accountant.gross_common = element.data.sb.gross_comm;
-            account.children.set(accountant.id, accountant);
-          });
-
-          // update back to banker
-          banker.children.set(accId, account);
-
-          // update back to bankerMap
-          this.bankerMap.set(banker.id, banker);
-        }
-      })
+        this.parseResponseData(response);
+      });
+      this.apiService.getDetailGaData().subscribe(response => {
+        this.parseResponseData(response);
+      });
+      this.apiService.getDetailLotoData().subscribe(response => {
+        this.parseResponseData(response);
+      });
     });
+  }
+
+  parseResponseData(response) {
+    let data = JSON.parse(JSON.stringify(response)).data.accountant[0];
+    let accId = data.accInfo.id;
+    let banker = this.bankerMap.get(data.accInfo.banker);
+
+    console.log(data);
+    if (banker != undefined) {
+      let account = banker.children.get(accId);
+
+      // update its info
+      account.sb = data.data.sb;
+      account.cf = data.data.cf;
+      account.loto = data.data.loto;
+      // console.log(account.sb);
+
+      // update its child
+      data.child.forEach(element => {
+        let accountant: Accountant = new Accountant(element.username, element);
+        account.children.set(accountant.id, accountant);
+      });
+
+      // update back to banker
+      banker.children.set(accId, account);
+
+      // update back to bankerMap
+      this.bankerMap.set(banker.id, banker);
+    }
   }
 }

@@ -3,17 +3,26 @@ export class Accountant {
     bankerId: string;
     name: string;
     note: any;
-    turnOver: number = -1;
-    gross_common: number = -1;
     isChecked: boolean = true;
     children: Map<string, Accountant>;
+    // data
+    sb: any;
+    cf: any;
+    loto: any;
 
     constructor(id, json) {
         this.id = id;
         this.children = new Map();
-        if (json != undefined) {
+
+        // check if it's accountant
+        if (json.acc_name != undefined) {
             this.name = json.acc_name;
             this.note = json.note;
+        } else {
+            this.name = json.username;
+            this.sb = json.data.sb;
+            this.cf = json.data.cf;
+            this.loto = json.data.loto;
         }
     }
 }
