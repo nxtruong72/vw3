@@ -9,6 +9,7 @@ export class Accountant {
     sb: any;
     cf: any;
     loto: any;
+    csn: any;
 
     constructor(id, json) {
         this.id = id;
@@ -23,6 +24,7 @@ export class Accountant {
             this.sb = json.data.sb;
             this.cf = json.data.cf;
             this.loto = json.data.loto;
+            this.csn = json.data.csn;
         }
     }
 }

@@ -22,6 +22,10 @@ export class AccountantComponent implements OnInit {
   // for radio button
   private dateInfo: Map<string, Object> = new Map();
   private chosenItem: string;
+  sbCounter: Banker[] = [];
+  cfCounter: Banker[] = [];
+  lotoCounter: Banker[] = [];
+  csnCounter: Banker[] = [];
 
   constructor(private router: Router, private apiService: ApiService) { }
 
@@ -203,7 +207,7 @@ export class AccountantComponent implements OnInit {
     let accId = data.accInfo.id;
     let banker = this.bankerMap.get(data.accInfo.banker);
 
-    console.log(data);
+    // console.log(data);
     if (banker != undefined) {
       let account = banker.children.get(accId);
 
@@ -222,8 +226,57 @@ export class AccountantComponent implements OnInit {
       // update back to banker
       banker.children.set(accId, account);
 
+      // update banker data
+      banker.sb = banker.cf = banker.loto = banker.csn = undefined;
+      banker.children.forEach((value, key) => {
+        if (value.sb != undefined) {
+          if (banker.sb == undefined)
+            banker.sb = {turnover: 0, gross_comm: 0};
+          banker.sb.turnover += parseInt(value.sb.turnover);
+          banker.sb.gross_comm += parseInt(value.sb.gross_comm);
+        }
+        if (value.cf != undefined) {
+          if (banker.cf == undefined)
+            banker.cf = { turnover: 0, gross_comm: 0 };
+          banker.cf.turnover += parseInt(value.cf.turnover);
+          banker.cf.gross_comm += parseInt(value.cf.gross_comm);
+        }
+        if (value.csn != undefined) {
+          if (banker.csn == undefined)
+            banker.csn = { turnover: 0, gross_comm: 0 };
+          banker.csn.turnover += parseInt(value.csn.turnover);
+          banker.csn.gross_comm += parseInt(value.csn.gross_comm);
+        }
+        if (value.loto != undefined) {
+          if (banker.loto == undefined)
+            banker.loto = { turnover: 0, payout: 0 };
+          banker.loto.turnover += parseInt(value.loto.turnover);
+          banker.loto.payout += parseInt(value.loto.payout);
+        }
+      });
+
       // update back to bankerMap
       this.bankerMap.set(banker.id, banker);
+
+      // update counter
+      this.sbCounter = [];
+      this.cfCounter = [];
+      this.lotoCounter = [];
+      this.csnCounter = [];
+      this.bankerMap.forEach((value, key) => {
+        if (value.sb != undefined) {
+          this.sbCounter.push(value);
+        }
+        if (value.cf != undefined) {
+          this.cfCounter.push(value);
+        }
+        if (value.csn != undefined) {
+          this.csnCounter.push(value);
+        }
+        if (value.loto != undefined) {
+          this.lotoCounter.push(value);
+        }
+      });
     }
   }
 }

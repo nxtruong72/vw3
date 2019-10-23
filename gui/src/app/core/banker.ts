@@ -11,6 +11,7 @@ export class Banker {
     sb: any;
     cf: any;
     loto: any;
+    csn: any;
 
     constructor(json) {
         this.id = json.id;
