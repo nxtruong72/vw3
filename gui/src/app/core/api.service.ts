@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Component } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import * as io from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
 import { Router } from '@angular/router';
 import {Subject} from 'rxjs';
 import { Banker } from './banker';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,7 @@ export class ApiService {
   receiveMsgEvent = new Subject();
   sharedData: Map<String, Banker>;
 
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(private snackBar: MatSnackBar, private router: Router, private http: HttpClient) {}
 
   baseUrl: string = 'https://manage.vw3.cc/';
   
@@ -41,7 +42,6 @@ export class ApiService {
         'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
       })
       this.checkSecure();
-      this.router.navigate(['accountant']);
     }, error => {
         alert(error.error.error_description);
     });
@@ -57,6 +57,7 @@ export class ApiService {
             this.applySecureCode();
           } else {
             console.log("Don't need to check secure");
+            this.router.navigate(['accountant']);
           }
         }, error => alert(error.error.error_description));
   }
@@ -72,6 +73,7 @@ export class ApiService {
           this.http.post(this.baseUrl + 'secure/check', body, {headers: this.headers})
               .subscribe(response => {
                 console.log("Check secure response: " + JSON.parse(JSON.stringify(response)));
+                this.router.navigate(['accountant']);
               }, error => alert(error.error.error_description));
         }, error => alert(error.error.error_description));
   }
@@ -90,6 +92,7 @@ export class ApiService {
     });
     this.socket.on('connect_error', () => {
       console.log('>>> Can not connect to server');
+      this.receiveMsgEvent.next({___ConnectError: true});
     });
     this.socket.on('disconnect', () => {
       this.connected = false;
