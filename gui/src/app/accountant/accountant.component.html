@@ -30,6 +30,23 @@
     </div>
 
     <div class="container content">
+      <!-- Status for scanning -->
+      <div class="data-div" *ngIf="statusList.size > 0">
+        <mat-card style="background-color: aquamarine">
+          <mat-card-header>
+            <mat-card-title [style.background-color]="red">Status</mat-card-title>
+          </mat-card-header>
+          <mat-card-content [style.background-color]="red">
+            <mat-chip-list>
+              <mat-chip *ngFor="let item of statusList | keyvalue">
+                {{item.key | uppercase}}:&nbsp;{{item.value}}
+              </mat-chip>
+            </mat-chip-list>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Check all -->
       <div *ngIf="bankerMap.size > 0">
         <mat-checkbox class="tp-margin" [(ngModel)]="isCheckAll" (change)="onCheckAll()">Check all</mat-checkbox>
       </div>

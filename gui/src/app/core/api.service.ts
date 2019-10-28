@@ -102,9 +102,7 @@ export class ApiService {
       console.log('>>> Error response from server: ', err);
     });
     this.socket.on('message', (msg) => {
-      
-      if (msg.___Bind && msg.type == "resolve") {
-        console.log(msg);
+      if (msg.___Bind) {
         this.receiveMsgEvent.next(msg);
       }
     });

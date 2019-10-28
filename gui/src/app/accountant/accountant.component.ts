@@ -28,6 +28,9 @@ export class AccountantComponent implements OnInit {
   lotoCounter: Banker[] = [];
   csnCounter: Banker[] = [];
 
+  // status of accountants when scanning
+  statusList: Map<String, String> = new Map();
+
   constructor(private snackBar: MatSnackBar, private router: Router, private apiService: ApiService) { }
 
   ngOnInit() {
@@ -38,15 +41,28 @@ export class AccountantComponent implements OnInit {
 
     // listen evet from apiservice
     this.apiService.receiveMsgEvent.subscribe(message => {
-      if ((JSON.parse(JSON.stringify(message)).___ConnectError)) {
+      let jsonString = JSON.parse(JSON.stringify(message));
+      if (jsonString.___ConnectError) {
         let errorMsg = "Cannot connect to Server!!!";
         this.snackBar.open(errorMsg, 'Error', {
           duration: 10 * 1000,
         });
-      } else if (JSON.parse(JSON.stringify(message)).data.bankerMap != undefined)
-        this.parseInitData(message);
-      else
-        this.parseScanData(message);
+      } else {
+        switch (jsonString.type) {
+          case "reject":
+          case "notify": {
+            this.changeStatus(jsonString.uuid, jsonString.data);
+            break;
+          }
+          case "resolve": {
+            if (jsonString.data.bankerMap != undefined)
+              this.parseInitData(message);
+            else
+              this.parseScanData(message);
+            break;
+          }
+        }
+      }
     });
 
     // fetching data
@@ -54,10 +70,21 @@ export class AccountantComponent implements OnInit {
     // this.parseData();
   }
 
+  changeStatus(uuid: string, data) {
+    if (this.uuidToAccountant.has(uuid)) {
+      let accountant = this.uuidToAccountant.get(uuid);
+      if (data.message != undefined) {
+        let status = JSON.parse(JSON.stringify(data)).message;
+        this.statusList.set(accountant.name, status);
+      }
+    }
+  }
+
   onClickScan() {
     let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
     let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
     this.uuidToAccountant.clear();
+    this.statusList.clear();
     this.bankerMap.forEach((value, key) => {
       value.children.forEach(accountant => {
         if (accountant.isChecked) {
@@ -163,7 +190,7 @@ export class AccountantComponent implements OnInit {
       banker.children.forEach((value, key) => {
         if (value.sb != undefined) {
           if (banker.sb == undefined)
-            banker.sb = {turnover: 0, gross_comm: 0};
+            banker.sb = { turnover: 0, gross_comm: 0 };
           banker.sb.turnover += parseInt(value.sb.turnover);
           banker.sb.gross_comm += parseInt(value.sb.gross_comm);
         }
@@ -209,6 +236,9 @@ export class AccountantComponent implements OnInit {
           this.lotoCounter.push(value);
         }
       });
+
+      // clear this in the statusList
+      this.statusList.delete(account.name);
     }
   }
 
