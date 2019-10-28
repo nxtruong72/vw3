@@ -38,9 +38,11 @@
           </mat-card-header>
           <mat-card-content [style.background-color]="red">
             <mat-chip-list>
-              <mat-chip *ngFor="let item of statusList | keyvalue">
-                {{item.key | uppercase}}:&nbsp;{{item.value}}
-              </mat-chip>
+              <div class="col-md-3" *ngFor="let item of statusList | keyvalue">
+                <mat-chip>
+                  {{item.key | uppercase}}:&nbsp;{{item.value}}
+                </mat-chip>
+              </div>
             </mat-chip-list>
           </mat-card-content>
         </mat-card>
@@ -153,7 +155,8 @@
           <!-- Sport book -->
           <ng-container *ngIf="sbCounter.length > 0">
             <tr *ngFor="let banker of sbCounter; let i = index">
-              <td *ngIf="i == 0" [attr.rowspan]="sbCounter.length" style="vertical-align : middle;text-align:center;">SPORTBOOK</td>
+              <td *ngIf="i == 0" [attr.rowspan]="sbCounter.length" style="vertical-align : middle;text-align:center;">
+                SPORTBOOK</td>
               <td>{{banker.name | uppercase}}</td>
               <td>{{banker.sb.turnover | number}}</td>
               <td>{{banker.total_account | number}}</td>
@@ -163,7 +166,8 @@
           <!-- Ga -->
           <ng-container *ngIf="cfCounter.length > 0">
             <tr *ngFor="let banker of cfCounter; let i = index">
-              <td *ngIf="i == 0" [attr.rowspan]="cfCounter.length" style="vertical-align : middle;text-align:center;">GÀ</td>
+              <td *ngIf="i == 0" [attr.rowspan]="cfCounter.length" style="vertical-align : middle;text-align:center;">GÀ
+              </td>
               <td>{{banker.name | uppercase}}</td>
               <td>{{banker.cf.turnover | number}}</td>
               <td>{{banker.total_account | number}}</td>
@@ -173,7 +177,8 @@
           <!-- Casino -->
           <ng-container *ngIf="csnCounter.length > 0">
             <tr *ngFor="let banker of csnCounter; let i = index">
-              <td *ngIf="i == 0" [attr.rowspan]="csnCounter.length" style="vertical-align : middle;text-align:center;">CASINO</td>
+              <td *ngIf="i == 0" [attr.rowspan]="csnCounter.length" style="vertical-align : middle;text-align:center;">
+                CASINO</td>
               <td>{{banker.name | uppercase}}</td>
               <td>{{banker.csn.turnover | number}}</td>
               <td>{{banker.total_account | number}}</td>
@@ -183,7 +188,8 @@
           <!-- Loto -->
           <ng-container *ngIf="lotoCounter.length > 0">
             <tr *ngFor="let banker of lotoCounter; let i = index">
-              <td *ngIf="i == 0" [attr.rowspan]="lotoCounter.length" style="vertical-align : middle;text-align:center;">LOTO</td>
+              <td *ngIf="i == 0" [attr.rowspan]="lotoCounter.length" style="vertical-align : middle;text-align:center;">
+                LOTO</td>
               <td>{{banker.name | uppercase}}</td>
               <td>{{banker.loto.turnover | number}}</td>
               <td>{{banker.total_account | number}}</td>
