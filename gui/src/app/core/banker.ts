@@ -7,11 +7,7 @@ export class Banker {
     book_name: string;
     total_account: number;
     children: Map<string, Accountant>;
-    // data
-    sb: any;
-    cf: any;
-    loto: any;
-    csn: any;
+    data: any;
 
     constructor(json) {
         this.id = json.id;

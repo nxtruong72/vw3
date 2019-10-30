@@ -26,6 +26,10 @@ export class ApiService {
   
   requestHeaders = new HttpHeaders();
 
+  sendPost() {
+
+  }
+
   login(loginData) {
     let loginHeaders = new HttpHeaders({'Content-type': 'application/x-www-form-urlencoded'});
     const body = new HttpParams()
@@ -34,7 +38,7 @@ export class ApiService {
       .set('client_id', '1')
       .set('client_secret', 'jashdfjkh1#!$%#^2342@#$@35')
       .set('grant_type', 'password');
-    
+    window.sessionStorage.setItem('username', loginData.username);
     this.http.post(this.baseUrl + 'oauth2/token', body, {headers: loginHeaders}).subscribe(data => {
       window.sessionStorage.setItem('token', JSON.stringify(data));
       this.headers = new HttpHeaders({
@@ -114,18 +118,19 @@ export class ApiService {
   }
 
   sendInitEvent() {
-    let args = [{username: "av5533"}];
+    let args = [{username: window.sessionStorage.getItem('username')}];
     this.socket.send({___Send: true, event: 'init', args: args});
   }
 
   sendSocketEvent(event, args): string {
     let newUUID = uuid();
-    // this.socket.on(newUUID, (type, data) => {
-    //   console.log(type);
-    //   console.log(data);
-    // });
     this.socket.send({___Send: true, event: event, uuid: newUUID, args: args});
     return newUUID;
+  }
+
+  getMemberList() {
+    // return this.http.post(this.baseUrl + 'member', null, {headers: this.headers});
+    return this.http.get('http://localhost:8080/file/member');
   }
 
   getInitData() {

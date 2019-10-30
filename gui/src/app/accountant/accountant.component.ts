@@ -66,8 +66,8 @@ export class AccountantComponent implements OnInit {
     });
 
     // fetching data
-    this.apiService.initSocket();
-    // this.parseData();
+    // this.apiService.initSocket();
+    this.parseData();
   }
 
   changeStatus(uuid: string, data) {
@@ -100,12 +100,6 @@ export class AccountantComponent implements OnInit {
       });
     });
   }
-
-  // onClickReport() {
-  //   this.apiService.sharedData = this.bankerMap;
-  //   this.router.navigate(['report']);
-  //   // window.open('report');
-  // }
 
   onRadioButtonChange() {
     this.fromDate = new FormControl(new Date(JSON.parse(JSON.stringify(this.dateInfo.get(this.chosenItem))).from_date));
@@ -170,10 +164,7 @@ export class AccountantComponent implements OnInit {
       let account = banker.children.get(accId);
 
       // update its info
-      account.sb = data.data.sb;
-      account.cf = data.data.cf;
-      account.loto = data.data.loto;
-      account.csn = data.data.csn;
+      account.data = data.data;
       // console.log(account.sb);
 
       // update its child
@@ -186,56 +177,29 @@ export class AccountantComponent implements OnInit {
       banker.children.set(accId, account);
 
       // update banker data
-      banker.sb = banker.cf = banker.loto = banker.csn = undefined;
+      banker.data = {};
       banker.children.forEach((value, key) => {
-        if (value.sb != undefined) {
-          if (banker.sb == undefined)
-            banker.sb = { turnover: 0, gross_comm: 0 };
-          banker.sb.turnover += parseInt(value.sb.turnover);
-          banker.sb.gross_comm += parseInt(value.sb.gross_comm);
-        }
-        if (value.cf != undefined) {
-          if (banker.cf == undefined)
-            banker.cf = { turnover: 0, gross_comm: 0 };
-          banker.cf.turnover += parseInt(value.cf.turnover);
-          banker.cf.gross_comm += parseInt(value.cf.gross_comm);
-        }
-        if (value.csn != undefined) {
-          if (banker.csn == undefined)
-            banker.csn = { turnover: 0, gross_comm: 0 };
-          banker.csn.turnover += parseInt(value.csn.turnover);
-          banker.csn.gross_comm += parseInt(value.csn.gross_comm);
-        }
-        if (value.loto != undefined) {
-          if (banker.loto == undefined)
-            banker.loto = { turnover: 0, payout: 0 };
-          banker.loto.turnover += parseInt(value.loto.turnover);
-          banker.loto.payout += parseInt(value.loto.payout);
+        if (value.data) {
+          Object.keys(value.data).forEach(element => {
+            if (!banker.data[element]) {
+              banker.data[element] = value.data[element];
+            } else {
+              let obj = value.data[element];
+              Object.keys(obj).forEach(subElement => {
+                if (!banker.data[element][subElement]) {
+                  banker.data[element][subElement] = obj[subElement];
+                } else {
+                  banker.data[element][subElement] = parseInt(banker.data[element][subElement]) + parseInt(obj[subElement]);                  
+                }
+              });
+            }
+          });
         }
       });
-
       // update back to bankerMap
       this.bankerMap.set(banker.id, banker);
 
-      // update counter
-      this.sbCounter = [];
-      this.cfCounter = [];
-      this.lotoCounter = [];
-      this.csnCounter = [];
-      this.bankerMap.forEach((value, key) => {
-        if (value.sb != undefined) {
-          this.sbCounter.push(value);
-        }
-        if (value.cf != undefined) {
-          this.cfCounter.push(value);
-        }
-        if (value.csn != undefined) {
-          this.csnCounter.push(value);
-        }
-        if (value.loto != undefined) {
-          this.lotoCounter.push(value);
-        }
-      });
+      this.updateCounter();
 
       // clear this in the statusList
       this.statusList.delete(account.name);
@@ -282,5 +246,32 @@ export class AccountantComponent implements OnInit {
         this.parseScanData(response);
       });
     });
+  }
+
+  updateCounter() {
+    this.sbCounter = [];
+    this.cfCounter = [];
+    this.lotoCounter = [];
+    this.csnCounter = [];
+    this.bankerMap.forEach((value, key) => {
+      if (value.data) {
+        if (value.data.sb) {
+          this.sbCounter.push(value);
+        }
+        if (value.data.cf) {
+          this.cfCounter.push(value);
+        }
+        if (value.data.csn) {
+          this.csnCounter.push(value);
+        }
+        if (value.data.loto) {
+          this.lotoCounter.push(value);
+        }
+      }
+    });
+  }
+
+  getObjectLength(obj) {
+    return Object.keys(obj).length;
   }
 }

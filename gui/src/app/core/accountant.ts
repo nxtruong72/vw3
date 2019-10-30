@@ -5,11 +5,7 @@ export class Accountant {
     note: any;
     isChecked: boolean = true;
     children: Map<string, Accountant>;
-    // data
-    sb: any;
-    cf: any;
-    loto: any;
-    csn: any;
+    data: any;
 
     constructor(id, json) {
         this.id = id;
@@ -21,10 +17,7 @@ export class Accountant {
             this.note = json.note;
         } else {
             this.name = json.username;
-            this.sb = json.data.sb;
-            this.cf = json.data.cf;
-            this.loto = json.data.loto;
-            this.csn = json.data.csn;
+            this.data = json.data;
         }
     }
 }

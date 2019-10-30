@@ -24,6 +24,8 @@ public class FileController {
     private static String FILE_SCAN_NAME_SB = "/home/nxuantruong/Source/vw3/vw3/gui/scan.json";
     private static String FILE_SCAN_NAME_GA = "/home/nxuantruong/Source/vw3/vw3/gui/scan_ga.json";
     private static String FILE_SCAN_NAME_LOTO = "/home/nxuantruong/Source/vw3/vw3/gui/scan_loto.json";
+    private static String FILE_MEMBER = "/home/nxuantruong/Source/vw3/vw3/gui/member.json";
+    private static String FILE_MEMBER_CHILDREN = "/home/nxuantruong/Source/vw3/vw3/gui/member_children.json";
 
     @Autowired
     CsvService csvService;
@@ -59,6 +61,20 @@ public class FileController {
     @ResponseBody
     public String getDetailLoto() throws IOException {
         List<String> lines = Files.readAllLines(Paths.get(FILE_SCAN_NAME_LOTO), StandardCharsets.UTF_8);
+        return String.join(System.lineSeparator(), lines);
+    }
+
+    @GetMapping(path = "/member", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String getMember() throws IOException {
+        List<String> lines = Files.readAllLines(Paths.get(FILE_MEMBER), StandardCharsets.UTF_8);
+        return String.join(System.lineSeparator(), lines);
+    }
+
+    @GetMapping(path = "/member_children", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String getMemberChildren() throws IOException {
+        List<String> lines = Files.readAllLines(Paths.get(FILE_MEMBER_CHILDREN), StandardCharsets.UTF_8);
         return String.join(System.lineSeparator(), lines);
     }
 }

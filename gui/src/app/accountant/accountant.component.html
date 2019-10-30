@@ -1,31 +1,34 @@
 <!-- <h1 style="margin: auto;align-content: center">Report</h1> -->
 <mat-tab-group>
   <mat-tab label="Accountant">
-    <div class="row" style="margin-top: 2rem">
-      <div class="col-md-4"></div>
-      <div class="col-md-8">
-        <mat-radio-group [(ngModel)]="chosenItem" (change)="onRadioButtonChange()">
-          <mat-radio-button style="margin-right: 20px;" value='today'>Today</mat-radio-button>
-          <mat-radio-button style="margin-right: 20px;" value='yesterday'>Yesterday</mat-radio-button>
-          <mat-radio-button style="margin-right: 20px;" value='this_week'>This week</mat-radio-button>
-          <mat-radio-button style="margin-right: 20px;" value='last_week'>Last week</mat-radio-button>
-        </mat-radio-group>
-      </div>
-
-      <div class="col-md-4"></div>
-      <div class="col-md-8">
-        <mat-form-field style="margin-right: 20px;">
-          <input matInput [matDatepicker]="from" placeholder="From date" [formControl]="fromDate">
-          <mat-datepicker-toggle matSuffix [for]="from"></mat-datepicker-toggle>
-          <mat-datepicker #from></mat-datepicker>
-        </mat-form-field>
-        <mat-form-field style="margin-right: 20px;">
-          <input matInput [matDatepicker]="to" placeholder="To date" [formControl]="toDate">
-          <mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
-          <mat-datepicker #to></mat-datepicker>
-        </mat-form-field>
-        <button mat-raised-button color="primary" style="margin-right: 20px;" (click)="onClickScan()">Scan</button>
-        <!-- <button mat-raised-button color="primary" (click)="onClickReport()">Report</button> -->
+    <div class="container-fluid">
+      <div class="row" style="margin-top: 2rem">
+        <div class="col-md-4"></div>
+        <div class="col-md-8">
+          <mat-radio-group [(ngModel)]="chosenItem" (change)="onRadioButtonChange()">
+            <mat-radio-button style="margin-right: 20px;" value='today'>Today</mat-radio-button>
+            <mat-radio-button style="margin-right: 20px;" value='yesterday'>Yesterday</mat-radio-button>
+            <mat-radio-button style="margin-right: 20px;" value='this_week'>This week</mat-radio-button>
+            <mat-radio-button style="margin-right: 20px;" value='last_week'>Last week</mat-radio-button>
+          </mat-radio-group>
+        </div>
+    
+    
+        <div class="col-md-4"></div>
+        <div class="col-md-8">
+          <mat-form-field style="margin-right: 20px;">
+            <input matInput [matDatepicker]="from" placeholder="From date" [formControl]="fromDate">
+            <mat-datepicker-toggle matSuffix [for]="from"></mat-datepicker-toggle>
+            <mat-datepicker #from></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field style="margin-right: 20px;">
+            <input matInput [matDatepicker]="to" placeholder="To date" [formControl]="toDate">
+            <mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
+            <mat-datepicker #to></mat-datepicker>
+          </mat-form-field>
+          <button mat-raised-button color="primary" style="margin-right: 20px;" (click)="onClickScan()">Scan</button>
+          <!-- <button mat-raised-button color="primary" (click)="onClickReport()">Report</button> -->
+        </div>
       </div>
     </div>
 
@@ -56,7 +59,7 @@
       <mat-accordion>
         <div class="data-div" *ngFor="let entry of bankerMap | keyvalue">
           <mat-expansion-panel>
-            <mat-expansion-panel-header>
+            <mat-expansion-panel-header style="background-color: lightgray">
               <mat-panel-title>
                 <section class="tp-section">
                   <mat-checkbox class="tp-margin" [(ngModel)]="entry.value.isChecked"
@@ -68,7 +71,7 @@
 
             <div class="data-children" *ngFor="let accountant of entry.value.children | keyvalue">
               <mat-expansion-panel>
-                <mat-expansion-panel-header>
+                <mat-expansion-panel-header style="background-color: lightblue">
                   <mat-panel-title>
                     <section class="tp-section">
                       <mat-checkbox class="tp-margin" [(ngModel)]="accountant.value.isChecked"
@@ -83,9 +86,9 @@
                 </mat-expansion-panel-header>
 
                 <div style="background-color:rgb(202, 223, 230)" *ngIf="accountant.value.children.size > 0">
-                  <table class="table table-striped table-dark">
-                    <thead>
-                      <th>Account</th>
+                  <table class="table table-hover">
+                    <thead class="table-primary">
+                      <th style="vertical-align : middle;text-align:center;">Account</th>
                       <th>Type</th>
                       <th>Turn over</th>
                       <th *ngIf="entry.value.book_name != 'loto'">Gross comm</th>
@@ -94,29 +97,14 @@
                     <tbody>
                       <!-- sport book -->
                       <ng-container *ngFor="let account of accountant.value.children | keyvalue">
-                        <!-- <p>{{account.value.name}}</p>
-                      <p>{{account.value.sb}}</p>
-                      <p>{{account.value.cf}}</p>
-                      <p>{{account.value.loto}}</p> -->
-                        <tr *ngIf="account.value.sb !== undefined">
-                          <td>{{account.value.name}}</td>
-                          <td>SB</td>
-                          <td>{{account.value.sb.turnover}}</td>
-                          <td>{{account.value.sb.gross_comm}}</td>
-                        </tr>
-                        <!-- ga -->
-                        <tr *ngIf="account.value.cf !== undefined">
-                          <td>{{account.value.name}}</td>
-                          <td>CF</td>
-                          <td>{{account.value.cf.turnover}}</td>
-                          <td>{{account.value.cf.gross_comm}}</td>
-                        </tr>
-                        <!-- loto -->
-                        <tr *ngIf="account.value.loto != undefined">
-                          <td>{{account.value.name}}</td>
-                          <td>LOTO</td>
-                          <td>{{account.value.loto.turnover | number:0}}</td>
-                          <td>{{account.value.loto.payout | number:0}}</td>
+                        <tr *ngFor="let element of account.value.data | keyvalue; let i = index">
+                          <td *ngIf="i == 0" [attr.rowspan]="getObjectLength(account.value.data)" style="vertical-align : middle;text-align:center;">
+                            {{account.value.name}}
+                          </td>
+                          <td>{{element.key | uppercase}}</td>
+                          <td>{{element.value.turnover | number:0}}</td>
+                          <td *ngIf="element.value.gross_comm != undefined">{{element.value.gross_comm | number:0}}</td>
+                          <td *ngIf="element.value.payout != undefined">{{element.value.payout | number:0}}</td>
                         </tr>
                       </ng-container>
                     </tbody>
@@ -158,7 +146,7 @@
               <td *ngIf="i == 0" [attr.rowspan]="sbCounter.length" style="vertical-align : middle;text-align:center;">
                 SPORTBOOK</td>
               <td>{{banker.name | uppercase}}</td>
-              <td>{{banker.sb.turnover | number}}</td>
+              <td>{{banker.data.sb.turnover | number}}</td>
               <td>{{banker.total_account | number}}</td>
             </tr>
           </ng-container>
@@ -169,7 +157,7 @@
               <td *ngIf="i == 0" [attr.rowspan]="cfCounter.length" style="vertical-align : middle;text-align:center;">GÀ
               </td>
               <td>{{banker.name | uppercase}}</td>
-              <td>{{banker.cf.turnover | number}}</td>
+              <td>{{banker.data.cf.turnover | number}}</td>
               <td>{{banker.total_account | number}}</td>
             </tr>
           </ng-container>
@@ -180,7 +168,7 @@
               <td *ngIf="i == 0" [attr.rowspan]="csnCounter.length" style="vertical-align : middle;text-align:center;">
                 CASINO</td>
               <td>{{banker.name | uppercase}}</td>
-              <td>{{banker.csn.turnover | number}}</td>
+              <td>{{banker.data.csn.turnover | number}}</td>
               <td>{{banker.total_account | number}}</td>
             </tr>
           </ng-container>
@@ -191,12 +179,17 @@
               <td *ngIf="i == 0" [attr.rowspan]="lotoCounter.length" style="vertical-align : middle;text-align:center;">
                 LOTO</td>
               <td>{{banker.name | uppercase}}</td>
-              <td>{{banker.loto.turnover | number}}</td>
+              <td>{{banker.data.loto.turnover | number}}</td>
               <td>{{banker.total_account | number}}</td>
             </tr>
           </ng-container>
         </tbody>
       </table>
     </div>
+  </mat-tab>
+
+  <!-- Member tab -->
+  <mat-tab label="Member">
+    <app-member></app-member>
   </mat-tab>
 </mat-tab-group>
