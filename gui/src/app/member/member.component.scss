@@ -5,3 +5,13 @@ table, mat-form-field {
 .mat-row:hover {
     background-color: bisque;
 }
+
+.example-element-detail {
+    overflow: hidden;
+    display: flex;
+}
+
+tr.example-detail-row {
+    height: 0;
+}
+

@@ -66,8 +66,8 @@ export class AccountantComponent implements OnInit {
     });
 
     // fetching data
-    // this.apiService.initSocket();
-    this.parseData();
+    this.apiService.initSocket();
+    // this.parseData();
   }
 
   changeStatus(uuid: string, data) {
@@ -92,7 +92,7 @@ export class AccountantComponent implements OnInit {
             "id": accountant.id,
             "from_date": from,
             "to_date": to,
-            "more_post": { "login_name": "av5533" }
+            "more_post": { "login_name": window.sessionStorage.getItem('username') }
           }]
           let uuid = this.apiService.sendSocketEvent('scan', args);
           this.uuidToAccountant.set(uuid, accountant);

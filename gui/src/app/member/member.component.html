@@ -2,37 +2,30 @@
   <div class="row">
     <!-- Member -->
     <div class="col-md-5 ">
+      <button (click)="memberClick()">Test</button>
       <mat-form-field>
         <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
       </mat-form-field>
-      <table mat-table [dataSource]="memberList">
-        <ng-container matColumnDef="position">
-          <th mat-header-cell *matHeaderCellDef> No. </th>
-          <td mat-cell *matCellDef="let element; let i = index"> {{memberList.filteredData.indexOf(element)+1}} </td>
+      <table mat-table [dataSource]="memberList" multiTemplateDataRows>
+        <ng-container *ngFor="let column of memberTableDisplay; let i = index" matColumnDef="{{column.id}}">
+            <th mat-header-cell *matHeaderCellDef> {{column.display}} </th>
+            <td mat-cell *matCellDef="let element;"> 
+              {{i == 0 ? memberList.filteredData.indexOf(element)+1 : (i != 4 ? (element[column.id] | uppercase) : element[column.id])}}
+            </td>
         </ng-container>
 
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef> NAME </th>
-          <td mat-cell *matCellDef="let element">{{element.name | uppercase}}</td>
-        </ng-container>
+        <!-- <ng-container matColumnDef="expandedDetail">
+            <td mat-cell *matCellDef="let element" [attr.colspan]="columnHeaders.length">
+              <div *ngIf="element.child.length != 0" class="example-element-detail"
+                   [@detailExpand]="expanded">
+                {{element.child.length}}XXX
+              </div>
+            </td>
+          </ng-container> -->
 
-        <ng-container matColumnDef="subUser">
-          <th mat-header-cell *matHeaderCellDef> USERNAME </th>
-          <td mat-cell *matCellDef="let element">{{element.subUser}}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="bankerName">
-          <th mat-header-cell *matHeaderCellDef> COMPANY </th>
-          <td mat-cell *matCellDef="let element"> {{element.bankerName | uppercase}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="isActive">
-          <th mat-header-cell *matHeaderCellDef> ACTIVE </th>
-          <td mat-cell *matCellDef="let element"> {{element.isActive == true ? 'True' : 'False'}} </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="memberTableDisplay"></tr>
-        <tr mat-row *matRowDef="let row; columns: memberTableDisplay"></tr>
+        <tr mat-header-row *matHeaderRowDef="columnHeaders"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnHeaders"></tr>
+        <!-- <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr> -->
       </table>
       <mat-paginator [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
     </div>
