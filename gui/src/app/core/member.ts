@@ -1,19 +1,24 @@
 export class Member {
     id: string;
-    parent_id: string;
-    fullName: string;
-    username: string;
-    status: string;
+    name: string;
+    bankerId: string;
+    bankerName: string;
+    subUser: string;
+    isActive: boolean;
+    child: Member[] = [];
 
     constructor(json) {
         this.id = json.id;
-        this.parent_id = json.parent_id;
-        this.fullName = json.fullname;
-        this.username = json.username;
-        if (json.status == 1) {
-            this.status = 'on';
-        } else {
-            this.status = 'off';
+        this.name = json.acc_name;
+        this.bankerId = json.banker;
+        this.bankerName = json.banker_name;
+        this.subUser = json.sub_user;
+        this.isActive = json.is_active;
+        if (json.child) {
+            json.child.forEach(element => {
+                let tmp = new Member(element);
+                this.child.push(tmp);
+            });
         }
     }
 }

@@ -1,5 +1,6 @@
 <div class="container-fluid">
   <div class="row">
+    <!-- Member -->
     <div class="col-md-5 ">
       <mat-form-field>
         <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
@@ -11,20 +12,23 @@
         </ng-container>
 
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef> ID </th>
-          <td mat-cell *matCellDef="let element">
-            <a (click)="memberClick(element.id); false" href>{{element.fullName | uppercase}}</a>
-          </td>
+          <th mat-header-cell *matHeaderCellDef> NAME </th>
+          <td mat-cell *matCellDef="let element">{{element.name | uppercase}}</td>
         </ng-container>
 
-        <ng-container matColumnDef="username">
-          <th mat-header-cell *matHeaderCellDef> USER NAME </th>
-          <td mat-cell *matCellDef="let element"> {{element.username | uppercase}} </td>
+        <ng-container matColumnDef="subUser">
+          <th mat-header-cell *matHeaderCellDef> USERNAME </th>
+          <td mat-cell *matCellDef="let element">{{element.subUser}}</td>
         </ng-container>
 
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef> STATUS </th>
-          <td mat-cell *matCellDef="let element"> {{element.status | uppercase}} </td>
+        <ng-container matColumnDef="bankerName">
+          <th mat-header-cell *matHeaderCellDef> COMPANY </th>
+          <td mat-cell *matCellDef="let element"> {{element.bankerName | uppercase}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="isActive">
+          <th mat-header-cell *matHeaderCellDef> ACTIVE </th>
+          <td mat-cell *matCellDef="let element"> {{element.isActive == true ? 'True' : 'False'}} </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="memberTableDisplay"></tr>
@@ -33,6 +37,7 @@
       <mat-paginator [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
     </div>
 
+    <!-- Member deteail -->
     <div class="col-md-7">
       XXX
     </div>

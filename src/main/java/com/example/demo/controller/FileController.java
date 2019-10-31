@@ -26,6 +26,7 @@ public class FileController {
     private static String FILE_SCAN_NAME_LOTO = "/home/nxuantruong/Source/vw3/vw3/gui/scan_loto.json";
     private static String FILE_MEMBER = "/home/nxuantruong/Source/vw3/vw3/gui/member.json";
     private static String FILE_MEMBER_CHILDREN = "/home/nxuantruong/Source/vw3/vw3/gui/member_children.json";
+    private static String FILE_ACCOUNT = "/home/nxuantruong/Source/vw3/vw3/gui/account.json";
 
     @Autowired
     CsvService csvService;
@@ -75,6 +76,13 @@ public class FileController {
     @ResponseBody
     public String getMemberChildren() throws IOException {
         List<String> lines = Files.readAllLines(Paths.get(FILE_MEMBER_CHILDREN), StandardCharsets.UTF_8);
+        return String.join(System.lineSeparator(), lines);
+    }
+
+    @GetMapping(path = "/account", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String getAccout() throws IOException {
+        List<String> lines = Files.readAllLines(Paths.get(FILE_ACCOUNT), StandardCharsets.UTF_8);
         return String.join(System.lineSeparator(), lines);
     }
 }
