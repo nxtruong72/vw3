@@ -129,8 +129,8 @@ export class ApiService {
   }
 
   getMemberList() {
-    // return this.http.post(this.baseUrl + 'member', null, {headers: this.headers});
-    return this.http.get('http://localhost:8080/file/account');
+    return this.http.post(this.baseUrl + 'account', null, {headers: this.headers});
+    // return this.http.get('http://localhost:8080/file/account');
   }
 
   getInitData() {

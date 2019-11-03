@@ -10,13 +10,15 @@ import { AccountantComponent } from './accountant/accountant.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CustomMaterialModule } from './core/material.module';
 import { MemberComponent } from './member/member.component';
+import { ReportComponent } from './report/report.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     AccountantComponent,
-    MemberComponent
+    MemberComponent,
+    ReportComponent
   ],
   imports: [
     BrowserModule,

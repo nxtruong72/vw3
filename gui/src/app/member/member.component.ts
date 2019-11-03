@@ -11,8 +11,8 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
   styleUrls: ['./member.component.scss'],
   animations: [
     trigger('detailExpand', [
-      state('collapsed', style({height: '0px', minHeight: '0', display: 'none'})),
-      state('expanded', style({height: '*'})),
+      state('collapsed', style({ height: '0px', minHeight: '0', display: 'none' })),
+      state('expanded', style({ height: '*' })),
       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
   ]
@@ -31,8 +31,6 @@ export class MemberComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  @Input() bankerMap: Map<string, Banker>;
-
   constructor(private apiservice: ApiService) { }
 
   ngOnInit() {
@@ -40,7 +38,11 @@ export class MemberComponent implements OnInit {
       let data = JSON.parse(JSON.stringify(response)).res.data;
       let tmp: Member[] = [];
       data.List.forEach(element => {
-        tmp.push(new Member(element));
+        if (element.child) {
+          element.child.forEach(child => {
+            tmp.push(new Member(child));
+          })
+        }
       });
       this.memberList = new MatTableDataSource<Member>(tmp);
       this.memberList.paginator = this.paginator;
@@ -52,6 +54,6 @@ export class MemberComponent implements OnInit {
   }
 
   memberClick() {
-    console.log(this.bankerMap);
+    // console.log(this.masterList);
   }
 }

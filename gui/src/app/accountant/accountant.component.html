@@ -118,78 +118,13 @@
     </div>
   </mat-tab>
 
-  <!-- Report tab -->
-  <mat-tab label="Report">
-    <div class="container content" style="margin-top: 2rem">
-      <!-- <div style="text-align: center; border: 1px solid black;">
-        Icon goes here {{bankerMap}}
-      </div> -->
-
-      <table class="table table-bordered" style="vertical-align : middle;text-align:center;">
-        <thead class="thead-dark">
-          <tr>
-            <th scope="col" colspan="3">BẢNG THỐNG KÊ ĐẠI LÝ</th>
-            <th scope="col">TỶ GIÁ $ 23200</th>
-          </tr>
-          <tr>
-            <th scope="col">LOẠI</th>
-            <th scope="col">CÔNG TY</th>
-            <th scope="col">TURNOVER</th>
-            <th scope="col">TÀI KHOẢN HOẠT ĐỘNG</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <!-- Sport book -->
-          <ng-container *ngIf="sbCounter.length > 0">
-            <tr *ngFor="let banker of sbCounter; let i = index">
-              <td *ngIf="i == 0" [attr.rowspan]="sbCounter.length" style="vertical-align : middle;text-align:center;">
-                SPORTBOOK</td>
-              <td>{{banker.name | uppercase}}</td>
-              <td>{{banker.data.sb.turnover | number}}</td>
-              <td>{{banker.total_account | number}}</td>
-            </tr>
-          </ng-container>
-
-          <!-- Ga -->
-          <ng-container *ngIf="cfCounter.length > 0">
-            <tr *ngFor="let banker of cfCounter; let i = index">
-              <td *ngIf="i == 0" [attr.rowspan]="cfCounter.length" style="vertical-align : middle;text-align:center;">GÀ
-              </td>
-              <td>{{banker.name | uppercase}}</td>
-              <td>{{banker.data.cf.turnover | number}}</td>
-              <td>{{banker.total_account | number}}</td>
-            </tr>
-          </ng-container>
-
-          <!-- Casino -->
-          <ng-container *ngIf="csnCounter.length > 0">
-            <tr *ngFor="let banker of csnCounter; let i = index">
-              <td *ngIf="i == 0" [attr.rowspan]="csnCounter.length" style="vertical-align : middle;text-align:center;">
-                CASINO</td>
-              <td>{{banker.name | uppercase}}</td>
-              <td>{{banker.data.csn.turnover | number}}</td>
-              <td>{{banker.total_account | number}}</td>
-            </tr>
-          </ng-container>
-
-          <!-- Loto -->
-          <ng-container *ngIf="lotoCounter.length > 0">
-            <tr *ngFor="let banker of lotoCounter; let i = index">
-              <td *ngIf="i == 0" [attr.rowspan]="lotoCounter.length" style="vertical-align : middle;text-align:center;">
-                LOTO</td>
-              <td>{{banker.name | uppercase}}</td>
-              <td>{{banker.data.loto.turnover | number}}</td>
-              <td>{{banker.total_account | number}}</td>
-            </tr>
-          </ng-container>
-        </tbody>
-      </table>
-    </div>
-  </mat-tab>
-
   <!-- Member tab -->
   <mat-tab label="Member">
-    <app-member [bankerMap]="bankerMap"></app-member>
+    <app-member></app-member>
+  </mat-tab>
+
+  <!-- Report tab -->
+  <mat-tab label="Report">
+    <app-report [bankerMap]="bankerMap"></app-report>
   </mat-tab>
 </mat-tab-group>

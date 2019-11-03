@@ -1,11 +1,14 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { Router } from "@angular/router";
 import { ApiService } from "../core/api.service";
 import { Banker } from '../core/banker';
 import { Accountant } from '../core/accountant';
 import { FormControl } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar, MatTableDataSource } from '@angular/material';
+import { MemberComponent } from '../member/member.component';
+import { Member } from '../core/member';
+import { ReportComponent } from '../report/report.component';
 
 @Component({
   selector: 'accountant',
@@ -30,6 +33,9 @@ export class AccountantComponent implements OnInit {
 
   // status of accountants when scanning
   statusList: Map<String, String> = new Map();
+
+  @ViewChild(MemberComponent) member;
+  @ViewChild(ReportComponent) report;
 
   constructor(private snackBar: MatSnackBar, private router: Router, private apiService: ApiService) { }
 
@@ -81,6 +87,7 @@ export class AccountantComponent implements OnInit {
   }
 
   onClickScan() {
+    // this.parseData();
     let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
     let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
     this.uuidToAccountant.clear();
@@ -152,6 +159,8 @@ export class AccountantComponent implements OnInit {
       banker.children.set(accountId, account);
       this.bankerMap.set(bankerId, banker);
     });
+
+    this.report.updateTable();
   }
 
   parseScanData(message) {
@@ -170,7 +179,20 @@ export class AccountantComponent implements OnInit {
       // update its child
       data.child.forEach(element => {
         let accountant: Accountant = new Accountant(element.username, element);
+        let tmp = this.member.memberList.data;
+        let members: Member[] = [];
+        let masterList: Set<string> = new Set();
         account.children.set(accountant.id, accountant);
+        if (!masterList.has(accountant.name)) {
+          masterList.add(accountant.name);
+        }
+        tmp.forEach(e => {
+          if (!masterList.has(e.name.toUpperCase())) {
+            members.push(e);
+          }
+        });
+        this.member.memberList = new MatTableDataSource<Member>(members);
+        this.member.memberList.paginator = this.member.paginator;
       });
 
       // update back to banker

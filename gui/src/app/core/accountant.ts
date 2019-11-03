@@ -13,6 +13,7 @@ export class Accountant {
 
         // check if it's accountant
         if (json.acc_name != undefined) {
+            this.bankerId = json.banker;
             this.name = json.acc_name;
             this.note = json.note;
         } else {
