@@ -1,0 +1,452 @@
+{
+  "___Bind": true,
+  "uuid": "1e7fb690-fedb-11e9-ba51-a19d1d1152dc",
+  "type": "resolve",
+  "data": {
+    "id": "5c31b30a79282518c59f7e11",
+    "from_date": "10/28/2019",
+    "to_date": "11/03/2019",
+    "more_post": {
+      "login_name": "av5533",
+      "get_child_list": {
+        "64hu60": true,
+        "64hu": true
+      }
+    },
+    "accountant": [
+      {
+        "level": 0,
+        "username": "64HU",
+        "data": {
+          "sb": {
+            "turnover": "40196",
+            "gross_comm": "93.03",
+            "member_comm": "83.57",
+            "win_loss": "-748.97"
+          }
+        },
+        "filter": false,
+        "child": [
+          {
+            "username": "64HU60",
+            "data": {
+              "sb": {
+                "turnover": "315",
+                "gross_comm": "0.53",
+                "member_comm": "0.00",
+                "win_loss": "95.38"
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "userID": "64HU",
+                "role": "ag",
+                "userName": "64hu60"
+              },
+              "parent": [
+                "64hu60"
+              ]
+            },
+            "level": 1,
+            "child": [
+              {
+                "username": "64HU606",
+                "data": {
+                  "sb": {
+                    "turnover": "315",
+                    "gross_comm": "0.53",
+                    "member_comm": "0.00",
+                    "win_loss": "95.38"
+                  }
+                },
+                "filter": {
+                  "detail_downLine": false,
+                  "downLine": {
+                    "userID": "64hu60",
+                    "role": "sa",
+                    "userName": "64hu606"
+                  },
+                  "parent": [
+                    "64hu60",
+                    "64hu606"
+                  ]
+                },
+                "level": 2,
+                "child": [],
+                "noExist": true,
+                "noFormula": true,
+                "reportAccountant": [
+                  {
+                    "reportType": "sb",
+                    "reportData": {
+                      "turnover": "315",
+                      "gross_comm": "0.53",
+                      "member_comm": "0.00",
+                      "win_loss": "95.38"
+                    },
+                    "resultList": []
+                  }
+                ]
+              }
+            ],
+            "noExist": true,
+            "noFormula": true,
+            "reportAccountant": [
+              {
+                "reportType": "sb",
+                "reportData": {
+                  "turnover": "315",
+                  "gross_comm": "0.53",
+                  "member_comm": "0.00",
+                  "win_loss": "95.38"
+                },
+                "resultList": []
+              }
+            ]
+          },
+          {
+            "username": "64HU66",
+            "data": {
+              "sb": {
+                "turnover": "28452",
+                "gross_comm": "66.36",
+                "member_comm": "57.43",
+                "win_loss": "-4305.81"
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "userID": "64HU",
+                "role": "ag",
+                "userName": "64hu66"
+              },
+              "parent": [
+                "64hu66"
+              ]
+            },
+            "level": 1,
+            "child": [],
+            "noExist": true,
+            "noFormula": true,
+            "reportAccountant": [
+              {
+                "reportType": "sb",
+                "reportData": {
+                  "turnover": "28452",
+                  "gross_comm": "66.36",
+                  "member_comm": "57.43",
+                  "win_loss": "-4305.81"
+                },
+                "resultList": []
+              }
+            ]
+          },
+          {
+            "username": "64HU69",
+            "data": {
+              "sb": {
+                "turnover": "360",
+                "gross_comm": "0.65",
+                "member_comm": "0.65",
+                "win_loss": "-41.15"
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "userID": "64HU",
+                "role": "ag",
+                "userName": "64hu69"
+              },
+              "parent": [
+                "64hu69"
+              ]
+            },
+            "level": 1,
+            "child": [],
+            "noExist": true,
+            "noFormula": true,
+            "reportAccountant": [
+              {
+                "reportType": "sb",
+                "reportData": {
+                  "turnover": "360",
+                  "gross_comm": "0.65",
+                  "member_comm": "0.65",
+                  "win_loss": "-41.15"
+                },
+                "resultList": []
+              }
+            ]
+          },
+          {
+            "username": "64HU71",
+            "data": {
+              "sb": {
+                "turnover": "11069",
+                "gross_comm": "25.49",
+                "member_comm": "25.49",
+                "win_loss": "3502.61"
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "userID": "64HU",
+                "role": "ag",
+                "userName": "64hu71"
+              },
+              "parent": [
+                "64hu71"
+              ]
+            },
+            "level": 1,
+            "child": [],
+            "noExist": true,
+            "noFormula": true,
+            "reportAccountant": [
+              {
+                "reportType": "sb",
+                "reportData": {
+                  "turnover": "11069",
+                  "gross_comm": "25.49",
+                  "member_comm": "25.49",
+                  "win_loss": "3502.61"
+                },
+                "resultList": []
+              }
+            ]
+          }
+        ],
+        "accInfo": {
+          "id": "5c31b30a79282518c59f7e11",
+          "acc_name": "64hu",
+          "acc_parent_id": null,
+          "banker": "56850ba0097802b9f23929b4",
+          "book_id": "56850ba0097802b9f23929ad"
+        },
+        "noFormula": true,
+        "reportAccountant": [
+          {
+            "reportType": "sb",
+            "reportData": {
+              "turnover": "40196",
+              "gross_comm": "93.03",
+              "member_comm": "83.57",
+              "win_loss": "-748.97"
+            },
+            "resultList": [],
+            "noFormula": true
+          }
+        ]
+      }
+    ],
+    "reportSave": {
+      "account_root_name": "64HU",
+      "reportSaveList": []
+    },
+    "dataFieldList": [
+      "turnover",
+      "gross_comm",
+      "member_comm",
+      "win_loss"
+    ],
+    "formulaFieldList": [],
+    "scanData": {
+      "sb": {
+        "level": 0,
+        "username": "64HU",
+        "data": {
+          "sb": {
+            "turnover": {
+              "text": "40,196"
+            },
+            "gross_comm": {
+              "text": "93.03"
+            },
+            "member_comm": {
+              "text": "83.57"
+            },
+            "win_loss": {
+              "text": "-748.97"
+            }
+          }
+        },
+        "filter": false,
+        "child": [
+          {
+            "username": "64hu60",
+            "data": {
+              "sb": {
+                "turnover": {
+                  "text": "315"
+                },
+                "gross_comm": {
+                  "text": "0.53"
+                },
+                "member_comm": {
+                  "text": "0.00"
+                },
+                "win_loss": {
+                  "text": "95.38"
+                }
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "userID": "64HU",
+                "role": "ag",
+                "userName": "64hu60"
+              },
+              "parent": [
+                "64hu60"
+              ]
+            },
+            "level": 1,
+            "child": [
+              {
+                "username": "64hu606",
+                "data": {
+                  "sb": {
+                    "turnover": {
+                      "text": "315"
+                    },
+                    "gross_comm": {
+                      "text": "0.53"
+                    },
+                    "member_comm": {
+                      "text": "0.00"
+                    },
+                    "win_loss": {
+                      "text": "95.38"
+                    }
+                  }
+                },
+                "filter": {
+                  "detail_downLine": false,
+                  "downLine": {
+                    "userID": "64hu60",
+                    "role": "sa",
+                    "userName": "64hu606"
+                  },
+                  "parent": [
+                    "64hu60",
+                    "64hu606"
+                  ]
+                },
+                "level": 2,
+                "child": []
+              }
+            ]
+          },
+          {
+            "username": "64hu66",
+            "data": {
+              "sb": {
+                "turnover": {
+                  "text": "28,452"
+                },
+                "gross_comm": {
+                  "text": "66.36"
+                },
+                "member_comm": {
+                  "text": "57.43"
+                },
+                "win_loss": {
+                  "text": "-4,305.81"
+                }
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "userID": "64HU",
+                "role": "ag",
+                "userName": "64hu66"
+              },
+              "parent": [
+                "64hu66"
+              ]
+            },
+            "level": 1,
+            "child": []
+          },
+          {
+            "username": "64hu69",
+            "data": {
+              "sb": {
+                "turnover": {
+                  "text": "360"
+                },
+                "gross_comm": {
+                  "text": "0.65"
+                },
+                "member_comm": {
+                  "text": "0.65"
+                },
+                "win_loss": {
+                  "text": "-41.15"
+                }
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "userID": "64HU",
+                "role": "ag",
+                "userName": "64hu69"
+              },
+              "parent": [
+                "64hu69"
+              ]
+            },
+            "level": 1,
+            "child": []
+          },
+          {
+            "username": "64hu71",
+            "data": {
+              "sb": {
+                "turnover": {
+                  "text": "11,069"
+                },
+                "gross_comm": {
+                  "text": "25.49"
+                },
+                "member_comm": {
+                  "text": "25.49"
+                },
+                "win_loss": {
+                  "text": "3,502.61"
+                }
+              }
+            },
+            "filter": {
+              "detail_downLine": false,
+              "downLine": {
+                "userID": "64HU",
+                "role": "ag",
+                "userName": "64hu71"
+              },
+              "parent": [
+                "64hu71"
+              ]
+            },
+            "level": 1,
+            "child": []
+          }
+        ]
+      },
+      "csn": {
+        "level": 0,
+        "username": "root",
+        "data": {},
+        "filter": false,
+        "child": []
+      }
+    }
+  }
+}

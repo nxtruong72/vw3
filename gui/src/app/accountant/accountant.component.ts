@@ -101,7 +101,7 @@ export class AccountantComponent implements OnInit {
             "to_date": to,
             "more_post": { "login_name": window.sessionStorage.getItem('username') }
           }]
-          let uuid = this.apiService.sendSocketEvent('scan', args);
+          let uuid = this.apiService.sendSocketEvent('scan', args, false);
           this.uuidToAccountant.set(uuid, accountant);
         }
       });
@@ -179,20 +179,16 @@ export class AccountantComponent implements OnInit {
       // update its child
       data.child.forEach(element => {
         let accountant: Accountant = new Accountant(element.username, element);
-        let tmp = this.member.memberList.data;
-        let members: Member[] = [];
         let masterList: Set<string> = new Set();
-        account.children.set(accountant.id, accountant);
+
+        // update member component: remove out the master that has data
         if (!masterList.has(accountant.name)) {
           masterList.add(accountant.name);
         }
-        tmp.forEach(e => {
-          if (!masterList.has(e.name.toUpperCase())) {
-            members.push(e);
-          }
-        });
-        this.member.memberList = new MatTableDataSource<Member>(members);
-        this.member.memberList.paginator = this.member.paginator;
+        this.member.memberList.updateMember(masterList);
+
+        // update child's info
+        account.children.set(accountant.id, accountant);
       });
 
       // update back to banker

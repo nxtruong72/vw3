@@ -53,6 +53,19 @@ export class MemberComponent implements OnInit {
     this.memberList.filter = filterValue.trim().toLowerCase();
   }
 
+  updateMember(masterList: Set<string>) {
+    let tmp = this.memberList.data;
+        let members: Member[] = [];
+        
+        tmp.forEach(e => {
+          if (!masterList.has(e.name.toUpperCase())) {
+            members.push(e);
+          }
+        });
+        this.memberList = new MatTableDataSource<Member>(members);
+        this.memberList.paginator = this.paginator;
+  }
+
   memberClick() {
     // console.log(this.masterList);
   }

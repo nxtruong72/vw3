@@ -18,7 +18,10 @@ export class ApiService {
   private headers: HttpHeaders;
   
   receiveMsgEvent = new Subject();
-  sharedData: Map<String, Banker>;
+
+  // Using for report component
+  reportMsgEvent = new Subject();
+  reportUUIDs: Set<string> = new Set();
 
   constructor(private snackBar: MatSnackBar, private router: Router, private http: HttpClient) {}
 
@@ -107,7 +110,11 @@ export class ApiService {
     });
     this.socket.on('message', (msg) => {
       if (msg.___Bind) {
-        this.receiveMsgEvent.next(msg);
+        if (this.reportUUIDs.has(msg.uuid)) {
+          this.reportMsgEvent.next(msg);
+        } else {
+          this.receiveMsgEvent.next(msg);
+        }
       }
     });
     this.socket.once('ready', () => {
@@ -122,9 +129,14 @@ export class ApiService {
     this.socket.send({___Send: true, event: 'init', args: args});
   }
 
-  sendSocketEvent(event, args): string {
+  sendSocketEvent(event, args, isReportComponent): string {
     let newUUID = uuid();
     this.socket.send({___Send: true, event: event, uuid: newUUID, args: args});
+    
+    if (isReportComponent == true) {
+      this.reportUUIDs.add(newUUID);
+    }
+
     return newUUID;
   }
 

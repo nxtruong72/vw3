@@ -1,70 +1,33 @@
-<!-- <div class="container content" style="margin-top: 2rem">
-  <table class="table table-bordered" style="vertical-align : middle;text-align:center;">
-    <thead class="thead-dark">
-      <tr>
-        <th scope="col" colspan="3">BẢNG THỐNG KÊ ĐẠI LÝ</th>
-        <th scope="col">TỶ GIÁ $ 23200</th>
-      </tr>
-      <tr>
-        <th scope="col">LOẠI</th>
-        <th scope="col">CÔNG TY</th>
-        <th scope="col">TURNOVER</th>
-        <th scope="col">TÀI KHOẢN HOẠT ĐỘNG</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <!-- Sport book --
-      <ng-container *ngIf="sbCounter.length > 0">
-        <tr *ngFor="let banker of sbCounter; let i = index">
-          <td *ngIf="i == 0" [attr.rowspan]="sbCounter.length" style="vertical-align : middle;text-align:center;">
-            SPORTBOOK</td>
-          <td>{{banker.name | uppercase}}</td>
-          <td>{{banker.data.sb.turnover | number}}</td>
-          <td>{{banker.total_account | number}}</td>
-        </tr>
-      </ng-container>
-
-      <!-- Ga --
-      <ng-container *ngIf="cfCounter.length > 0">
-        <tr *ngFor="let banker of cfCounter; let i = index">
-          <td *ngIf="i == 0" [attr.rowspan]="cfCounter.length" style="vertical-align : middle;text-align:center;">GÀ
-          </td>
-          <td>{{banker.name | uppercase}}</td>
-          <td>{{banker.data.cf.turnover | number}}</td>
-          <td>{{banker.total_account | number}}</td>
-        </tr>
-      </ng-container>
-
-      <!-- Casino --
-      <ng-container *ngIf="csnCounter.length > 0">
-        <tr *ngFor="let banker of csnCounter; let i = index">
-          <td *ngIf="i == 0" [attr.rowspan]="csnCounter.length" style="vertical-align : middle;text-align:center;">
-            CASINO</td>
-          <td>{{banker.name | uppercase}}</td>
-          <td>{{banker.data.csn.turnover | number}}</td>
-          <td>{{banker.total_account | number}}</td>
-        </tr>
-      </ng-container>
-
-      <!-- Loto --
-      <ng-container *ngIf="lotoCounter.length > 0">
-        <tr *ngFor="let banker of lotoCounter; let i = index">
-          <td *ngIf="i == 0" [attr.rowspan]="lotoCounter.length" style="vertical-align : middle;text-align:center;">
-            LOTO</td>
-          <td>{{banker.name | uppercase}}</td>
-          <td>{{banker.data.loto.turnover | number}}</td>
-          <td>{{banker.total_account | number}}</td>
-        </tr>
-      </ng-container>
-    </tbody>
-  </table>
-</div> -->
-
 <div class="container-fluid">
-  <div class="row">
+  <div class="row" style="margin-top: 20px;">
+    <!-- Choose date -->
+    <div class="col-md-4"></div>
+    <div class="col-md-8">
+      <mat-radio-group [(ngModel)]="chosenItem" (change)="onRadioButtonChange()">
+        <mat-radio-button style="margin-right: 20px;" value='today'>Today</mat-radio-button>
+        <mat-radio-button style="margin-right: 20px;" value='yesterday'>Yesterday</mat-radio-button>
+        <mat-radio-button style="margin-right: 20px;" value='this_week'>This week</mat-radio-button>
+        <mat-radio-button style="margin-right: 20px;" value='last_week'>Last week</mat-radio-button>
+      </mat-radio-group>
+    </div>
+    
+    <div class="col-md-4"></div>
+    <div class="col-md-8">
+      <mat-form-field style="margin-right: 20px;">
+        <input matInput [matDatepicker]="from" placeholder="From date" [formControl]="fromDate">
+        <mat-datepicker-toggle matSuffix [for]="from"></mat-datepicker-toggle>
+        <mat-datepicker #from></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field style="margin-right: 20px;">
+        <input matInput [matDatepicker]="to" placeholder="To date" [formControl]="toDate">
+        <mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
+        <mat-datepicker #to></mat-datepicker>
+      </mat-form-field>
+      <button mat-raised-button color="primary" style="margin-right: 20px;" (click)="onClickScan()">Scan all</button>
+    </div>
+
     <div class="col-md-4">
-      <mat-form-field>
+      <mat-form-field style="width: 100%;">
         <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
       </mat-form-field>
       <table mat-table [dataSource]="superList" multiTemplateDataRows>
