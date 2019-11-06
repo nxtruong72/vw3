@@ -4,6 +4,7 @@ import { Member } from '../core/member';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { Banker } from '../core/banker';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-member',
@@ -31,7 +32,7 @@ export class MemberComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor(private apiservice: ApiService) { }
+  constructor(private apiservice: ApiService, private router: Router) { }
 
   ngOnInit() {
     this.apiservice.getMemberList().subscribe(response => {
@@ -46,6 +47,9 @@ export class MemberComponent implements OnInit {
       });
       this.memberList = new MatTableDataSource<Member>(tmp);
       this.memberList.paginator = this.paginator;
+    }, error => {
+      console.log("Get member error", error);
+      this.router.navigate(['login']);
     })
   }
 

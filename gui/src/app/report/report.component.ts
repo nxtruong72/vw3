@@ -7,6 +7,7 @@ import { FormControl } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { async } from 'q';
 import { Subscription, interval } from 'rxjs';
+import { Route, Router } from '@angular/router';
 
 interface Status {
   name: string,

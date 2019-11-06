@@ -40,10 +40,10 @@ export class AccountantComponent implements OnInit {
   constructor(private snackBar: MatSnackBar, private router: Router, private apiService: ApiService) { }
 
   ngOnInit() {
-    // if(!window.sessionStorage.getItem('token')) {
-    //   this.router.navigate(['login']);
-    //   return;
-    // }
+    if(!window.sessionStorage.getItem('token')) {
+      this.router.navigate(['login']);
+      return;
+    }
 
     // listen evet from apiservice
     this.apiService.receiveMsgEvent.subscribe(message => {
