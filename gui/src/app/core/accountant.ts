@@ -6,6 +6,7 @@ export class Accountant {
     isChecked: boolean = true;
     children: Map<string, Accountant>;
     data: any;
+    level: number;
 
     constructor(id, json) {
         this.id = id;
@@ -19,6 +20,7 @@ export class Accountant {
         } else {
             this.name = json.username;
             this.data = json.data;
+            this.level = json.level;
         }
     }
 }

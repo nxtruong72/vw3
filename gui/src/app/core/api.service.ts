@@ -140,6 +140,10 @@ export class ApiService {
     return newUUID;
   }
 
+  delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   getMemberList() {
     return this.http.post(this.baseUrl + 'account', null, {headers: this.headers});
     // return this.http.get('http://localhost:8080/file/account');

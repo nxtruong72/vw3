@@ -10,7 +10,7 @@
         <mat-radio-button style="margin-right: 20px;" value='last_week'>Last week</mat-radio-button>
       </mat-radio-group>
     </div>
-    
+
     <div class="col-md-4"></div>
     <div class="col-md-8">
       <mat-form-field style="margin-right: 20px;">
@@ -43,8 +43,43 @@
         <tr mat-header-row *matHeaderRowDef="superTableHeader"></tr>
         <tr mat-row *matRowDef="let row; columns: superTableHeader"></tr>
       </table>
-      <mat-paginator [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
+      <mat-paginator #supperPaginator [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
     </div>
-    <div class="col-md-8">XXX</div>
+    <div class="col-md-8">
+      <!-- Status for scanning -->
+      <div class="data-div" *ngIf="statusList.size > 0">
+        <mat-card style="background-color: aquamarine">
+          <mat-card-header>
+            <mat-card-title [style.background-color]="red">Status</mat-card-title>
+          </mat-card-header>
+          <mat-card-content [style.background-color]="red">
+            <mat-chip-list>
+              <div class="col-md-3" *ngFor="let item of statusList | keyvalue">
+                <mat-chip>
+                  {{item.value.name | uppercase}}:&nbsp;{{item.value.status}}
+                </mat-chip>
+              </div>
+            </mat-chip-list>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Member table -->
+      <mat-form-field style="width: 100%;">
+        <input matInput (keyup)="applyMemberFilter($event.target.value)" placeholder="Filter">
+      </mat-form-field>
+      <table mat-table [dataSource]="memberData" multiTemplateDataRows>
+        <ng-container *ngFor="let column of memberDisplay; let i = index" matColumnDef="{{column.id}}">
+          <th mat-header-cell *matHeaderCellDef> {{column.display}} </th>
+          <td mat-cell *matCellDef="let element;">
+            {{i == 0 ? memberData.filteredData.indexOf(element)+1 : element[column.id] | uppercase}}
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="memberTableHeader"></tr>
+        <tr mat-row *matRowDef="let row; columns: memberTableHeader"></tr>
+      </table>
+      <mat-paginator #memberPaginator [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
+    </div>
   </div>
 </div>
