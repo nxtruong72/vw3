@@ -6,10 +6,13 @@ import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { async } from 'q';
+import { Subscription, interval } from 'rxjs';
 
 interface Status {
   name: string,
-  status: string
+  status: string,
+  args: any,
+  time: number
 }
 
 interface MemberColumn {
@@ -39,11 +42,14 @@ export class ReportComponent implements OnInit {
   ];
 
   private superList: MatTableDataSource<Accountant>;
-  private memberData: MatTableDataSource<MemberColumn>;
+  private memberData: MatTableDataSource<MemberColumn> = new MatTableDataSource();
   private datePipe = new DatePipe('en-US');
   private uuidToAccountant: Map<string, Accountant> = new Map();
   private statusList: Map<string, Status> = new Map();
   private memberList: Accountant[] = [];
+
+  private subscription: Subscription;
+  private checkStatusJob = interval(10000);
 
   // @ViewChildren(MatPaginator) paginator: QueryList<MatPaginator>;
   @ViewChild('supperPaginator', { read: MatPaginator }) supperPaginator: MatPaginator;
@@ -71,6 +77,19 @@ export class ReportComponent implements OnInit {
         }
       }
     });
+
+    // this job will validate and re-scan the member when it waited more than 10s
+    this.subscription = this.checkStatusJob.subscribe(val => {
+      let now = Date.now() / 1000;
+      this.statusList.forEach((value, key) => {
+        if (value.status != 'Empty data' && now > value.time+30) {
+          console.log('Restarting ' + value.name) + '...';
+          let uuid = this.send(value.args);
+          this.statusList.set(uuid, { name: value.name, status: "Sending", args: value.args, time: (Date.now()/1000) });
+          this.statusList.delete(key);
+        }
+      })
+    });
   }
 
   changeStatus(uuid, data) {
@@ -90,21 +109,14 @@ export class ReportComponent implements OnInit {
     let data = JSON.parse(JSON.stringify(message)).data;
     let childList = this.getChildList(message.uuid, data);
 
+    if (!this.statusList.has(message.uuid)) {
+      return;
+    }
+
     if (childList.length < 3) {
       let accounts: Accountant[] = this.getChildren(message.uuid, data);
 
-      for (let i = 0; i < accounts.length; i++) {
-        let acc:Accountant = accounts[i];
-      // this.getChildren(message.uuid, data).forEach(acc => {
-        
-
-        // let wait a little bit
-        // (async () => {
-        //   console.log("Before delay");
-        //   await this.apiService.delay(5000);
-        //   console.log("after delay");
-        // })();
-        setTimeout(() => {
+      this.getChildren(message.uuid, data).forEach(acc => {
           // scan for this element
           let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
           let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
@@ -113,21 +125,22 @@ export class ReportComponent implements OnInit {
             "id": data.id,
             "from_date": from,
             "to_date": to,
-            "more_post": {
-              "login_name": window.sessionStorage.getItem('username'),
-              "get_child_list": {}
-            }
+            "more_post": {}
           }];
+          let more_post = {
+            "login_name": window.sessionStorage.getItem('username'),
+            "get_child_list": {}
+          };
           get_child_list[acc.name.toLowerCase()] = true;
           childList.forEach(c => {
             get_child_list[c] = true;
           })
-          args[0].more_post.get_child_list = get_child_list;
+          more_post.get_child_list = get_child_list;
+          args[0].more_post = more_post;
 
-          let uuid = this.apiService.sendSocketEvent('scan', args, true);
-          this.statusList.set(uuid, { name: acc.name, status: "Sending" });
-        }, 3000);
-      }
+          let uuid = this.send(args);
+          this.statusList.set(uuid, { name: acc.name, status: "Sending", args: args, time: (Date.now()/1000) });
+        });
     } else {
       let members = this.getChildren(message.uuid, data);
       let tmp = (this.memberData ? this.memberData.data : []);
@@ -202,6 +215,10 @@ export class ReportComponent implements OnInit {
   }
 
   applyMemberFilter(filterValue: string) {
+    // apply filter for winLoss only
+    this.memberData.filterPredicate = (data: MemberColumn, filterValue: string) => {
+      return data.winLoss > parseInt(filterValue);
+    }
     this.memberData.filter = filterValue.trim().toLowerCase();
   }
 
@@ -233,8 +250,13 @@ export class ReportComponent implements OnInit {
       "to_date": to,
       "more_post": { "login_name": window.sessionStorage.getItem('username') }
     }];
+    let uuid = this.send(args);
+    this.statusList.set(uuid, { name: account.name, status: "Sending", args: args, time: (Date.now()/1000) });
+  }
+
+  send(args) {
     let uuid = this.apiService.sendSocketEvent('scan', args, true);
-    this.statusList.set(uuid, { name: account.name, status: "Sending" });
+    return uuid;
   }
 
   onRadioButtonChange() {

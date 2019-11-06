@@ -23,7 +23,7 @@
         <mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
         <mat-datepicker #to></mat-datepicker>
       </mat-form-field>
-      <button mat-raised-button color="primary" style="margin-right: 20px;" (click)="onClickScan()">Scan all</button>
+      <!-- <button mat-raised-button color="primary" style="margin-right: 20px;" (click)="onClickScan()">Scan all</button> -->
     </div>
 
     <div class="col-md-4">
@@ -66,7 +66,7 @@
 
       <!-- Member table -->
       <mat-form-field style="width: 100%;">
-        <input matInput (keyup)="applyMemberFilter($event.target.value)" placeholder="Filter">
+        <input matInput (keyup)="applyMemberFilter($event.target.value)" placeholder="Win loss larger than">
       </mat-form-field>
       <table mat-table [dataSource]="memberData" multiTemplateDataRows>
         <ng-container *ngFor="let column of memberDisplay; let i = index" matColumnDef="{{column.id}}">
