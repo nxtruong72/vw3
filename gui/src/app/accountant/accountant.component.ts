@@ -9,6 +9,7 @@ import { MatSnackBar, MatTableDataSource } from '@angular/material';
 import { MemberComponent } from '../member/member.component';
 import { Member } from '../core/member';
 import { ReportComponent } from '../report/report.component';
+import { TurnoverComponent } from '../turnover/turnover.component';
 
 @Component({
   selector: 'accountant',
@@ -22,20 +23,17 @@ export class AccountantComponent implements OnInit {
   private toDate = new FormControl();
   private datePipe = new DatePipe('en-US');
   private isCheckAll = true;
-  private uuidToAccountant: Map<String, Accountant> = new Map();
+  private uuidToAccountant: Map<string, Accountant> = new Map();
   // for radio button
   private dateInfo: Map<string, Object> = new Map();
   private chosenItem: string;
-  sbCounter: Banker[] = [];
-  cfCounter: Banker[] = [];
-  lotoCounter: Banker[] = [];
-  csnCounter: Banker[] = [];
 
   // status of accountants when scanning
-  statusList: Map<String, String> = new Map();
+  private statusList: Map<string, string> = new Map();
 
   @ViewChild(MemberComponent) member;
   @ViewChild(ReportComponent) report;
+  @ViewChild(TurnoverComponent) turnOver;
 
   constructor(private snackBar: MatSnackBar, private router: Router, private apiService: ApiService) { }
 
@@ -103,6 +101,7 @@ export class AccountantComponent implements OnInit {
           }]
           let uuid = this.apiService.sendSocketEvent('scan', args, false);
           this.uuidToAccountant.set(uuid, accountant);
+          this.statusList.set(accountant.name, "Sending");
         }
       });
     });
@@ -185,7 +184,7 @@ export class AccountantComponent implements OnInit {
         if (!masterList.has(accountant.name)) {
           masterList.add(accountant.name);
         }
-        this.member.memberList.updateMember(masterList);
+        this.member.updateMember(masterList);
 
         // update child's info
         account.children.set(accountant.id, accountant);
@@ -216,8 +215,7 @@ export class AccountantComponent implements OnInit {
       });
       // update back to bankerMap
       this.bankerMap.set(banker.id, banker);
-
-      this.updateCounter();
+      this.turnOver.updateTurnOver();
 
       // clear this in the statusList
       this.statusList.delete(account.name);
@@ -263,29 +261,6 @@ export class AccountantComponent implements OnInit {
       this.apiService.getDetailLotoData().subscribe(response => {
         this.parseScanData(response);
       });
-    });
-  }
-
-  updateCounter() {
-    this.sbCounter = [];
-    this.cfCounter = [];
-    this.lotoCounter = [];
-    this.csnCounter = [];
-    this.bankerMap.forEach((value, key) => {
-      if (value.data) {
-        if (value.data.sb) {
-          this.sbCounter.push(value);
-        }
-        if (value.data.cf) {
-          this.cfCounter.push(value);
-        }
-        if (value.data.csn) {
-          this.csnCounter.push(value);
-        }
-        if (value.data.loto) {
-          this.lotoCounter.push(value);
-        }
-      }
     });
   }
 

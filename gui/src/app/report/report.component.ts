@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ViewChildren, QueryList, ViewEncapsulation } from '@angular/core';
 import { Banker } from '../core/banker';
 import { ApiService } from '../core/api.service';
 import { Accountant } from '../core/accountant';
@@ -25,7 +25,8 @@ interface MemberColumn {
 @Component({
   selector: 'app-report',
   templateUrl: './report.component.html',
-  styleUrls: ['./report.component.scss']
+  styleUrls: ['./report.component.scss'],
+  // encapsulation:ViewEncapsulation.None
 })
 export class ReportComponent implements OnInit {
   private superTableHeader = ['position', 'name', 'bankerId'];
@@ -48,6 +49,7 @@ export class ReportComponent implements OnInit {
   private uuidToAccountant: Map<string, Accountant> = new Map();
   private statusList: Map<string, Status> = new Map();
   private memberList: Accountant[] = [];
+  private spanCache = [];
 
   private subscription: Subscription;
   private checkStatusJob = interval(10000);
@@ -159,7 +161,7 @@ export class ReportComponent implements OnInit {
       });
       this.memberData = new MatTableDataSource(tmp);
       this.memberData.paginator = this.memberPaginator;
-      console.log(this.memberData.data);
+      this.updateSpanCache();
     }
 
     // remove from status list
@@ -244,6 +246,7 @@ export class ReportComponent implements OnInit {
     // reset member data source
     this.memberData = new MatTableDataSource();
     this.memberData.paginator = this.memberPaginator;
+    this.spanCache = [];
 
     let args = [{
       "id": account.id,
@@ -263,6 +266,33 @@ export class ReportComponent implements OnInit {
   onRadioButtonChange() {
     this.fromDate = new FormControl(new Date(JSON.parse(JSON.stringify(this.dateInfo.get(this.chosenItem))).from_date));
     this.toDate = new FormControl(new Date(JSON.parse(JSON.stringify(this.dateInfo.get(this.chosenItem))).to_date));
+  }
+
+  updateSpanCache() {
+    let data = this.memberData.data;
+
+    this.spanCache = [];
+    for (let i = 0; i < data.length;) {
+      let count = 1;
+      for (let j = i+1; j < data.length; j++) {
+        if (data[j].name != data[i].name) {
+          break;
+        }
+        count++;
+      }
+      this.spanCache[i] = count;
+      i += count;
+    }
+    console.log(this.spanCache);
+  }
+
+  getRowSpan(column, index) {
+    // only apply span for column name
+    if (column == 'name') {
+      console.log(index + ' -> ' + this.spanCache[index]);
+      return this.spanCache[index];
+    }
+    return 1;
   }
 
   onClickScan() {

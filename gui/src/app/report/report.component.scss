@@ -2,6 +2,23 @@ table {
     width: 100%;
 }
 
-.mat-row:hover {
+.mat-row:hover
+.mat-cell:hover
+.mat-row.hoverable:hover {
     background-color: bisque;
+}
+
+.member-border {
+    border-right: 1px solid rgba(0,0,0,.12);
+}
+
+td {
+    vertical-align: middle;
+    // border-right: 1px solid rgba(0,0,0,.12);
+    padding-left: 16px !important;
+    padding-top: 14px !important;
+}
+
+th {
+    padding-left: 16px !important;
 }

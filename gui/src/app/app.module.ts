@@ -11,6 +11,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CustomMaterialModule } from './core/material.module';
 import { MemberComponent } from './member/member.component';
 import { ReportComponent } from './report/report.component';
+import { TurnoverComponent } from './turnover/turnover.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { ReportComponent } from './report/report.component';
     LoginComponent,
     AccountantComponent,
     MemberComponent,
-    ReportComponent
+    ReportComponent,
+    TurnoverComponent
   ],
   imports: [
     BrowserModule,

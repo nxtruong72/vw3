@@ -71,7 +71,9 @@
       <table mat-table [dataSource]="memberData" multiTemplateDataRows>
         <ng-container *ngFor="let column of memberDisplay; let i = index" matColumnDef="{{column.id}}">
           <th mat-header-cell *matHeaderCellDef> {{column.display}} </th>
-          <td mat-cell *matCellDef="let element;">
+          <td mat-cell *matCellDef="let element; let idx = dataIndex"  class="member-border"
+          [attr.rowspan]="getRowSpan(column.id, idx)"
+          [style.display]="getRowSpan(column.id, idx) == undefined ? 'none' : ''">
             {{i == 0 ? memberData.filteredData.indexOf(element)+1 : element[column.id] | uppercase}}
           </td>
         </ng-container>

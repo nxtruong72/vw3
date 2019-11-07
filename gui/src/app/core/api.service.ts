@@ -15,7 +15,11 @@ export class ApiService {
   private socket: any;
   private connected: boolean;
   private isReady: boolean = false;
-  private headers: HttpHeaders;
+  private token = JSON.parse(window.sessionStorage.getItem('token'));
+  private headers: HttpHeaders = new HttpHeaders({
+    'Authorization': 'Bearer ' + (this.token ? this.token.access_token : ''),
+    'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+  });
   
   receiveMsgEvent = new Subject();
 
