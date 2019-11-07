@@ -16,10 +16,10 @@ interface TurnOver {
 })
 export class TurnoverComponent implements OnInit {
   tableDisplay: any[] = [
-    { display: 'TYPE', id: 'type' },
-    { display: 'COMPANY', id: 'company' },
-    { display: 'TURNOVER', id: 'turnover' },
-    { display: 'ACTIVE ACCOUNTS', id: 'totalAcc' }
+    { display: 'Type', id: 'type' },
+    { display: 'Company', id: 'company' },
+    { display: 'Turn Over', id: 'turnover' },
+    { display: 'Active Accounts', id: 'totalAcc' }
   ];
   columnHeaders: string[] = ['type', 'company', 'turnover', 'totalAcc'];
 
@@ -29,6 +29,8 @@ export class TurnoverComponent implements OnInit {
   private dataSource: MatTableDataSource<TurnOver>;
   private totalTurnover: number;
   private totalAccount: number;
+  // using for rowspan
+  private spanCache = [];
 
   constructor() { }
 
@@ -58,8 +60,50 @@ export class TurnoverComponent implements OnInit {
         this.totalAccount += value.total_account;
       }
     });
+    tmpData = this.sort(tmpData);
     this.dataSource = new MatTableDataSource(tmpData);
     this.dataSource.paginator = this.paginator;
+    this.updateSpanCached();
     console.log(tmpData);
+  }
+
+  sort(listData: TurnOver[]) {
+    let tmpList = listData;
+    for (let i = 0; i < tmpList.length; i++) {
+      for (let j = i+1; j < tmpList.length; j++) {
+        if (tmpList[i].type > tmpList[j].type
+            || (tmpList[i].type == tmpList[j].type && tmpList[i].company > tmpList[j].company)) {
+                let tmp = tmpList[i];
+                tmpList[i] = tmpList[j];
+                tmpList[j] = tmp;
+              }
+      }
+    }
+    return tmpList;
+  }
+
+  updateSpanCached() {
+    let data = this.dataSource.data;
+    this.spanCache = [];
+
+    for (let i = 0; i < data.length;) {
+      let count = 1;
+      for (let j = i+1; j <data.length; j++) {
+        if (data[j].type != data[i].type) {
+          break;
+        }
+        count++;
+      }
+      this.spanCache[i] = count;
+      i += count;
+    }
+  }
+
+  getRowSpan(column, index) {
+    // only apply span for column type
+    if (column == 'type') {
+      return this.spanCache[index];
+    }
+    return 1;
   }
 }
