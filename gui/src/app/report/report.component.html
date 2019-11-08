@@ -23,7 +23,7 @@
         <mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
         <mat-datepicker #to></mat-datepicker>
       </mat-form-field>
-      <!-- <button mat-raised-button color="primary" style="margin-right: 20px;" (click)="onClickScan()">Scan all</button> -->
+      <button mat-raised-button color="primary" style="margin-right: 20px;" (click)="onClickScan()">Scan all</button>
     </div>
 
     <div class="col-md-4">
@@ -81,7 +81,7 @@
         <tr mat-header-row *matHeaderRowDef="memberTableHeader"></tr>
         <tr mat-row *matRowDef="let row; columns: memberTableHeader"></tr>
       </table>
-      <mat-paginator #memberPaginator [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
+      <mat-paginator #memberPaginator [pageSizeOptions]="[10, 20, 50, 100, 200, 500, 1000]" showFirstLastButtons></mat-paginator>
     </div>
   </div>
 </div>

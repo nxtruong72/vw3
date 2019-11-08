@@ -9,18 +9,19 @@ export class Accountant {
     level: number;
 
     constructor(id, json) {
+        let data = JSON.parse(JSON.stringify(json));
         this.id = id;
         this.children = new Map();
 
         // check if it's accountant
-        if (json.acc_name != undefined) {
-            this.bankerId = json.banker;
-            this.name = json.acc_name;
-            this.note = json.note;
+        if (data.acc_name != undefined) {
+            this.bankerId = data.banker;
+            this.name = data.acc_name;
+            this.note = data.note;
         } else {
-            this.name = json.username;
-            this.data = json.data;
-            this.level = json.level;
+            this.name = data.username;
+            this.data = data.data;
+            this.level = data.level;
         }
     }
 }

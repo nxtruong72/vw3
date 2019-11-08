@@ -1,13 +1,12 @@
-import { Component, OnInit, Inject, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from "@angular/router";
 import { ApiService } from "../core/api.service";
 import { Banker } from '../core/banker';
 import { Accountant } from '../core/accountant';
 import { FormControl } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { MatSnackBar, MatTableDataSource } from '@angular/material';
+import { MatSnackBar } from '@angular/material';
 import { MemberComponent } from '../member/member.component';
-import { Member } from '../core/member';
 import { ReportComponent } from '../report/report.component';
 import { TurnoverComponent } from '../turnover/turnover.component';
 
@@ -60,9 +59,9 @@ export class AccountantComponent implements OnInit {
           }
           case "resolve": {
             if (jsonString.data.bankerMap != undefined)
-              this.parseInitData(message);
+              this.parseInitData(jsonString);
             else
-              this.parseScanData(message);
+              this.parseScanData(jsonString);
             break;
           }
         }
@@ -143,7 +142,6 @@ export class AccountantComponent implements OnInit {
     this.chosenItem = 'today';
     this.onRadioButtonChange();
 
-
     // Get banker info
     Object.keys(bankerMap).forEach(bankerId => {
       let banker = new Banker(bankerMap[bankerId]);
@@ -163,7 +161,7 @@ export class AccountantComponent implements OnInit {
   }
 
   parseScanData(message) {
-    let data = JSON.parse(JSON.stringify(message)).data.accountant[0];
+    let data = JSON.parse(JSON.stringify(message.data.accountant[0]));
     let accId = data.accInfo.id;
     let banker = this.bankerMap.get(data.accInfo.banker);
 
@@ -173,25 +171,19 @@ export class AccountantComponent implements OnInit {
 
       // update its info
       account.data = data.data;
-      // console.log(account.sb);
 
       // update its child
       data.child.forEach(element => {
         let accountant: Accountant = new Accountant(element.username, element);
         let masterList: Set<string> = new Set();
+        account.children.set(accountant.id, accountant);
 
         // update member component: remove out the master that has data
         if (!masterList.has(accountant.name)) {
           masterList.add(accountant.name);
         }
         this.member.updateMember(masterList);
-
-        // update child's info
-        account.children.set(accountant.id, accountant);
       });
-
-      // update back to banker
-      banker.children.set(accId, account);
 
       // update banker data
       banker.data = {};
@@ -199,69 +191,27 @@ export class AccountantComponent implements OnInit {
         if (value.data) {
           Object.keys(value.data).forEach(element => {
             if (!banker.data[element]) {
-              banker.data[element] = value.data[element];
+              banker.data[element] = JSON.parse(JSON.stringify(value.data[element]));
             } else {
               let obj = value.data[element];
               Object.keys(obj).forEach(subElement => {
                 if (!banker.data[element][subElement]) {
-                  banker.data[element][subElement] = obj[subElement];
+                  banker.data[element][subElement] = JSON.parse(JSON.stringify(obj[subElement]));
                 } else {
-                  banker.data[element][subElement] = parseInt(banker.data[element][subElement]) + parseInt(obj[subElement]);                  
+                  banker.data[element][subElement] = Number(banker.data[element][subElement]) + Number(obj[subElement]);
                 }
               });
             }
           });
         }
       });
-      // update back to bankerMap
-      this.bankerMap.set(banker.id, banker);
+
+      // call turnover to udpate value
       this.turnOver.updateTurnOver();
 
       // clear this in the statusList
       this.statusList.delete(account.name);
     }
-  }
-
-  parseData() {
-    this.apiService.getInitData().subscribe(response => {
-      let bankerMap = JSON.parse(JSON.stringify(response)).data.bankerMap;
-      let scanAccMap = JSON.parse(JSON.stringify(response)).data.scanAccMap;
-      let dateInfo = JSON.parse(JSON.stringify(response)).data.dateInfo;
-
-
-      // get date info
-      this.dateInfo.set('today', dateInfo.today);
-      this.dateInfo.set('yesterday', dateInfo.yesterday);
-      this.dateInfo.set('this_week', dateInfo.this_week);
-      this.dateInfo.set('last_week', dateInfo.last_week);
-      this.chosenItem = 'today';
-
-      // Get banker info
-      Object.keys(bankerMap).forEach(bankerId => {
-        let banker = new Banker(bankerMap[bankerId]);
-        this.bankerMap.set(bankerId, banker);
-      })
-
-      // Get accountant info
-      Object.keys(scanAccMap).forEach(accountId => {
-        let bankerId = scanAccMap[accountId].banker;
-        let banker = this.bankerMap.get(bankerId);
-        let account: Accountant = new Accountant(accountId, scanAccMap[accountId]);
-        banker.children.set(accountId, account);
-        this.bankerMap.set(bankerId, banker);
-      });
-
-      // Get account info
-      this.apiService.getDetailData().subscribe(response => {
-        this.parseScanData(response);
-      });
-      this.apiService.getDetailGaData().subscribe(response => {
-        this.parseScanData(response);
-      });
-      this.apiService.getDetailLotoData().subscribe(response => {
-        this.parseScanData(response);
-      });
-    });
   }
 
   getObjectLength(obj) {

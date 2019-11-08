@@ -10,7 +10,8 @@
               <td mat-cell *matCellDef="let element; let idx = dataIndex" 
               [attr.rowspan]="getRowSpan(column.id, idx)"
               [style.display]="getRowSpan(column.id, idx) == undefined ? 'none' : ''">
-                {{i >= 2 ? (element[column.id] | number) : (element[column.id] | uppercase)}}
+                <!-- {{i >= 2 ? (element[column.id] | number) : (element[column.id] | uppercase)}} -->
+                {{i >= 1 ? (element[column.id] | number) : (element[column.id] | uppercase)}}
               </td>
           </ng-container>
   

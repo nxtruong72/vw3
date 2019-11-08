@@ -5,9 +5,7 @@ import { Accountant } from '../core/accountant';
 import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { async } from 'q';
 import { Subscription, interval } from 'rxjs';
-import { Route, Router } from '@angular/router';
 
 interface Status {
   name: string,
@@ -46,10 +44,9 @@ export class ReportComponent implements OnInit {
   private superList: MatTableDataSource<Accountant>;
   private memberData: MatTableDataSource<MemberColumn> = new MatTableDataSource();
   private datePipe = new DatePipe('en-US');
-  private uuidToAccountant: Map<string, Accountant> = new Map();
   private statusList: Map<string, Status> = new Map();
-  private memberList: Accountant[] = [];
   private spanCache = [];
+  private alreadyHasData: Set<string> = new Set();
 
   private subscription: Subscription;
   private checkStatusJob = interval(10000);
@@ -83,15 +80,22 @@ export class ReportComponent implements OnInit {
 
     // this job will validate and re-scan the member when it waited more than 10s
     this.subscription = this.checkStatusJob.subscribe(val => {
+      const processingStatus: Set<string> = new Set(["Getting Data"]);
       let now = Date.now() / 1000;
+      let counter = 0;
+      let currentRequests = this.statusList.size;
       this.statusList.forEach((value, key) => {
-        if (value.status != 'Empty data' && now > value.time+30) {
-          console.log('Restarting ' + value.name) + '...';
+        if (currentRequests < 50 && !this.alreadyHasData.has(value.name.toUpperCase())
+        && processingStatus.has(value.status) && now > value.time+30) {
           let uuid = this.send(value.args);
           this.statusList.set(uuid, { name: value.name, status: "Sending", args: value.args, time: (Date.now()/1000) });
-          this.statusList.delete(key);
+          currentRequests++;
+          counter++;
         }
-      })
+      });
+      if (counter > 0) {
+        console.log('Restarted ' + counter + ' of ' + this.statusList.size);
+      }
     });
   }
 
@@ -116,10 +120,10 @@ export class ReportComponent implements OnInit {
       return;
     }
 
-    if (childList.length < 3) {
-      let accounts: Accountant[] = this.getChildren(message.uuid, data);
-
-      this.getChildren(message.uuid, data).forEach(acc => {
+    if (!this.alreadyHasData.has(childList[0].toUpperCase())) {
+      this.alreadyHasData.add(childList[0].toUpperCase());
+      if (childList.length < 3) {
+        this.getChildren(message.uuid, data).forEach(acc => {
           // scan for this element
           let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
           let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
@@ -142,31 +146,38 @@ export class ReportComponent implements OnInit {
           args[0].more_post = more_post;
 
           let uuid = this.send(args);
-          this.statusList.set(uuid, { name: acc.name, status: "Sending", args: args, time: (Date.now()/1000) });
+          this.statusList.set(uuid, { name: acc.name, status: "Sending", args: args, time: (Date.now() / 1000) });
         });
-    } else {
-      let members = this.getChildren(message.uuid, data);
-      let tmp = (this.memberData ? this.memberData.data : []);
-      members.forEach(e => {
-        if (e.level >= 3) {
-          Object.keys(e.data).forEach(element => {
-            let xxx: MemberColumn = {
-              name: e.name,
-              type: element,
-              winLoss: e.data[element].win_loss
-            };
-            tmp.push(xxx);
-          });
-        }
-      });
-      this.memberData = new MatTableDataSource(tmp);
-      this.memberData.paginator = this.memberPaginator;
-      this.updateSpanCache();
+      } else {
+        let members = this.getChildren(message.uuid, data);
+        let tmp = (this.memberData ? this.memberData.data : []);
+        members.forEach(e => {
+          if (e.level >= 3) {
+            Object.keys(e.data).forEach(element => {
+              let xxx: MemberColumn = {
+                name: e.name,
+                type: element,
+                winLoss: e.data[element].win_loss
+              };
+              tmp.push(xxx);
+            });
+          }
+        });
+        this.memberData = new MatTableDataSource(tmp);
+        this.memberData.paginator = this.memberPaginator;
+        this.updateSpanCache();
+      }
     }
+    console.log(this.alreadyHasData);
 
     // remove from status list
     if (this.statusList.has(message.uuid)) {
-      this.statusList.delete(message.uuid);
+      let name = this.statusList.get(message.uuid).name.toUpperCase();
+      this.statusList.forEach((value, key) => {
+        if (value.name.toUpperCase() == name) {
+          this.statusList.delete(key);
+        }
+      });
     }
   }
 
@@ -237,17 +248,23 @@ export class ReportComponent implements OnInit {
   }
 
   onClickSuper(account: Accountant) {
-    console.log(account);
-    let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
-    let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
+    this.reset();
+    this.sendRequest(account);
+  }
+
+  reset() {
     this.apiService.reportUUIDs.clear();
     this.statusList.clear();
-    this.memberList = [];
+    this.alreadyHasData.clear();
     // reset member data source
     this.memberData = new MatTableDataSource();
     this.memberData.paginator = this.memberPaginator;
     this.spanCache = [];
+  }
 
+  sendRequest(account: Accountant) {
+    let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
+    let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
     let args = [{
       "id": account.id,
       "from_date": from,
@@ -283,19 +300,20 @@ export class ReportComponent implements OnInit {
       this.spanCache[i] = count;
       i += count;
     }
-    console.log(this.spanCache);
   }
 
   getRowSpan(column, index) {
     // only apply span for column name
     if (column == 'name') {
-      console.log(index + ' -> ' + this.spanCache[index]);
       return this.spanCache[index];
     }
     return 1;
   }
 
   onClickScan() {
-
+    this.reset();
+    this.superList.data.forEach(s => {
+      this.sendRequest(s);
+    })
   }
 }

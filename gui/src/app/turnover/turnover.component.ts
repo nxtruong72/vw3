@@ -16,12 +16,12 @@ interface TurnOver {
 })
 export class TurnoverComponent implements OnInit {
   tableDisplay: any[] = [
-    { display: 'Type', id: 'type' },
+    // { display: 'Type', id: 'type' },
     { display: 'Company', id: 'company' },
     { display: 'Turn Over', id: 'turnover' },
     { display: 'Active Accounts', id: 'totalAcc' }
   ];
-  columnHeaders: string[] = ['type', 'company', 'turnover', 'totalAcc'];
+  columnHeaders: string[] = [/*'type',*/ 'company', 'turnover', 'totalAcc'];
 
   @Input() bankerMap:  Map<string, Banker>;
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -46,19 +46,15 @@ export class TurnoverComponent implements OnInit {
       "loto": "LOTO"
     }
     this.bankerMap.forEach((value, key) => {
-      let hasData: boolean = false;
+      let sum = 0;
       if (value.data) {
-        Object.keys(value.data).forEach(e => {
-          if (mappingName[e]) {
-            tmpData.push({ type: mappingName[e], company: value.name, turnover: value.data[e].turnover, totalAcc: value.total_account });
-            this.totalTurnover += Number(value.data[e].turnover);
-            hasData = true;
+        Object.keys(value.data).forEach(type => {
+          if (value.data[type].turnover) {
+            sum += Number(value.data[type].turnover);
           }
         });
       }
-      if (hasData) {
-        this.totalAccount += value.total_account;
-      }
+      tmpData.push({ type: "XXX", company: value.name, turnover: sum, totalAcc: value.total_account });
     });
     tmpData = this.sort(tmpData);
     this.dataSource = new MatTableDataSource(tmpData);
@@ -101,9 +97,9 @@ export class TurnoverComponent implements OnInit {
 
   getRowSpan(column, index) {
     // only apply span for column type
-    if (column == 'type') {
-      return this.spanCache[index];
-    }
+    // if (column == 'type') {
+    //   return this.spanCache[index];
+    // }
     return 1;
   }
 }
