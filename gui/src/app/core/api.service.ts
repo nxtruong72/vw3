@@ -116,6 +116,9 @@ export class ApiService {
       if (msg.___Bind) {
         if (this.reportUUIDs.has(msg.uuid)) {
           this.reportMsgEvent.next(msg);
+          if (msg.type == 'resolve' || msg.type == 'reject') {
+            this.reportUUIDs.delete(msg.uuid);
+          }
         } else {
           this.receiveMsgEvent.next(msg);
         }

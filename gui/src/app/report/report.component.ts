@@ -8,10 +8,12 @@ import { DatePipe } from '@angular/common';
 import { Subscription, interval } from 'rxjs';
 
 interface Status {
+  id: string,
   name: string,
   status: string,
   args: any,
-  time: number
+  time: number,
+  restartCounter: number
 }
 
 interface MemberColumn {
@@ -19,6 +21,9 @@ interface MemberColumn {
   type: string,
   winLoss: number
 }
+
+const MAX_REQUEST = 50;
+const PROCESSING_STATUS = ["Sending", "Check session", "Logging", "Getting Data"];
 
 @Component({
   selector: 'app-report',
@@ -46,10 +51,10 @@ export class ReportComponent implements OnInit {
   private datePipe = new DatePipe('en-US');
   private statusList: Map<string, Status> = new Map();
   private spanCache = [];
-  private alreadyHasData: Set<string> = new Set();
 
   private subscription: Subscription;
   private checkStatusJob = interval(10000);
+  private requestBuffer = [];
 
   // @ViewChildren(MatPaginator) paginator: QueryList<MatPaginator>;
   @ViewChild('supperPaginator', { read: MatPaginator }) supperPaginator: MatPaginator;
@@ -80,23 +85,51 @@ export class ReportComponent implements OnInit {
 
     // this job will validate and re-scan the member when it waited more than 10s
     this.subscription = this.checkStatusJob.subscribe(val => {
-      const processingStatus: Set<string> = new Set(["Getting Data"]);
+      const processingStatus: Set<string> = new Set(PROCESSING_STATUS);
+      let stopIDs: Set<string> = new Set();
       let now = Date.now() / 1000;
       let counter = 0;
-      let currentRequests = this.statusList.size;
+      let currentProcessing = this.countProcessing();
+
+      // Check to restart the request if it's hang
       this.statusList.forEach((value, key) => {
-        if (currentRequests < 50 && !this.alreadyHasData.has(value.name.toUpperCase())
-        && processingStatus.has(value.status) && now > value.time+30) {
-          let uuid = this.send(value.args);
-          this.statusList.set(uuid, { name: value.name, status: "Sending", args: value.args, time: (Date.now()/1000) });
-          currentRequests++;
+        let waitingTime = (value.restartCounter+1) * 30;
+        if (processingStatus.has(value.status) && now > value.time + waitingTime) {
+          // Cause many request have the same id, so just call stopping 1 time
+          if (!stopIDs.has(value.id)) {
+            this.stopRequest(value);
+            stopIDs.add(value.id);
+          }
+          value.restartCounter++;
+          this.requestBuffer.push(value);
+          this.statusList.delete(key);
           counter++;
+          console.log('Restarting ' + value.name + ' for waiting more than ' + waitingTime + ' seconds...')
         }
       });
-      if (counter > 0) {
-        console.log('Restarted ' + counter + ' of ' + this.statusList.size);
+
+      // Check buffer
+      while (currentProcessing < MAX_REQUEST && this.requestBuffer.length > 0) {
+        let status = this.requestBuffer.shift();
+        this.send(status.id, status.name, status.args, status.restartCounter);
+        currentProcessing++;
+      }
+
+      if (counter > 0 || this.requestBuffer.length > 0) {
+        console.log('Restarted ' + counter + ' of ' + this.statusList.size + ' - Buffer length: ' + this.requestBuffer.length);
       }
     });
+  }
+
+  countProcessing() {
+    const processingStatus: Set<string> = new Set(PROCESSING_STATUS);
+    let result = 0;
+    this.statusList.forEach(status => {
+      if (processingStatus.has(status.status)) {
+        result++;
+      }
+    });
+    return result;
   }
 
   changeStatus(uuid, data) {
@@ -104,6 +137,7 @@ export class ReportComponent implements OnInit {
       let status = this.statusList.get(uuid);
       if (data.message != undefined) {
         status.status = JSON.parse(JSON.stringify(data)).message;
+        status.time = (Date.now() / 1000);
         this.statusList.set(uuid, status);
       }
     }
@@ -120,55 +154,52 @@ export class ReportComponent implements OnInit {
       return;
     }
 
-    if (!this.alreadyHasData.has(childList[0].toUpperCase())) {
-      this.alreadyHasData.add(childList[0].toUpperCase());
-      if (childList.length < 3) {
-        this.getChildren(message.uuid, data).forEach(acc => {
-          // scan for this element
-          let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
-          let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
-          let get_child_list: { [x: string]: any } = {};
-          let args = [{
-            "id": data.id,
-            "from_date": from,
-            "to_date": to,
-            "more_post": {}
-          }];
-          let more_post = {
-            "login_name": window.sessionStorage.getItem('username'),
-            "get_child_list": {}
-          };
-          get_child_list[acc.name.toLowerCase()] = true;
-          childList.forEach(c => {
-            get_child_list[c] = true;
-          })
-          more_post.get_child_list = get_child_list;
-          args[0].more_post = more_post;
+    if (childList.length < 3) {
+      this.getChildren(message.uuid, data).forEach(acc => {
+        // scan for this element
+        let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
+        let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
+        let get_child_list: { [x: string]: any } = {};
+        let args = [{
+          "id": data.id,
+          "from_date": from,
+          "to_date": to,
+          "more_post": {}
+        }];
+        let more_post = {
+          "login_name": window.sessionStorage.getItem('username'),
+          "get_child_list": {}
+        };
+        get_child_list[acc.name.toLowerCase()] = true;
+        childList.forEach(c => {
+          get_child_list[c] = true;
+        })
+        more_post.get_child_list = get_child_list;
+        args[0].more_post = more_post;
 
-          let uuid = this.send(args);
-          this.statusList.set(uuid, { name: acc.name, status: "Sending", args: args, time: (Date.now() / 1000) });
-        });
-      } else {
-        let members = this.getChildren(message.uuid, data);
-        let tmp = (this.memberData ? this.memberData.data : []);
-        members.forEach(e => {
-          if (e.level >= 3) {
-            Object.keys(e.data).forEach(element => {
-              let xxx: MemberColumn = {
-                name: e.name,
-                type: element,
-                winLoss: e.data[element].win_loss
-              };
-              tmp.push(xxx);
-            });
-          }
-        });
-        this.memberData = new MatTableDataSource(tmp);
-        this.memberData.paginator = this.memberPaginator;
-        this.updateSpanCache();
-      }
+        if (acc.id && acc.name) {
+          this.send(acc.id, acc.name, args, 0);
+        }
+      });
+    } else {
+      let members = this.getChildren(message.uuid, data);
+      let tmp = (this.memberData ? this.memberData.data : []);
+      members.forEach(e => {
+        if (e.level >= 3) {
+          Object.keys(e.data).forEach(element => {
+            let xxx: MemberColumn = {
+              name: e.name,
+              type: element,
+              winLoss: e.data[element].win_loss
+            };
+            tmp.push(xxx);
+          });
+        }
+      });
+      this.memberData = new MatTableDataSource(tmp);
+      this.memberData.paginator = this.memberPaginator;
+      this.updateSpanCache();
     }
-    console.log(this.alreadyHasData);
 
     // remove from status list
     if (this.statusList.has(message.uuid)) {
@@ -200,7 +231,7 @@ export class ReportComponent implements OnInit {
         }
         if (loop) {
           loop.forEach(e => {
-            let account: Accountant = new Accountant("XXX", e);
+            let account: Accountant = new Accountant(data.id, e);
             result.push(account);
           });
         }
@@ -218,7 +249,9 @@ export class ReportComponent implements OnInit {
         childList.push(element);
       });
     } else {
-      childList.push(this.statusList.get(uuid).name);
+      if (this.statusList.get(uuid)) {
+        childList.push(this.statusList.get(uuid).name);
+      }
     }
 
     return childList;
@@ -255,7 +288,6 @@ export class ReportComponent implements OnInit {
   reset() {
     this.apiService.reportUUIDs.clear();
     this.statusList.clear();
-    this.alreadyHasData.clear();
     // reset member data source
     this.memberData = new MatTableDataSource();
     this.memberData.paginator = this.memberPaginator;
@@ -271,14 +303,28 @@ export class ReportComponent implements OnInit {
       "to_date": to,
       "more_post": { "login_name": window.sessionStorage.getItem('username') }
     }];
-    let uuid = this.send(args);
-    this.statusList.set(uuid, { name: account.name, status: "Sending", args: args, time: (Date.now()/1000) });
+    if (account.id && account.name) {
+      this.send(account.id, account.name, args, 0);
+    }
   }
 
-  send(args) {
-    let uuid = this.apiService.sendSocketEvent('scan', args, true);
-    return uuid;
+  send(id, name, args, restartCounter) {
+    let status = { id: id, name: name, status: "Sending", args: args, time: (Date.now() / 1000), restartCounter: restartCounter };
+
+    if (this.countProcessing() < MAX_REQUEST) {
+      let uuid = this.apiService.sendSocketEvent('scan', args, true);
+      this.statusList.set(uuid, status);
+    } else {
+      this.requestBuffer.push(status);
+    }
   }
+
+  stopRequest(req: Status) {
+    let args = [{ "id": req.id }];
+    this.apiService.sendSocketEvent('stop', args, true);
+  }
+
+
 
   onRadioButtonChange() {
     this.fromDate = new FormControl(new Date(JSON.parse(JSON.stringify(this.dateInfo.get(this.chosenItem))).from_date));
@@ -291,7 +337,7 @@ export class ReportComponent implements OnInit {
     this.spanCache = [];
     for (let i = 0; i < data.length;) {
       let count = 1;
-      for (let j = i+1; j < data.length; j++) {
+      for (let j = i + 1; j < data.length; j++) {
         if (data[j].name != data[i].name) {
           break;
         }
