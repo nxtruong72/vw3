@@ -56,6 +56,11 @@ export class ReportComponent implements OnInit {
   private checkStatusJob = interval(10000);
   private requestBuffer = [];
 
+  // member table filter
+  private inputValue = '';
+  private cbPositive = true;
+  private cbNegative = true;
+
   // @ViewChildren(MatPaginator) paginator: QueryList<MatPaginator>;
   @ViewChild('supperPaginator', { read: MatPaginator }) supperPaginator: MatPaginator;
   @ViewChild('memberPaginator', { read: MatPaginator }) memberPaginator: MatPaginator;
@@ -198,6 +203,7 @@ export class ReportComponent implements OnInit {
       });
       this.memberData = new MatTableDataSource(tmp);
       this.memberData.paginator = this.memberPaginator;
+      this.updateFilterPredicate();
       this.updateSpanCache();
     }
 
@@ -257,16 +263,25 @@ export class ReportComponent implements OnInit {
     return childList;
   }
 
-  applyFilter(filterValue: string) {
+  applySupervisorFilter(filterValue: string) {
     this.superList.filter = filterValue.trim().toLowerCase();
   }
 
   applyMemberFilter(filterValue: string) {
-    // apply filter for winLoss only
+    this.inputValue = filterValue.trim().toLowerCase();
+    this.memberData.filter = JSON.stringify(this.inputValue);
+  }
+
+  updateFilterPredicate() {
     this.memberData.filterPredicate = (data: MemberColumn, filterValue: string) => {
-      return data.winLoss > parseInt(filterValue);
+      let searchStr = this.inputValue;
+      if ((this.cbPositive && data.winLoss >= 0) || (this.cbNegative && data.winLoss < 0)) {
+        let xxx = !searchStr || data.name.indexOf(searchStr) != -1 || data.type.indexOf(searchStr) != -1;
+        return !searchStr || data.name.indexOf(searchStr) != -1 || data.type.indexOf(searchStr) != -1;
+      }
+      return false;
     }
-    this.memberData.filter = filterValue.trim().toLowerCase();
+    this.memberData.filter = JSON.stringify(this.inputValue);
   }
 
   updateTable() {

@@ -22,3 +22,10 @@ td {
 th {
     padding-left: 16px !important;
 }
+
+.section {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    height: 60px;
+}
