@@ -276,7 +276,8 @@ export class ReportComponent implements OnInit {
     this.memberData.filterPredicate = (data: MemberColumn, filterValue: string) => {
       let searchStr = this.inputValue;
       if ((this.cbPositive && data.winLoss >= 0) || (this.cbNegative && data.winLoss < 0)) {
-        return !searchStr || data.name.indexOf(searchStr) != -1 || data.type.indexOf(searchStr) != -1;
+        return !searchStr || data.name.trim().toLowerCase().indexOf(searchStr) != -1
+            || data.type.trim().toLowerCase().indexOf(searchStr) != -1;
       }
       return false;
     }
