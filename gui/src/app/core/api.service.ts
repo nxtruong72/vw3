@@ -148,10 +148,14 @@ export class ApiService {
   }
 
   getAllMember() {
-    return this.http.get('http://localhost:8080/file/member_aLL');
+    return this.http.post(this.baseUrl + 'member', null, {headers: this.headers});
+    // return this.http.get('http://localhost:8080/file/member_aLL');
   }
   
   getMemberDetail(id) {
+    const body = new HttpParams()
+      .set('memberId', id);
+    return this.http.post(this.baseUrl + 'member/get_link_formula_detail', body, {headers: this.headers});
     return this.http.get('http://localhost:8080/file/member_r40');
   }
 
