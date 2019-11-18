@@ -27,6 +27,8 @@ public class FileController {
     private static String FILE_MEMBER = "/home/nxuantruong/Source/vw3/vw3/gui/member.json";
     private static String FILE_MEMBER_CHILDREN = "/home/nxuantruong/Source/vw3/vw3/gui/member_children.json";
     private static String FILE_ACCOUNT = "/home/nxuantruong/Source/vw3/vw3/gui/account.json";
+    private static String FILE_MEMBER_ALL = "/home/nxuantruong/Source/vw3/vw3/gui/member_all.json";
+    private static String FILE_MEMBER_DETAIL_R40 = "/home/nxuantruong/Source/vw3/vw3/gui/member_detail_R40.json";
 
     @Autowired
     CsvService csvService;
@@ -83,6 +85,20 @@ public class FileController {
     @ResponseBody
     public String getAccout() throws IOException {
         List<String> lines = Files.readAllLines(Paths.get(FILE_ACCOUNT), StandardCharsets.UTF_8);
+        return String.join(System.lineSeparator(), lines);
+    }
+
+    @GetMapping(path = "/member_aLL", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String getMemberAll() throws IOException {
+        List<String> lines = Files.readAllLines(Paths.get(FILE_MEMBER_ALL), StandardCharsets.UTF_8);
+        return String.join(System.lineSeparator(), lines);
+    }
+
+    @GetMapping(path = "/member_r40", produces = "application/json; charset=utf-8")
+    @ResponseBody
+    public String getMemberR40() throws IOException {
+        List<String> lines = Files.readAllLines(Paths.get(FILE_MEMBER_DETAIL_R40), StandardCharsets.UTF_8);
         return String.join(System.lineSeparator(), lines);
     }
 }

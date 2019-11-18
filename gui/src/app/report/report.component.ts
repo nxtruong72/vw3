@@ -1,29 +1,19 @@
-import { Component, OnInit, Input, ViewChild, ViewChildren, QueryList, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Banker } from '../core/banker';
 import { ApiService } from '../core/api.service';
 import { Accountant } from '../core/accountant';
 import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { FormControl } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { Subscription, interval } from 'rxjs';
-
-interface Status {
-  id: string,
-  name: string,
-  status: string,
-  args: any,
-  time: number,
-  restartCounter: number
-}
+import { MemberFetcher } from '../core/scanning.util';
+import { Subject } from 'rxjs';
 
 interface MemberColumn {
   name: string,
   type: string,
-  winLoss: number
+  winLoss: number,
+  turnover: number
 }
-
-const MAX_REQUEST = 50;
-const PROCESSING_STATUS = ["Sending", "Check session", "Logging", "Getting Data"];
 
 @Component({
   selector: 'app-report',
@@ -38,31 +28,40 @@ export class ReportComponent implements OnInit {
     { display: 'Name', id: 'name' },
     { display: 'Company', id: 'bankerId' }
   ];
-  private memberTableHeader = ['position', 'name', 'type', 'winLoss'];
+  private customerTableHeader = ['position', 'name', 'username'];
+  private customerDisplay: any[] = [
+    { display: 'No.', id: 'position' },
+    { display: 'Name', id: 'name' },
+    { display: 'Username', id: 'username' }
+  ];
+  private memberTableHeader = ['position', 'name', 'type', 'winLoss', 'turnover'];
   private memberDisplay: any[] = [
     { display: 'No.', id: 'position' },
     { display: 'Name', id: 'name' },
     { display: 'Type', id: 'type' },
-    { display: 'Win loss', id: 'winLoss' }
+    { display: 'Win loss', id: 'winLoss' },
+    { display: 'Turn over', id: 'turnover' }
   ];
 
   private superList: MatTableDataSource<Accountant>;
   private memberData: MatTableDataSource<MemberColumn> = new MatTableDataSource();
   private datePipe = new DatePipe('en-US');
-  private statusList: Map<string, Status> = new Map();
+  private statusList: Map<string, string> = new Map();
   private spanCache = [];
-
-  private subscription: Subscription;
-  private checkStatusJob = interval(10000);
-  private requestBuffer = [];
 
   // member table filter
   private inputValue = '';
   private cbPositive = true;
   private cbNegative = true;
 
+  private reportMsgEvent = new Subject();
+
+  // for Customer
+  private customerList: MatTableDataSource<Accountant>;
+
   // @ViewChildren(MatPaginator) paginator: QueryList<MatPaginator>;
   @ViewChild('supperPaginator', { read: MatPaginator }) supperPaginator: MatPaginator;
+  @ViewChild('customerPaginator', { read: MatPaginator }) customerPaginator: MatPaginator;
   @ViewChild('memberPaginator', { read: MatPaginator }) memberPaginator: MatPaginator;
   @Input() bankerMap: Map<string, Banker>;
   @Input() fromDate: FormControl;
@@ -70,82 +69,38 @@ export class ReportComponent implements OnInit {
   @Input() dateInfo: Map<string, Object>;
   @Input() chosenItem: string;
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService, private memberFetcher: MemberFetcher) { }
 
   ngOnInit() {
-    this.apiService.reportMsgEvent.subscribe(message => {
-      let jsonString = JSON.parse(JSON.stringify(message));
-      switch (jsonString.type) {
-        case "reject":
-        case "notify": {
-          this.changeStatus(jsonString.uuid, jsonString.data);
-          break;
+    this.reportMsgEvent.subscribe(msg => {
+      let jsonString = JSON.parse(JSON.stringify(msg));
+      if (jsonString.type == "notify") {
+        if (jsonString.data.name != "") {
+          this.statusList.set(jsonString.data.name.toLowerCase(), jsonString.data.status);
         }
-        case "resolve": {
-          this.parseScanData(message);
-          break;
+      } else if (jsonString.type == "delete") {
+        let name = jsonString.data.name.toLowerCase();
+        if (name != "" && this.statusList.has(name)) {
+          this.statusList.delete(name);
         }
+      } else if (jsonString.type == "resolve") {
+        this.parseScanData(jsonString.data);
       }
     });
 
-    // this job will validate and re-scan the member when it waited more than 10s
-    this.subscription = this.checkStatusJob.subscribe(val => {
-      const processingStatus: Set<string> = new Set(PROCESSING_STATUS);
-      let stopIDs: Set<string> = new Set();
-      let now = Date.now() / 1000;
-      let counter = 0;
-      let currentProcessing = this.countProcessing();
-
-      // Check to restart the request if it's hang
-      this.statusList.forEach((value, key) => {
-        let waitingTime = (value.restartCounter+1) * 30;
-        if (processingStatus.has(value.status) && now > value.time + waitingTime) {
-          // Cause many request have the same id, so just call stopping 1 time
-          if (!stopIDs.has(value.id)) {
-            this.stopRequest(value);
-            stopIDs.add(value.id);
-          }
-          value.restartCounter++;
-          this.requestBuffer.push(value);
-          this.statusList.delete(key);
-          counter++;
-          console.log('Restarting ' + value.name + ' for waiting more than ' + waitingTime + ' seconds...')
-        }
+    // get all customers
+    this.apiService.getAllMember().subscribe(response => {
+      let data = JSON.parse(JSON.stringify(response)).res.data;
+      let cusomterData: Accountant[] = [];
+      data.List.forEach(item => {
+        let acc: Accountant = new Accountant(item.id, undefined);
+        acc.username = item.username;
+        acc.name = item.fullname;
+        cusomterData.push(acc);
       });
-
-      // Check buffer
-      while (currentProcessing < MAX_REQUEST && this.requestBuffer.length > 0) {
-        let status = this.requestBuffer.shift();
-        this.send(status.id, status.name, status.args, status.restartCounter);
-        currentProcessing++;
-      }
-
-      if (counter > 0 || this.requestBuffer.length > 0) {
-        console.log('Restarted ' + counter + ' of ' + this.statusList.size + ' - Buffer length: ' + this.requestBuffer.length);
-      }
+      this.customerList = new MatTableDataSource(cusomterData);
+      this.customerList.paginator = this.customerPaginator;
     });
-  }
-
-  countProcessing() {
-    const processingStatus: Set<string> = new Set(PROCESSING_STATUS);
-    let result = 0;
-    this.statusList.forEach(status => {
-      if (processingStatus.has(status.status)) {
-        result++;
-      }
-    });
-    return result;
-  }
-
-  changeStatus(uuid, data) {
-    if (this.statusList.has(uuid)) {
-      let status = this.statusList.get(uuid);
-      if (data.message != undefined) {
-        status.status = JSON.parse(JSON.stringify(data)).message;
-        status.time = (Date.now() / 1000);
-        this.statusList.set(uuid, status);
-      }
-    }
   }
 
   /* Decide to keep scanning continous or not base on the child list
@@ -153,118 +108,33 @@ export class ReportComponent implements OnInit {
    */
   parseScanData(message) {
     let data = JSON.parse(JSON.stringify(message)).data;
-    let childList = this.getChildList(message.uuid, data);
-
-    if (!this.statusList.has(message.uuid)) {
-      return;
-    }
-
-    if (childList.length < 3) {
-      this.getChildren(message.uuid, data).forEach(acc => {
-        // scan for this element
-        let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
-        let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
-        let get_child_list: { [x: string]: any } = {};
-        let args = [{
-          "id": data.id,
-          "from_date": from,
-          "to_date": to,
-          "more_post": {}
-        }];
-        let more_post = {
-          "login_name": window.sessionStorage.getItem('username'),
-          "get_child_list": {}
-        };
-        get_child_list[acc.name.toLowerCase()] = true;
-        childList.forEach(c => {
-          get_child_list[c] = true;
-        })
-        more_post.get_child_list = get_child_list;
-        args[0].more_post = more_post;
-
-        if (acc.id && acc.name) {
-          this.send(acc.id, acc.name, args, 0);
-        }
-      });
-    } else {
-      let members = this.getChildren(message.uuid, data);
-      let tmp = (this.memberData ? this.memberData.data : []);
-      members.forEach(e => {
-        if (e.level >= 3) {
-          Object.keys(e.data).forEach(element => {
-            let xxx: MemberColumn = {
-              name: e.name,
-              type: element,
-              winLoss: e.data[element].win_loss
-            };
-            tmp.push(xxx);
-          });
-        }
-      });
-      this.memberData = new MatTableDataSource(tmp);
-      this.memberData.paginator = this.memberPaginator;
-      this.updateFilterPredicate();
-      this.updateSpanCache();
-    }
-
-    // remove from status list
-    if (this.statusList.has(message.uuid)) {
-      let name = this.statusList.get(message.uuid).name.toUpperCase();
-      this.statusList.forEach((value, key) => {
-        if (value.name.toUpperCase() == name) {
-          this.statusList.delete(key);
-        }
-      });
-    }
-  }
-
-  getChildren(uuid, data): Accountant[] {
-    let result: Accountant[] = [];
-    let childList: string[] = this.getChildList(uuid, data);
-    let index = childList.length - 1;
-    data.accountant.forEach(account => {
-      if (account.username.toLowerCase() == childList[index].toLowerCase()) {
-        let loop = account.child;
-        // continue with its child
-        while (index > 0) {
-          let tmp = loop;
-          index--;
-          tmp.forEach(e => {
-            if (e.username.toLowerCase() == childList[index].toLowerCase()) {
-              loop = e.child;
-            }
-          });
-        }
-        if (loop) {
-          loop.forEach(e => {
-            let account: Accountant = new Accountant(data.id, e);
-            result.push(account);
-          });
-        }
+    let members = this.memberFetcher.getChildren(message.uuid, data);
+    let tmp = (this.memberData ? this.memberData.data : []);
+    members.forEach(e => {
+      if (e.level >= 3) {
+        Object.keys(e.data).forEach(element => {
+          let xxx: MemberColumn = {
+            name: e.name,
+            type: element,
+            winLoss: e.data[element].win_loss,
+            turnover: e.data[element].turnover
+          };
+          tmp.push(xxx);
+        });
       }
     });
-
-    return result;
-  }
-
-  getChildList(uuid, data): string[] {
-    let childList: string[] = [];
-
-    if (data.more_post.get_child_list) {
-      Object.keys(data.more_post.get_child_list).forEach(element => {
-        childList.push(element);
-      });
-    } else {
-      if (this.statusList.get(uuid)) {
-        childList.push(this.statusList.get(uuid).name);
-      }
-    }
-
-    return childList;
+    this.memberData = new MatTableDataSource(tmp);
+    this.memberData.paginator = this.memberPaginator;
+    this.updateFilterPredicate();
+    this.updateSpanCache();
   }
 
   applySupervisorFilter(filterValue: string) {
     this.superList.filter = filterValue.trim().toLowerCase();
+  }
+
+  applyCustomerFilter(filterValue: string) {
+    this.customerList.filter = filterValue.trim().toLowerCase();
   }
 
   applyMemberFilter(filterValue: string) {
@@ -295,9 +165,50 @@ export class ReportComponent implements OnInit {
     this.superList.paginator = this.supperPaginator;
   }
 
-  onClickSuper(account: Accountant) {
+  onClickCustomer(account: Accountant) {
+    let checker: Set<string> = new Set();
+    let superList: Accountant[] = [];
     this.reset();
-    this.sendRequest(account);
+    this.apiService.getMemberDetail(account.id).subscribe(response => {
+      let data = JSON.parse(JSON.stringify(response)).res.data.List;
+      data.memberDetail.forEach(member => {
+        let banker = this.bankerMap.get(member.banker_id);
+        let acc_name = member.acc_name.toLowerCase();
+        if (banker) {
+          banker.children.forEach((acc, id) => {
+            if (acc_name.indexOf(acc.name.toLowerCase()) != -1 && !checker.has(id)) {
+              checker.add(id);
+              superList.push(acc);
+            }
+          });
+        }
+      });
+      if (superList.length > 0) {
+        let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
+        let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
+        this.memberFetcher.scan(from, to, superList, account.name.toLowerCase(), this.reportMsgEvent);
+      }
+      console.log(superList);
+    });
+  }
+
+  onClickSuper(account: Accountant) {
+    let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
+    let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
+    let scanedList: Accountant[] = [account];
+    this.reset();
+    this.memberFetcher.scan(from, to, scanedList, undefined, this.reportMsgEvent);
+  }
+
+  onClickScan() {
+    let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
+    let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
+    let scanedList: Accountant[] = [];
+    this.reset();
+    this.superList.data.forEach(s => {
+      scanedList.push(s);
+    });
+    this.memberFetcher.scan(from, to, scanedList, undefined, this.reportMsgEvent);
   }
 
   reset() {
@@ -308,38 +219,6 @@ export class ReportComponent implements OnInit {
     this.memberData.paginator = this.memberPaginator;
     this.spanCache = [];
   }
-
-  sendRequest(account: Accountant) {
-    let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
-    let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
-    let args = [{
-      "id": account.id,
-      "from_date": from,
-      "to_date": to,
-      "more_post": { "login_name": window.sessionStorage.getItem('username') }
-    }];
-    if (account.id && account.name) {
-      this.send(account.id, account.name, args, 0);
-    }
-  }
-
-  send(id, name, args, restartCounter) {
-    let status = { id: id, name: name, status: "Sending", args: args, time: (Date.now() / 1000), restartCounter: restartCounter };
-
-    if (this.countProcessing() < MAX_REQUEST) {
-      let uuid = this.apiService.sendSocketEvent('scan', args, true);
-      this.statusList.set(uuid, status);
-    } else {
-      this.requestBuffer.push(status);
-    }
-  }
-
-  stopRequest(req: Status) {
-    let args = [{ "id": req.id }];
-    this.apiService.sendSocketEvent('stop', args, true);
-  }
-
-
 
   onRadioButtonChange() {
     this.fromDate = new FormControl(new Date(JSON.parse(JSON.stringify(this.dateInfo.get(this.chosenItem))).from_date));
@@ -369,12 +248,5 @@ export class ReportComponent implements OnInit {
       return this.spanCache[index];
     }
     return 1;
-  }
-
-  onClickScan() {
-    this.reset();
-    this.superList.data.forEach(s => {
-      this.sendRequest(s);
-    })
   }
 }

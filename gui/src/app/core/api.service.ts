@@ -147,6 +147,14 @@ export class ApiService {
     return newUUID;
   }
 
+  getAllMember() {
+    return this.http.get('http://localhost:8080/file/member_aLL');
+  }
+  
+  getMemberDetail(id) {
+    return this.http.get('http://localhost:8080/file/member_r40');
+  }
+
   delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
