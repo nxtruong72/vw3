@@ -43,6 +43,8 @@ export class ReportComponent implements OnInit {
     { display: 'Turn over', id: 'turnover' }
   ];
 
+  private memberLabel: string = 'Member data';
+
   private superList: MatTableDataSource<Accountant>;
   private memberData: MatTableDataSource<MemberColumn> = new MatTableDataSource();
   private datePipe = new DatePipe('en-US');
@@ -190,6 +192,7 @@ export class ReportComponent implements OnInit {
       }
       console.log(superList);
     });
+    this.memberLabel = 'Member data (' + account.name.toUpperCase() + ')';
   }
 
   onClickSuper(account: Accountant) {
@@ -218,6 +221,7 @@ export class ReportComponent implements OnInit {
     this.memberData = new MatTableDataSource();
     this.memberData.paginator = this.memberPaginator;
     this.spanCache = [];
+    this.memberLabel = 'Member data';
   }
 
   onRadioButtonChange() {
