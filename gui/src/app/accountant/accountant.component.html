@@ -24,7 +24,8 @@
             <mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
             <mat-datepicker #to></mat-datepicker>
           </mat-form-field>
-          <button mat-raised-button color="primary" style="margin-right: 20px;" (click)="onClickScan()">Scan</button>
+          <button mat-raised-button color="{{isScanning ? 'warn' : 'primary'}}" style="margin-right: 20px;" (click)="onClickScan()">{{isScanning ? 'Stop' : 'Scan master'}}</button>
+          <button mat-raised-button color="{{isScanning ? 'warn' : 'primary'}}" style="margin-right: 20px;" (click)="onClickScan()">{{isScanning ? 'Stop' : 'Scan member'}}</button>
         </div>
       </div>
     </div>
@@ -123,7 +124,7 @@
 
   <!-- Report tab -->
   <mat-tab label="Report">
-    <app-report [bankerMap]="bankerMap" [fromDate]="fromDate" [toDate]="toDate" [dateInfo]="dateInfo"
+    <app-report [(bankerMap)]="bankerMap" [fromDate]="fromDate" [toDate]="toDate" [dateInfo]="dateInfo"
       [chosenItem]="chosenItem"></app-report>
   </mat-tab>
 

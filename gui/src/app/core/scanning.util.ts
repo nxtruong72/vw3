@@ -224,7 +224,6 @@ export class MemberFetcher {
 
   hasMemberReport(reports) {
     let ret: boolean = false;
-    console.log(reports);
     for (const report of reports) {
     // reports.forEach(report => {
       if (report.resultList) {
@@ -234,15 +233,10 @@ export class MemberFetcher {
         for (const result of report.resultList) {
         // report.resultList.forEach(result => {
           if (result.memberName && result.memberName.toLowerCase() == this.memberName) {
-            console.log("CCCCCCCCCC");
             ret = true;
           }
         }
       }
-    }
-    
-    if (ret) {
-      console.log("BBBBBBBBB");
     }
     return ret;
   }

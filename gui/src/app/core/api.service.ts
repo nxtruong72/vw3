@@ -7,6 +7,9 @@ import {Subject} from 'rxjs';
 import { Banker } from './banker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+const MAX_REQUEST = 50;
+const PROCESSING_STATUS = ["Sending", "Check session", "Logging", "Getting Data"];
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,12 +23,18 @@ export class ApiService {
     'Authorization': 'Bearer ' + (this.token ? this.token.access_token : ''),
     'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
   });
+
+  // scanning status
+  private scanningList: Map<string, any> = new Map();
   
   receiveMsgEvent = new Subject();
 
   // Using for report component
   reportMsgEvent = new Subject();
   reportUUIDs: Set<string> = new Set();
+
+  // notifier
+  private notifier = new Subject();
 
   constructor(private snackBar: MatSnackBar, private router: Router, private http: HttpClient) {}
 
@@ -113,14 +122,18 @@ export class ApiService {
       console.log('>>> Error response from server: ', err);
     });
     this.socket.on('message', (msg) => {
-      if (msg.___Bind) {
-        if (this.reportUUIDs.has(msg.uuid)) {
-          this.reportMsgEvent.next(msg);
-          if (msg.type == 'resolve' || msg.type == 'reject') {
-            this.reportUUIDs.delete(msg.uuid);
+      let json = JSON.parse(JSON.stringify(msg));
+      if (json.___Bind) {
+        if (this.reportUUIDs.has(json.uuid)) {
+          this.reportMsgEvent.next(json);
+          if (json.type == 'resolve' || json.type == 'reject') {
+            this.reportUUIDs.delete(json.uuid);
           }
         } else {
-          this.receiveMsgEvent.next(msg);
+          this.receiveMsgEvent.next(json);
+        }
+        if (this.scanningList.has(json.uuid) && (json.type == 'resolve' || json.type == 'reject')) {
+          this.scanningList.delete(json.uuid);
         }
       }
     });
@@ -128,7 +141,7 @@ export class ApiService {
       console.log("READY!!!");
       this.isReady = true;
       this.sendInitEvent();
-    })
+    });
   }
 
   sendInitEvent() {
@@ -139,12 +152,18 @@ export class ApiService {
   sendSocketEvent(event, args, isReportComponent): string {
     let newUUID = uuid();
     this.socket.send({___Send: true, event: event, uuid: newUUID, args: args});
-    
     if (isReportComponent == true) {
       this.reportUUIDs.add(newUUID);
     }
-
+    this.scanningList.set(newUUID, args);
     return newUUID;
+  }
+
+  stop() {
+    this.scanningList.forEach((args, uuid) => {
+      console.log('deleting... ' + uuid);
+      this.socket.send({___Send: true, event: 'stop', uuid: uuid, args: args});
+    });
   }
 
   getAllMember() {

@@ -10,12 +10,13 @@ import { MemberComponent } from '../member/member.component';
 import { ReportComponent } from '../report/report.component';
 import { TurnoverComponent } from '../turnover/turnover.component';
 
+const PROCESSING_STATUS = ["Sending", "Check session", "Logging", "Getting Data"];
+
 @Component({
   selector: 'accountant',
   templateUrl: './accountant.component.html',
   styleUrls: ['./accountant.component.css']
 })
-
 export class AccountantComponent implements OnInit {
   private bankerMap: Map<string, Banker> = new Map<string, Banker>();
   private fromDate = new FormControl();
@@ -29,6 +30,8 @@ export class AccountantComponent implements OnInit {
 
   // status of accountants when scanning
   private statusList: Map<string, string> = new Map();
+
+  private isScanning: boolean = false;
 
   @ViewChild(MemberComponent) member;
   @ViewChild(ReportComponent) report;
@@ -81,10 +84,15 @@ export class AccountantComponent implements OnInit {
         this.statusList.set(accountant.name, status);
       }
     }
+    this.isScanning = this.checkScanning();
   }
 
   onClickScan() {
     // this.parseData();
+    if (this.isScanning) {
+      this.apiService.stop();
+      return;
+    }
     let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
     let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
     this.uuidToAccountant.clear();
@@ -101,6 +109,7 @@ export class AccountantComponent implements OnInit {
           let uuid = this.apiService.sendSocketEvent('scan', args, false);
           this.uuidToAccountant.set(uuid, accountant);
           this.statusList.set(accountant.name, "Sending");
+          this.isScanning = true;
         }
       });
     });
@@ -211,7 +220,21 @@ export class AccountantComponent implements OnInit {
 
       // clear this in the statusList
       this.statusList.delete(account.name);
+      this.isScanning = this.checkScanning();
     }
+  }
+
+  checkScanning(): boolean {
+    console.log('Check scanning');
+    let result: boolean = false;
+    let status: Set<string> = new Set(PROCESSING_STATUS);
+    this.statusList.forEach((value, key) => {
+      if (status.has(value)) {
+        result = true;
+        return;
+      }
+    });
+    return result;
   }
 
   getObjectLength(obj) {
