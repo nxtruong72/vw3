@@ -32,6 +32,7 @@ export class AccountantComponent implements OnInit {
   private statusList: Map<string, string> = new Map();
 
   private isScanning: boolean = false;
+  private isScanningMember: boolean = false;
 
   @ViewChild(MemberComponent) member;
   @ViewChild(ReportComponent) report;
@@ -79,16 +80,27 @@ export class AccountantComponent implements OnInit {
   changeStatus(uuid: string, data) {
     if (this.uuidToAccountant.has(uuid)) {
       let accountant = this.uuidToAccountant.get(uuid);
+      let accName: string = (accountant.acc_name != "" ? accountant.acc_name : accountant.username);
       if (data.message != undefined) {
         let status = JSON.parse(JSON.stringify(data)).message;
-        this.statusList.set(accountant.name, status);
+        this.statusList.set(accName.toLowerCase(), status);
       }
     }
     this.isScanning = this.checkScanning();
   }
 
-  onClickScan() {
+  onClickMasterScan() {
     // this.parseData();
+    this.isScanningMember = false;
+    this.startScanning();
+  }
+
+  onClickMemberScan() {
+    this.isScanningMember = true;
+    this.startScanning();
+  }
+
+  startScanning() {
     if (this.isScanning) {
       this.apiService.stop();
       return;
@@ -98,8 +110,9 @@ export class AccountantComponent implements OnInit {
     this.uuidToAccountant.clear();
     this.statusList.clear();
     this.bankerMap.forEach((value, key) => {
-      value.children.forEach(accountant => {
+      value.child.forEach(accountant => {
         if (accountant.isChecked) {
+          let accName: string = (accountant.acc_name != "" ? accountant.acc_name : accountant.username);
           let args = [{
             "id": accountant.id,
             "from_date": from,
@@ -108,7 +121,7 @@ export class AccountantComponent implements OnInit {
           }]
           let uuid = this.apiService.sendSocketEvent('scan', args, false);
           this.uuidToAccountant.set(uuid, accountant);
-          this.statusList.set(accountant.name, "Sending");
+          this.statusList.set(accName.toLowerCase(), "Sending");
           this.isScanning = true;
         }
       });
@@ -127,13 +140,12 @@ export class AccountantComponent implements OnInit {
   }
 
   onCheckBoxChange(item) {
-    console.log(item);
     this.onChangeStatus(item, item.isChecked);
   }
 
   onChangeStatus(node, value) {
     node.isChecked = value;
-    node.children.forEach(child => {
+    node.child.forEach(child => {
       this.onChangeStatus(child, value);
     });
   }
@@ -161,8 +173,8 @@ export class AccountantComponent implements OnInit {
     Object.keys(scanAccMap).forEach(accountId => {
       let bankerId = scanAccMap[accountId].banker;
       let banker = this.bankerMap.get(bankerId);
-      let account: Accountant = new Accountant(accountId, scanAccMap[accountId]);
-      banker.children.set(accountId, account);
+      let account: Accountant = new Accountant(scanAccMap[accountId]);
+      banker.child.set(accountId, account);
       this.bankerMap.set(bankerId, banker);
     });
 
@@ -176,27 +188,12 @@ export class AccountantComponent implements OnInit {
 
     // console.log(data);
     if (banker != undefined) {
-      let account = banker.children.get(accId);
-
-      // update its info
-      account.data = data.data;
-
-      // update its child
-      data.child.forEach(element => {
-        let accountant: Accountant = new Accountant(element.username, element);
-        let masterList: Set<string> = new Set();
-        account.children.set(accountant.id, accountant);
-
-        // update member component: remove out the master that has data
-        if (!masterList.has(accountant.name)) {
-          masterList.add(accountant.name);
-        }
-        this.member.updateMember(masterList);
-      });
+      let account = banker.child.get(accId);
+      let members = account.updateScanData(data);
 
       // update banker data
       banker.data = {};
-      banker.children.forEach((value, key) => {
+      banker.child.forEach((value, key) => {
         if (value.data) {
           Object.keys(value.data).forEach(element => {
             if (!banker.data[element]) {
@@ -219,13 +216,51 @@ export class AccountantComponent implements OnInit {
       this.turnOver.updateTurnOver();
 
       // clear this in the statusList
-      this.statusList.delete(account.name);
+      let statusName = (members.length > 0 ? members[0] : account.username);
+      this.statusList.delete(statusName.toLowerCase());
+
+      // keep scanning to get member data
+      if (members.length < 3) {
+        let tmpAccountant = account;
+        
+        for (let i = 1; i < members.length; i++) {
+          tmpAccountant.child.forEach(e => {
+            if (e.username.toLowerCase() == e.username.toLowerCase()) {
+              tmpAccountant = e;
+              return;
+            }
+          })
+        }
+
+        // let acc = tmpAccountant.child[0];
+        tmpAccountant.child.forEach(acc => {        
+          let get_child_list: { [x: string]: any } = {};
+          let args = [{
+            "id": account.id,
+            "from_date": this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy'),
+            "to_date": this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy'),
+            "more_post": {}
+          }];
+          let more_post = {
+            "login_name": window.sessionStorage.getItem('username'),
+            "get_child_list": {}
+          };
+          get_child_list[acc.username.toLowerCase()] = true;
+          for (let i = members.length-1; i >= 0; i--) {
+            get_child_list[members[i].toLowerCase()] = true;
+          }
+          more_post.get_child_list = get_child_list;
+          args[0].more_post = more_post;
+          let uuid = this.apiService.sendSocketEvent('scan', args, false);
+          this.statusList.set(acc.username.toLowerCase(), "Sending");
+        });
+      }
+
       this.isScanning = this.checkScanning();
     }
   }
 
   checkScanning(): boolean {
-    console.log('Check scanning');
     let result: boolean = false;
     let status: Set<string> = new Set(PROCESSING_STATUS);
     this.statusList.forEach((value, key) => {

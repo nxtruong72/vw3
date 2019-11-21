@@ -24,8 +24,8 @@
             <mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
             <mat-datepicker #to></mat-datepicker>
           </mat-form-field>
-          <button mat-raised-button color="{{isScanning ? 'warn' : 'primary'}}" style="margin-right: 20px;" (click)="onClickScan()">{{isScanning ? 'Stop' : 'Scan master'}}</button>
-          <button mat-raised-button color="{{isScanning ? 'warn' : 'primary'}}" style="margin-right: 20px;" (click)="onClickScan()">{{isScanning ? 'Stop' : 'Scan member'}}</button>
+          <button mat-raised-button color="{{isScanning ? 'warn' : 'primary'}}" style="margin-right: 20px;" (click)="onClickMasterScan()">{{isScanning ? 'Stop' : 'Scan master'}}</button>
+          <button mat-raised-button color="{{isScanning ? 'warn' : 'primary'}}" style="margin-right: 20px;" (click)="onClickMemberScan()">{{isScanning ? 'Stop' : 'Scan member'}}</button>
         </div>
       </div>
     </div>
@@ -67,14 +67,14 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
 
-            <div class="data-children" *ngFor="let accountant of entry.value.children | keyvalue">
+            <div class="data-children" *ngFor="let accountant of entry.value.child | keyvalue">
               <mat-expansion-panel>
                 <mat-expansion-panel-header style="background-color: lightblue">
                   <mat-panel-title>
                     <section class="tp-section">
                       <mat-checkbox class="tp-margin" [(ngModel)]="accountant.value.isChecked"
                         (change)="onCheckBoxChange(accountant.value)">
-                        {{accountant.value.name | uppercase}}
+                        {{accountant.value.acc_name | uppercase}}
                       </mat-checkbox>
                     </section>
                   </mat-panel-title>
@@ -83,7 +83,8 @@
                   </mat-panel-description>
                 </mat-expansion-panel-header>
 
-                <div style="background-color:rgb(202, 223, 230)" *ngIf="accountant.value.children.size > 0">
+                <!-- Master table -->
+                <div style="background-color:rgb(202, 223, 230)" *ngIf="accountant.value.child.length > 0">
                   <table class="table table-hover">
                     <thead class="table-primary">
                       <th style="vertical-align : middle;text-align:center;">Account</th>
@@ -93,12 +94,11 @@
                       <th *ngIf="entry.value.book_name == 'loto'">Payout</th>
                     </thead>
                     <tbody>
-                      <!-- sport book -->
-                      <ng-container *ngFor="let account of accountant.value.children | keyvalue">
-                        <tr *ngFor="let element of account.value.data | keyvalue; let i = index">
-                          <td *ngIf="i == 0" [attr.rowspan]="getObjectLength(account.value.data)"
+                      <ng-container *ngFor="let account of accountant.value.child">
+                        <tr *ngFor="let element of account.data | keyvalue; let i = index">
+                          <td *ngIf="i == 0" [attr.rowspan]="getObjectLength(account.data)"
                             style="vertical-align : middle;text-align:center;">
-                            {{account.value.name}}
+                            {{account.username}}
                           </td>
                           <td>{{element.key | uppercase}}</td>
                           <td>{{element.value.turnover | number:0}}</td>

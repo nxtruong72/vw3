@@ -152,15 +152,15 @@ export class MemberFetcher {
           "login_name": window.sessionStorage.getItem('username'),
           "get_child_list": {}
         };
-        get_child_list[acc.name.toLowerCase()] = true;
+        get_child_list[acc.username.toLowerCase()] = true;
         childList.forEach(c => {
           get_child_list[c] = true;
         });
         more_post.get_child_list = get_child_list;
         args[0].more_post = more_post;
 
-        if (acc.id && acc.name) {
-          this.send(acc.id, acc.name, args, 0);
+        if (acc.id && acc.username) {
+          this.send(acc.id, acc.username, args, 0);
         }
       });
     } else {
@@ -201,9 +201,8 @@ export class MemberFetcher {
         }
         if (loop) {
           loop.forEach(e => {
-            let account: Accountant = new Accountant(data.id, e);
+            let account: Accountant = new Accountant(e);
             if (this.isContinue(account)) {
-              console.log("AAAAAAAAAAAAA");
               result.push(account);
             }
           });

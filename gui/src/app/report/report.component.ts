@@ -95,9 +95,9 @@ export class ReportComponent implements OnInit {
       let data = JSON.parse(JSON.stringify(response)).res.data;
       let cusomterData: Accountant[] = [];
       data.List.forEach(item => {
-        let acc: Accountant = new Accountant(item.id, undefined);
+        let acc: Accountant = new Accountant(undefined);
         acc.username = item.username;
-        acc.name = item.fullname;
+        acc.acc_name = item.fullname;
         cusomterData.push(acc);
       });
       this.customerList = new MatTableDataSource(cusomterData);
@@ -116,7 +116,7 @@ export class ReportComponent implements OnInit {
       if (e.level >= 3) {
         Object.keys(e.data).forEach(element => {
           let xxx: MemberColumn = {
-            name: e.name,
+            name: e.username,
             type: element,
             winLoss: e.data[element].win_loss,
             turnover: e.data[element].turnover
@@ -159,7 +159,7 @@ export class ReportComponent implements OnInit {
   updateTable() {
     let supers: Accountant[] = [];
     this.bankerMap.forEach((value, key) => {
-      value.children.forEach((value, key) => {
+      value.child.forEach((value, key) => {
         supers.push(value);
       })
     });
@@ -177,8 +177,8 @@ export class ReportComponent implements OnInit {
         let banker = this.bankerMap.get(member.banker_id);
         let acc_name = member.acc_name.toLowerCase();
         if (banker) {
-          banker.children.forEach((acc, id) => {
-            if (acc_name.indexOf(acc.name.toLowerCase()) != -1 && !checker.has(id)) {
+          banker.child.forEach((acc, id) => {
+            if (acc_name.indexOf(acc.username.toLowerCase()) != -1 && !checker.has(id)) {
               checker.add(id);
               superList.push(acc);
             }
@@ -188,11 +188,11 @@ export class ReportComponent implements OnInit {
       if (superList.length > 0) {
         let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
         let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
-        this.memberFetcher.scan(from, to, superList, account.name.toLowerCase(), this.reportMsgEvent);
+        this.memberFetcher.scan(from, to, superList, account.username.toLowerCase(), this.reportMsgEvent);
       }
       console.log(superList);
     });
-    this.memberLabel = 'Member data (' + account.name.toUpperCase() + ')';
+    this.memberLabel = 'Member data (' + account.username.toUpperCase() + ')';
   }
 
   onClickSuper(account: Accountant) {

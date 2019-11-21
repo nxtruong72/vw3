@@ -6,7 +6,7 @@ export class Banker {
     isChecked: boolean;
     book_name: string;
     total_account: number;
-    children: Map<string, Accountant>;
+    child: Map<string, Accountant>;
     data: any;
 
     constructor(json) {
@@ -15,6 +15,6 @@ export class Banker {
         this.book_name = json.book_name;
         this.total_account = json.total_account;
         this.isChecked = true;
-        this.children = new Map();
+        this.child = new Map();
     }
 }

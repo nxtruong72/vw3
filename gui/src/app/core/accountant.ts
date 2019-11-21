@@ -1,32 +1,75 @@
 export class Accountant {
-  id: string;
-  bankerId: string;
-  name: string;
-  note: any;
+  // init data
+  id: string = "";
+  banker: string = "";
+  acc_name: string = "";
+  note: string = "";
+
+  // scanned data
+  level: number = 0;
+  username: string = "";
+  data: [];
+  child: Accountant[] = [];
+  reportAccountant: [];
+
   isChecked: boolean = true;
-  children: Map<string, Accountant>;
-  data: any;
-  level: number;
-  username: string;
-  reportAccountant: any;
 
-  constructor(id, json) {
-    this.id = id;
-    this.children = new Map();
-
-    if (json) {
-      let data = JSON.parse(JSON.stringify(json));
-      // check if it's accountant
-      if (data.acc_name != undefined) {
-        this.bankerId = data.banker;
-        this.name = data.acc_name;
-        this.note = data.note;
-      } else {
-        this.name = data.username;
-        this.data = data.data;
-        this.level = data.level;
-        this.reportAccountant = data.reportAccountant;
+  constructor(input) {
+    if (input) {
+      let json = JSON.parse(JSON.stringify(input));
+      this.id = (json.id ? json.id : this.id);
+      this.banker = (json.banker ? json.banker : this.banker);
+      this.acc_name = (json.acc_name ? json.acc_name : this.acc_name);
+      this.note = (json.note ? json.note : this.note);
+      this.level = (json.level ? json.level : this.level);
+      this.username = (json.username ? json.username : this.username);
+      this.data = json.data;
+      if (json.child && json.child.length > 0) {
+        this.child = [];
+        json.child.forEach(e => {
+          let acc: Accountant = new Accountant(e);
+          this.child.push(acc);
+        });
       }
+      this.reportAccountant = json.reportAccountant;
     }
+  }
+
+  updateScanData(input): string[] {
+    let members: string[] = [];
+    if (input) {
+      let json = JSON.parse(JSON.stringify(input));
+      this.level = json.level;
+      this.username = json.username;
+      this.data = json.data;
+      if (json.child && json.child.length > 0) {
+        json.child.forEach(e => {          
+          let tmpChild = this.findChild(e.username);
+          if (!tmpChild) {
+            let acc: Accountant = new Accountant(e);
+            this.child.push(acc);
+          } else {
+            let tmpMembers = tmpChild.updateScanData(e);
+            tmpMembers.forEach(m => {
+              members.push(m);
+            })
+          }
+        });
+        members.push(this.username);
+      }
+      this.reportAccountant = json.reportAccountant;
+    }
+    return members;
+  }
+
+  findChild(name): Accountant {
+    let result: Accountant = undefined;
+    this.child.forEach(e => {
+      if (e.username === name) {
+        result = e;
+        return;
+      }
+    });
+    return result;
   }
 }

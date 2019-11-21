@@ -60,7 +60,6 @@ export class TurnoverComponent implements OnInit {
     this.dataSource = new MatTableDataSource(tmpData);
     this.dataSource.paginator = this.paginator;
     this.updateSpanCached();
-    console.log(tmpData);
   }
 
   sort(listData: TurnOver[]) {
