@@ -167,8 +167,9 @@ export class ApiService {
   }
 
   sendInitEvent() {
-    let args = [{username: window.sessionStorage.getItem('username')}];
-    this.socket.send({___Send: true, event: 'init', args: args});
+    let args = [{username: window.sessionStorage.getItem('username').toLowerCase()}];
+    let newUuid = uuid();
+    this.socket.send({___Send: true, event: 'init', uuid: newUuid, args: args});
   }
 
   sendSocketEvent(myUuid, id, name, event, args, restartCounter): string {

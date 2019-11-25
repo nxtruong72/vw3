@@ -10,8 +10,9 @@ export class Accountant {
   username: string = "";
   data: [];
   child: Accountant[] = [];
-  reportAccountant: [];
+  reportAccountant: any;
 
+  customers: Set<string> = new Set;
   isChecked: boolean = true;
 
   constructor(input) {

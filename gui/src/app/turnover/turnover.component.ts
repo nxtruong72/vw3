@@ -52,8 +52,9 @@ export class TurnoverComponent implements OnInit {
       let cusomterData: Accountant[] = [];
       data.List.forEach(item => {
         let acc: Accountant = new Accountant(undefined);
-        acc.username = item.username;
-        acc.acc_name = item.fullname;
+        acc.username = item.username.toUpperCase();
+        acc.acc_name = item.fullname.toUpperCase();
+        acc.id = item.id;
         cusomterData.push(acc);
       });
       this.customerList = new MatTableDataSource(cusomterData);
@@ -69,16 +70,18 @@ export class TurnoverComponent implements OnInit {
       "cf": "GÀ",
       "loto": "LOTO"
     }
-    this.bankerMap.forEach((value, key) => {
+    this.bankerMap.forEach((banker, bankerId) => {
       let sum = 0;
-      if (value.data) {
-        Object.keys(value.data).forEach(type => {
-          if (value.data[type].turnover) {
-            sum += Number(value.data[type].turnover);
+      if (banker.data) {
+        Object.keys(banker.data).forEach(type => {
+          if (banker.data[type].turnover) {
+            sum += Number(banker.data[type].turnover);
           }
         });
       }
-      tmpData.push({ type: "XXX", company: value.name, turnover: sum, totalAcc: value.total_account });
+      if (banker.name != '7$') {
+        tmpData.push({ type: "XXX", company: banker.name, turnover: sum, totalAcc: banker.total_account });
+      }
     });
     tmpData = this.sort(tmpData);
     this.dataSource = new MatTableDataSource(tmpData);
@@ -127,28 +130,44 @@ export class TurnoverComponent implements OnInit {
   }
 
   onClickCustomer(account: Accountant) {
-    this.apiService.getMemberDetail(account.id).subscribe(response => {
-      let data = JSON.parse(JSON.stringify(response)).res.data.List;
-      data.memberDetail.forEach(member => {
-        let banker = this.bankerMap.get(member.banker_id);
-        let acc_name = member.acc_name.toLowerCase();
-        if (banker) {
-          banker.child.forEach()
-
-          banker.child.forEach((acc, id) => {
-            if (acc_name.indexOf(acc.username.toLowerCase()) != -1 && !checker.has(id)) {
-              checker.add(id);
-              superList.push(acc);
+    let tmpData: TurnOver[] = [];
+    let customerName = account.acc_name;
+    let superList: string[] = [];
+    this.bankerMap.forEach((banker, bankerId) => {
+      let sum = 0;
+      banker.child.forEach((sup, supId) => {
+        if (sup.customers.has(customerName)) {
+          superList.push(sup.acc_name);
+          sup.child.forEach(master => {
+            if (master.reportAccountant && master.reportAccountant.length > 0) {
+              master.reportAccountant.forEach(report => {
+                let ok = false;
+                report.resultList.forEach(result => {
+                  if (result.memberName.toUpperCase() == customerName) {
+                    ok = true;
+                  }
+                })
+                if (report.resultList.length == 0 || ok) {
+                  sum += Number(report.reportData.turnover);
+                }
+              })
             }
-          });
+          })
         }
-      });
-      if (superList.length > 0) {
-        let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
-        let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
-        this.memberFetcher.scan(from, to, superList, account.username.toLowerCase(), this.reportMsgEvent);
+      })
+      console.log(banker.name + ' -> ' + sum);
+      if (banker.name != '7$') {
+        tmpData.push({ type: "XXX", company: banker.name, turnover: sum, totalAcc: banker.total_account });
       }
-      console.log(superList);
-    });
+    })
+    tmpData = this.sort(tmpData);
+    this.dataSource = new MatTableDataSource(tmpData);
+    this.dataSource.paginator = this.turnOverPaginator;
+    this.updateSpanCached();
+    console.log(superList);
+  }
+
+  applyCustomerFilter(filterValue: string) {
+    this.customerList.filter = filterValue.trim().toLowerCase();
   }
 }

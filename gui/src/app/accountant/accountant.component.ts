@@ -154,6 +154,7 @@ export class AccountantComponent implements OnInit {
     let bankerMap = JSON.parse(JSON.stringify(message)).data.bankerMap;
     let scanAccMap = JSON.parse(JSON.stringify(message)).data.scanAccMap;
     let dateInfo = JSON.parse(JSON.stringify(message)).data.dateInfo;
+    let memberMap = JSON.parse(JSON.stringify(message)).data.memberMap;
 
     // get date info
     this.dateInfo.set('today', dateInfo.today);
@@ -177,6 +178,30 @@ export class AccountantComponent implements OnInit {
       banker.child.set(accountId, account);
       this.bankerMap.set(bankerId, banker);
     });
+
+    // Mapping customer with bankerMap
+    let customerMap: Map<string, Set<string>> = new Map();
+    memberMap.forEach(customer => {
+      let cusName = customer.member.fullname.toUpperCase();
+      let setMember: Set<string> = new Set();
+      customer.accounts.forEach(member => {
+        let acc_name = member.acc_name.toUpperCase();
+        setMember.add(acc_name);
+      })
+      customerMap.set(cusName, setMember);
+    })
+    this.bankerMap.forEach((banker, bankerId) => {
+      banker.child.forEach(sup => {
+        let supName = sup.acc_name.toUpperCase();
+        customerMap.forEach((members, customer) => {
+          if (members.has(supName)) {
+            sup.customers.add(customer);
+          }
+        })
+      })
+    })
+
+    console.log(this.bankerMap);
 
     this.report.updateTable();
   }
