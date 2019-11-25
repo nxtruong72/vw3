@@ -1,6 +1,8 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Banker } from '../core/banker';
 import { MatTableDataSource, MatPaginator } from '@angular/material';
+import { ApiService } from '../core/api.service';
+import { Accountant } from '../core/accountant';
 
 interface TurnOver {
   type: string,
@@ -15,16 +17,23 @@ interface TurnOver {
   styleUrls: ['./turnover.component.scss']
 })
 export class TurnoverComponent implements OnInit {
-  tableDisplay: any[] = [
+  private columnHeaders: string[] = [/*'type',*/ 'company', 'turnover', 'totalAcc'];
+  private tableDisplay: any[] = [
     // { display: 'Type', id: 'type' },
     { display: 'Company', id: 'company' },
     { display: 'Turn Over', id: 'turnover' },
     { display: 'Active Accounts', id: 'totalAcc' }
   ];
-  columnHeaders: string[] = [/*'type',*/ 'company', 'turnover', 'totalAcc'];
+  private customerTableHeader = ['position', 'acc_name', 'username'];
+  private customerDisplay: any[] = [
+    { display: 'No.', id: 'position' },
+    { display: 'Name', id: 'acc_name' },
+    { display: 'Username', id: 'username' }
+  ];
 
   @Input() bankerMap:  Map<string, Banker>;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('customerPaginator', { read: MatPaginator }) customerPaginator: MatPaginator;
+  @ViewChild('turnOverTable', { read: MatPaginator }) turnOverPaginator: MatPaginator;
 
   private dataSource: MatTableDataSource<TurnOver>;
   private totalTurnover: number;
@@ -32,9 +41,24 @@ export class TurnoverComponent implements OnInit {
   // using for rowspan
   private spanCache = [];
 
-  constructor() { }
+  private customerList: MatTableDataSource<Accountant>;
+
+  constructor(private apiService: ApiService) { }
 
   ngOnInit() {
+    // get all customers
+    this.apiService.getAllMember().subscribe(response => {
+      let data = JSON.parse(JSON.stringify(response)).res.data;
+      let cusomterData: Accountant[] = [];
+      data.List.forEach(item => {
+        let acc: Accountant = new Accountant(undefined);
+        acc.username = item.username;
+        acc.acc_name = item.fullname;
+        cusomterData.push(acc);
+      });
+      this.customerList = new MatTableDataSource(cusomterData);
+      this.customerList.paginator = this.customerPaginator;
+    });
   }
 
   updateTurnOver() {
@@ -58,7 +82,7 @@ export class TurnoverComponent implements OnInit {
     });
     tmpData = this.sort(tmpData);
     this.dataSource = new MatTableDataSource(tmpData);
-    this.dataSource.paginator = this.paginator;
+    this.dataSource.paginator = this.turnOverPaginator;
     this.updateSpanCached();
   }
 
@@ -100,5 +124,31 @@ export class TurnoverComponent implements OnInit {
     //   return this.spanCache[index];
     // }
     return 1;
+  }
+
+  onClickCustomer(account: Accountant) {
+    this.apiService.getMemberDetail(account.id).subscribe(response => {
+      let data = JSON.parse(JSON.stringify(response)).res.data.List;
+      data.memberDetail.forEach(member => {
+        let banker = this.bankerMap.get(member.banker_id);
+        let acc_name = member.acc_name.toLowerCase();
+        if (banker) {
+          banker.child.forEach()
+
+          banker.child.forEach((acc, id) => {
+            if (acc_name.indexOf(acc.username.toLowerCase()) != -1 && !checker.has(id)) {
+              checker.add(id);
+              superList.push(acc);
+            }
+          });
+        }
+      });
+      if (superList.length > 0) {
+        let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
+        let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
+        this.memberFetcher.scan(from, to, superList, account.username.toLowerCase(), this.reportMsgEvent);
+      }
+      console.log(superList);
+    });
   }
 }

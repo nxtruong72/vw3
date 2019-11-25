@@ -5,6 +5,7 @@ import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { Banker } from '../core/banker';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { Router } from '@angular/router';
+import { Accountant } from '../core/accountant';
 
 @Component({
   selector: 'app-member',
@@ -28,7 +29,8 @@ export class MemberComponent implements OnInit {
   ];
   // memberTableDisplay: string[] = ['position', 'name', 'subUser', 'bankerName', 'isActive'];
   columnHeaders: string[] = ['position', 'name', 'subUser', 'bankerName', 'isActive'];
-  memberList: MatTableDataSource<Member>;
+  memberList: MatTableDataSource<Member> = new MatTableDataSource();
+  
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -57,12 +59,24 @@ export class MemberComponent implements OnInit {
     this.memberList.filter = filterValue.trim().toLowerCase();
   }
 
-  updateMember(masterList: Set<string>) {
+  updateMember(bankerMap: Map<string, Banker>) {
     let tmp = this.memberList.data;
     let members: Member[] = [];
+    let masterSet: Set<string> = new Set();
+
+    // get all master that has data
+    bankerMap.forEach((banker, bankerId) => {
+      banker.child.forEach((superUser, id) => {
+        superUser.child.forEach(master => {
+          if (master.data) {
+            masterSet.add(master.username.toUpperCase());
+          }
+        });
+      })
+    });
 
     tmp.forEach(e => {
-      if (!masterList.has(e.name.toUpperCase())) {
+      if (!masterSet.has(e.name.toUpperCase())) {
         members.push(e);
       }
     });

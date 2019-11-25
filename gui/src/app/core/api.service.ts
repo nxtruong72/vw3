@@ -3,21 +3,29 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import * as io from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
 import { Router } from '@angular/router';
-import {Subject} from 'rxjs';
-import { Banker } from './banker';
+import {Subject, Subscription, interval} from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-const MAX_REQUEST = 50;
-const PROCESSING_STATUS = ["Sending", "Check session", "Logging", "Getting Data"];
+const MAX_REQUEST = 72;
+const PROCESSING_STATUS: Set<string> = new Set(["Sending", "Check session", "Logging", "Getting Data"]);
+
+interface Status {
+  id: string,
+  uuid: string,
+  name: string,
+  status: string,
+  args: any,
+  time: number,
+  restartCounter: number
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
+  private baseUrl: string = 'https://manage.vw3.cc/';
   private socket_url = "https://manage.vw3.cc:2083/accountant";
   private socket: any;
-  private connected: boolean;
-  private isReady: boolean = false;
   private token = JSON.parse(window.sessionStorage.getItem('token'));
   private headers: HttpHeaders = new HttpHeaders({
     'Authorization': 'Bearer ' + (this.token ? this.token.access_token : ''),
@@ -25,7 +33,7 @@ export class ApiService {
   });
 
   // scanning status
-  private scanningList: Map<string, any> = new Map();
+  private scanningList: Map<string, Status> = new Map();
   
   receiveMsgEvent = new Subject();
 
@@ -33,17 +41,47 @@ export class ApiService {
   reportMsgEvent = new Subject();
   reportUUIDs: Set<string> = new Set();
 
-  // notifier
-  private notifier = new Subject();
+  // check status job
+  private subscription: Subscription;
+  private checkStatusJob = interval(10000);
 
-  constructor(private snackBar: MatSnackBar, private router: Router, private http: HttpClient) {}
+  private requestBuffer: Status[] = [];
 
-  baseUrl: string = 'https://manage.vw3.cc/';
-  
-  requestHeaders = new HttpHeaders();
+  constructor(private snackBar: MatSnackBar, private router: Router, private http: HttpClient) {
+    this.subscription = this.checkStatusJob.subscribe(val => {
+      let stopIDs: Set<string> = new Set();
+      let now = Date.now() / 1000;
+      let counter = 0;
+      let currentProcessing = this.countProcessing();
 
-  sendPost() {
+      // Check to restart the request if it's hang
+      this.scanningList.forEach((status, uuid) => {
+        let waitingTime = (status.restartCounter + 1) * 30;
+        if (PROCESSING_STATUS.has(status.status) && now > status.time + waitingTime) {
+          // Cause many request have the same id, so just call stopping 1 time
+          if (!stopIDs.has(status.id)) {
+            this.stop(status);
+            stopIDs.add(status.id);
+          }
+          status.restartCounter++;
+          this.requestBuffer.push(status);
+          this.scanningList.delete(uuid);
+          counter++;
+          console.log('Restarting ' + status.name + ' for waiting more than ' + waitingTime + ' seconds...');
+        }
+      });
 
+      // Check buffer
+      while (currentProcessing < MAX_REQUEST && this.requestBuffer.length > 0) {
+        let status = this.requestBuffer.shift();
+        this.sendSocketEvent(status.uuid, status.id, status.name, 'scan', status.args, status.restartCounter);
+        currentProcessing++;
+      }
+
+      if (counter > 0 || this.requestBuffer.length > 0) {
+        console.log('Restarted ' + counter + ' of ' + this.scanningList.size + ' - Buffer length: ' + this.requestBuffer.length);
+      }
+    })
   }
 
   login(loginData) {
@@ -106,40 +144,24 @@ export class ApiService {
   }
 
   register_base_event() {
-    this.socket.on('connect', () => {
-      this.connected = true;
-      console.log('>>> Connecting success');
-    });
+    this.socket.on('connect', () => { console.log('>>> Connecting success'); });
     this.socket.on('connect_error', () => {
       console.log('>>> Can not connect to server');
       this.receiveMsgEvent.next({___ConnectError: true});
     });
-    this.socket.on('disconnect', () => {
-      this.connected = false;
-      console.log('>>> Disconnect from server');
-    });
-    this.socket.on('error', (err) => {
-      console.log('>>> Error response from server: ', err);
-    });
+    this.socket.on('disconnect', () => { console.log('>>> Disconnect from server'); });
+    this.socket.on('error', (err) => { console.log('>>> Error response from server: ', err); });
     this.socket.on('message', (msg) => {
       let json = JSON.parse(JSON.stringify(msg));
       if (json.___Bind) {
-        if (this.reportUUIDs.has(json.uuid)) {
-          this.reportMsgEvent.next(json);
-          if (json.type == 'resolve' || json.type == 'reject') {
-            this.reportUUIDs.delete(json.uuid);
-          }
-        } else {
-          this.receiveMsgEvent.next(json);
-        }
-        if (this.scanningList.has(json.uuid) && (json.type == 'resolve' || json.type == 'reject')) {
-          this.scanningList.delete(json.uuid);
+        this.receiveMsgEvent.next(json);
+        if (this.scanningList.has(json.uuid) 
+          && (json.type == 'resolve' || (json.type == 'reject' && json.data.message != 'Stopped') )) {
+            this.scanningList.delete(json.uuid);
         }
       }
     });
     this.socket.once('ready', () => {
-      console.log("READY!!!");
-      this.isReady = true;
       this.sendInitEvent();
     });
   }
@@ -149,21 +171,27 @@ export class ApiService {
     this.socket.send({___Send: true, event: 'init', args: args});
   }
 
-  sendSocketEvent(event, args, isReportComponent): string {
-    let newUUID = uuid();
-    this.socket.send({___Send: true, event: event, uuid: newUUID, args: args});
-    if (isReportComponent == true) {
-      this.reportUUIDs.add(newUUID);
+  sendSocketEvent(myUuid, id, name, event, args, restartCounter): string {
+    let newUUID = (myUuid ? myUuid : uuid());
+    let status: Status = { id: id, uuid: newUUID, name: name, args: args, status: 'Sending', time: this.getTimeNow(), restartCounter: restartCounter }
+    if (this.countProcessing() < MAX_REQUEST) {
+      this.socket.send({___Send: true, event: event, uuid: newUUID, args: args});
+      this.scanningList.set(newUUID, status);
+    } else {
+      this.requestBuffer.push(status);
     }
-    this.scanningList.set(newUUID, args);
     return newUUID;
   }
 
-  stop() {
+  stopAll() {
     this.scanningList.forEach((args, uuid) => {
-      console.log('deleting... ' + uuid);
+      console.log('stopping... ' + uuid);
       this.socket.send({___Send: true, event: 'stop', uuid: uuid, args: args});
     });
+  }
+  
+  stop(status: Status) {
+    this.socket.send({___Send: true, event: 'stop', uuid: status.uuid, args: status.args});
   }
 
   getAllMember() {
@@ -173,6 +201,20 @@ export class ApiService {
   getMemberDetail(id) {
     const body = new HttpParams().set('memberId', id);
     return this.http.post(this.baseUrl + 'member/get_link_formula_detail', body, {headers: this.headers});
+  }
+
+  countProcessing(): number {
+    let counter = 0;
+    this.scanningList.forEach((status, uuid) => {
+      if (PROCESSING_STATUS.has(status.status)) {
+        counter++;
+      }
+    });
+    return counter;
+  }
+
+  getTimeNow(): number {
+    return Date.now() / 1000;
   }
 
   delay(ms: number) {

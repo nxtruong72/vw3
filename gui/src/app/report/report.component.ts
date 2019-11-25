@@ -22,17 +22,11 @@ interface MemberColumn {
   // encapsulation:ViewEncapsulation.None
 })
 export class ReportComponent implements OnInit {
-  private superTableHeader = ['position', 'name', 'bankerId'];
+  private superTableHeader = ['position', 'acc_name', 'banker'];
   private superDisplay: any[] = [
     { display: 'No.', id: 'position' },
-    { display: 'Name', id: 'name' },
-    { display: 'Company', id: 'bankerId' }
-  ];
-  private customerTableHeader = ['position', 'name', 'username'];
-  private customerDisplay: any[] = [
-    { display: 'No.', id: 'position' },
-    { display: 'Name', id: 'name' },
-    { display: 'Username', id: 'username' }
+    { display: 'Name', id: 'acc_name' },
+    { display: 'Company', id: 'banker' }
   ];
   private memberTableHeader = ['position', 'name', 'type', 'winLoss', 'turnover'];
   private memberDisplay: any[] = [
@@ -47,16 +41,12 @@ export class ReportComponent implements OnInit {
 
   private superList: MatTableDataSource<Accountant>;
   private memberData: MatTableDataSource<MemberColumn> = new MatTableDataSource();
-  private datePipe = new DatePipe('en-US');
-  private statusList: Map<string, string> = new Map();
   private spanCache = [];
 
   // member table filter
   private inputValue = '';
   private cbPositive = true;
   private cbNegative = true;
-
-  private reportMsgEvent = new Subject();
 
   // for Customer
   private customerList: MatTableDataSource<Accountant>;
@@ -65,71 +55,11 @@ export class ReportComponent implements OnInit {
   @ViewChild('supperPaginator', { read: MatPaginator }) supperPaginator: MatPaginator;
   @ViewChild('customerPaginator', { read: MatPaginator }) customerPaginator: MatPaginator;
   @ViewChild('memberPaginator', { read: MatPaginator }) memberPaginator: MatPaginator;
-  @Input() bankerMap: Map<string, Banker>;
-  @Input() fromDate: FormControl;
-  @Input() toDate: FormControl;
-  @Input() dateInfo: Map<string, Object>;
-  @Input() chosenItem: string;
+  @Input() bankerMap: Map<string, Banker> = new Map();
 
-  constructor(private apiService: ApiService, private memberFetcher: MemberFetcher) { }
+  constructor() { }
 
-  ngOnInit() {
-    this.reportMsgEvent.subscribe(msg => {
-      let jsonString = JSON.parse(JSON.stringify(msg));
-      if (jsonString.type == "notify") {
-        if (jsonString.data.name != "") {
-          this.statusList.set(jsonString.data.name.toLowerCase(), jsonString.data.status);
-        }
-      } else if (jsonString.type == "delete") {
-        let name = jsonString.data.name.toLowerCase();
-        if (name != "" && this.statusList.has(name)) {
-          this.statusList.delete(name);
-        }
-      } else if (jsonString.type == "resolve") {
-        this.parseScanData(jsonString.data);
-      }
-    });
-
-    // get all customers
-    this.apiService.getAllMember().subscribe(response => {
-      let data = JSON.parse(JSON.stringify(response)).res.data;
-      let cusomterData: Accountant[] = [];
-      data.List.forEach(item => {
-        let acc: Accountant = new Accountant(undefined);
-        acc.username = item.username;
-        acc.acc_name = item.fullname;
-        cusomterData.push(acc);
-      });
-      this.customerList = new MatTableDataSource(cusomterData);
-      this.customerList.paginator = this.customerPaginator;
-    });
-  }
-
-  /* Decide to keep scanning continous or not base on the child list
-      if the child list is larger or equal to 3, it means we have the member data, don't need to keep scanning
-   */
-  parseScanData(message) {
-    let data = JSON.parse(JSON.stringify(message)).data;
-    let members = this.memberFetcher.getChildren(message.uuid, data);
-    let tmp = (this.memberData ? this.memberData.data : []);
-    members.forEach(e => {
-      if (e.level >= 3) {
-        Object.keys(e.data).forEach(element => {
-          let xxx: MemberColumn = {
-            name: e.username,
-            type: element,
-            winLoss: e.data[element].win_loss,
-            turnover: e.data[element].turnover
-          };
-          tmp.push(xxx);
-        });
-      }
-    });
-    this.memberData = new MatTableDataSource(tmp);
-    this.memberData.paginator = this.memberPaginator;
-    this.updateFilterPredicate();
-    this.updateSpanCache();
-  }
+  ngOnInit() {}
 
   applySupervisorFilter(filterValue: string) {
     this.superList.filter = filterValue.trim().toLowerCase();
@@ -157,76 +87,58 @@ export class ReportComponent implements OnInit {
   }
 
   updateTable() {
+    let accAll: Accountant = new Accountant(undefined);
+    let bankerAll: Banker = new Banker(undefined);
     let supers: Accountant[] = [];
-    this.bankerMap.forEach((value, key) => {
-      value.child.forEach((value, key) => {
-        supers.push(value);
+
+    accAll.acc_name = 'All';
+    accAll.banker = 'XXX';
+    supers.push(accAll);
+
+    bankerAll.name = '7$'; bankerAll.child = new Map();
+    this.bankerMap.set('XXX', bankerAll);
+    this.bankerMap.forEach((banker, bankerId) => {
+      banker.child.forEach((sup, id) => {
+        supers.push(sup);
       })
     });
     this.superList = new MatTableDataSource(supers);
     this.superList.paginator = this.supperPaginator;
   }
 
-  onClickCustomer(account: Accountant) {
-    let checker: Set<string> = new Set();
-    let superList: Accountant[] = [];
-    this.reset();
-    this.apiService.getMemberDetail(account.id).subscribe(response => {
-      let data = JSON.parse(JSON.stringify(response)).res.data.List;
-      data.memberDetail.forEach(member => {
-        let banker = this.bankerMap.get(member.banker_id);
-        let acc_name = member.acc_name.toLowerCase();
-        if (banker) {
-          banker.child.forEach((acc, id) => {
-            if (acc_name.indexOf(acc.username.toLowerCase()) != -1 && !checker.has(id)) {
-              checker.add(id);
-              superList.push(acc);
-            }
-          });
-        }
-      });
-      if (superList.length > 0) {
-        let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
-        let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
-        this.memberFetcher.scan(from, to, superList, account.username.toLowerCase(), this.reportMsgEvent);
-      }
-      console.log(superList);
-    });
-    this.memberLabel = 'Member data (' + account.username.toUpperCase() + ')';
-  }
-
   onClickSuper(account: Accountant) {
-    let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
-    let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
-    let scanedList: Accountant[] = [account];
-    this.reset();
-    this.memberFetcher.scan(from, to, scanedList, undefined, this.reportMsgEvent);
-  }
-
-  onClickScan() {
-    let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
-    let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
-    let scanedList: Accountant[] = [];
-    this.reset();
-    this.superList.data.forEach(s => {
-      scanedList.push(s);
-    });
-    this.memberFetcher.scan(from, to, scanedList, undefined, this.reportMsgEvent);
-  }
-
-  reset() {
-    this.apiService.reportUUIDs.clear();
-    this.statusList.clear();
-    // reset member data source
-    this.memberData = new MatTableDataSource();
+    let memberData: MemberColumn[] = [];
+    if (account.acc_name == 'All') {
+      this.bankerMap.forEach((banker, id) => {
+        banker.child.forEach((sup, id) => {
+          memberData = memberData.concat(this.getMembers(sup));
+        })
+      })
+    } else {
+      let banker = this.bankerMap.get(account.banker);
+      memberData = memberData.concat(this.getMembers(banker.child.get(account.id)));
+    }
+    this.memberData = new MatTableDataSource(memberData);
     this.memberData.paginator = this.memberPaginator;
-    this.spanCache = [];
-    this.memberLabel = 'Member data';
+    this.updateSpanCache();
+    console.log(memberData);
   }
 
-  onRadioButtonChange() {
-    this.fromDate = new FormControl(new Date(JSON.parse(JSON.stringify(this.dateInfo.get(this.chosenItem))).from_date));
-    this.toDate = new FormControl(new Date(JSON.parse(JSON.stringify(this.dateInfo.get(this.chosenItem))).to_date));
+  getMembers(sup: Accountant): MemberColumn[] {
+    let members: MemberColumn[] = [];
+    sup.child.forEach(master => {
+      master.child.forEach(agent => {
+        agent.child.forEach(member => {
+          if (member.data) {
+            Object.keys(member.data).forEach(type => {
+              let data: MemberColumn = { name: member.username, type: type, turnover: member.data[type].turnover, winLoss: member.data[type].win_loss };
+              members.push(data);
+            })
+          }
+        })
+      })
+    })
+    return members;
   }
 
   updateSpanCache() {

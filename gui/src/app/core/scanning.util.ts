@@ -257,24 +257,24 @@ export class MemberFetcher {
   }
 
   send(id, name, args, restartCounter) {
-    let status = { id: id, name: name, status: "Sending", args: args, time: (Date.now() / 1000), restartCounter: restartCounter };
-    let notifyData = {
-      type: "notify",
-      data: status
-    };
+    // let status = { id: id, name: name, status: "Sending", args: args, time: (Date.now() / 1000), restartCounter: restartCounter };
+    // let notifyData = {
+    //   type: "notify",
+    //   data: status
+    // };
 
-    if (this.countProcessing() < MAX_REQUEST) {
-      let uuid = this.apiService.sendSocketEvent('scan', args, true);
-      this.statusList.set(uuid, status);
-      this.notifier.next(notifyData);
-    } else {
-      this.requestBuffer.push(status);
-    }
+    // if (this.countProcessing() < MAX_REQUEST) {
+    //   let uuid = this.apiService.sendSocketEvent('scan', args, true);
+    //   this.statusList.set(uuid, status);
+    //   this.notifier.next(notifyData);
+    // } else {
+    //   this.requestBuffer.push(status);
+    // }
   }
 
   stopRequest(req: Status) {
     let args = [{ "id": req.id }];
-    this.apiService.sendSocketEvent('stop', args, true);
+    // this.apiService.sendSocketEvent('stop', args, true);
   }
 
   countProcessing() {

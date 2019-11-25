@@ -43,6 +43,7 @@ export class Accountant {
       this.username = json.username;
       this.data = json.data;
       if (json.child && json.child.length > 0) {
+        members.push(this.username);
         json.child.forEach(e => {          
           let tmpChild = this.findChild(e.username);
           if (!tmpChild) {
@@ -55,7 +56,6 @@ export class Accountant {
             })
           }
         });
-        members.push(this.username);
       }
       this.reportAccountant = json.reportAccountant;
     }

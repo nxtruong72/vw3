@@ -1,24 +1,42 @@
-<div class="container">
-    <div class="row">
-      <div class="col-md-12">
-        <!-- <mat-form-field>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-4">
+      <mat-form-field style="width: 100%;">
+        <input matInput (keyup)="applyCustomerFilter($event.target.value)" placeholder="Filter">
+      </mat-form-field>
+      <table mat-table [dataSource]="customerList" multiTemplateDataRows>
+        <ng-container *ngFor="let column of customerDisplay; let i = index" matColumnDef="{{column.id}}">
+          <th mat-header-cell *matHeaderCellDef> {{column.display}} </th>
+          <td mat-cell *matCellDef="let element;">
+            <a *ngIf="i == 1" (click)="onClickCustomer(element); false" href>{{element[column.id] | uppercase}}</a>
+            {{i == 0 ? customerList.filteredData.indexOf(element)+1 : 
+                              (i == 2 ? (element[column.id] | uppercase) : '')}}
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="customerTableHeader"></tr>
+        <tr mat-row *matRowDef="let row; columns: customerTableHeader"></tr>
+      </table>
+      <mat-paginator #customerPaginator [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
+    </div>
+    <div class="col-md-8">
+      <!-- <mat-form-field>
           <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
         </mat-form-field> -->
-        <table mat-table [dataSource]="dataSource" multiTemplateDataRows>
-          <ng-container *ngFor="let column of tableDisplay; let i = index" matColumnDef="{{column.id}}">
-              <th mat-header-cell *matHeaderCellDef> {{column.display}} </th>
-              <td mat-cell *matCellDef="let element; let idx = dataIndex" 
-              [attr.rowspan]="getRowSpan(column.id, idx)"
-              [style.display]="getRowSpan(column.id, idx) == undefined ? 'none' : ''">
-                <!-- {{i >= 2 ? (element[column.id] | number) : (element[column.id] | uppercase)}} -->
-                {{i >= 1 ? (element[column.id] | number) : (element[column.id] | uppercase)}}
-              </td>
-          </ng-container>
-  
-          <tr mat-header-row *matHeaderRowDef="columnHeaders"></tr>
-          <tr mat-row *matRowDef="let row; columns: columnHeaders"></tr>
-        </table>
-        <mat-paginator [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
-      </div>
+      <table mat-table [dataSource]="dataSource" multiTemplateDataRows>
+        <ng-container *ngFor="let column of tableDisplay; let i = index" matColumnDef="{{column.id}}">
+          <th mat-header-cell *matHeaderCellDef> {{column.display}} </th>
+          <td mat-cell *matCellDef="let element; let idx = dataIndex" [attr.rowspan]="getRowSpan(column.id, idx)"
+            [style.display]="getRowSpan(column.id, idx) == undefined ? 'none' : ''">
+            <!-- {{i >= 2 ? (element[column.id] | number) : (element[column.id] | uppercase)}} -->
+            {{i >= 1 ? (element[column.id] | number) : (element[column.id] | uppercase)}}
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnHeaders"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnHeaders"></tr>
+      </table>
+      <mat-paginator #turnOverTable [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
     </div>
   </div>
+</div>

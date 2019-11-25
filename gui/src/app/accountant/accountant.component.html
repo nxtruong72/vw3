@@ -41,7 +41,7 @@
             <mat-chip-list>
               <div class="col-md-3" *ngFor="let item of statusList | keyvalue">
                 <mat-chip>
-                  {{item.key | uppercase}}:&nbsp;{{item.value}}
+                  {{item.value.name | uppercase}}:&nbsp;{{item.value.status}}
                 </mat-chip>
               </div>
             </mat-chip-list>
@@ -124,8 +124,7 @@
 
   <!-- Report tab -->
   <mat-tab label="Report">
-    <app-report [(bankerMap)]="bankerMap" [fromDate]="fromDate" [toDate]="toDate" [dateInfo]="dateInfo"
-      [chosenItem]="chosenItem"></app-report>
+    <app-report [bankerMap]="bankerMap"></app-report>
   </mat-tab>
 
   <!-- Member tab -->

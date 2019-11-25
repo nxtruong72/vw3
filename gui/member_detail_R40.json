@@ -1,0 +1,24 @@
+{
+  "status": true,
+  "res": {
+    "data": {
+      "List": {
+        "memberDetail": [
+          {
+            "account_id": "5db9bdf1008bb19f6632e937",
+            "user_id": "5dade3ec008bb19f66329ef5",
+            "__v": 0,
+            "deleted": 0,
+            "updated": 0,
+            "created": 1572453974,
+            "id": "5db9be56791ba53e56133de3",
+            "formula_group_name": "SBB-US:SUP LẺ $12 COM 5/0/0 - GIAO",
+            "banker_id": "56850ba0097802b9f23929b2",
+            "banker_name": "sbobet",
+            "acc_name": "uj2953"
+          }
+        ]
+      }
+    }
+  }
+}

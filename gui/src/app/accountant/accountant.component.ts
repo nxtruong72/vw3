@@ -10,7 +10,12 @@ import { MemberComponent } from '../member/member.component';
 import { ReportComponent } from '../report/report.component';
 import { TurnoverComponent } from '../turnover/turnover.component';
 
-const PROCESSING_STATUS = ["Sending", "Check session", "Logging", "Getting Data"];
+const PROCESSING_STATUS: Set<string> = new Set(["Sending", "Check session", "Logging", "Getting Data"]);
+
+interface Status {
+  name: string,
+  status: string
+}
 
 @Component({
   selector: 'accountant',
@@ -23,13 +28,12 @@ export class AccountantComponent implements OnInit {
   private toDate = new FormControl();
   private datePipe = new DatePipe('en-US');
   private isCheckAll = true;
-  private uuidToAccountant: Map<string, Accountant> = new Map();
   // for radio button
   private dateInfo: Map<string, Object> = new Map();
   private chosenItem: string;
 
   // status of accountants when scanning
-  private statusList: Map<string, string> = new Map();
+  private statusList: Map<string, Status> = new Map();
 
   private isScanning: boolean = false;
   private isScanningMember: boolean = false;
@@ -78,13 +82,10 @@ export class AccountantComponent implements OnInit {
   }
 
   changeStatus(uuid: string, data) {
-    if (this.uuidToAccountant.has(uuid)) {
-      let accountant = this.uuidToAccountant.get(uuid);
-      let accName: string = (accountant.acc_name != "" ? accountant.acc_name : accountant.username);
-      if (data.message != undefined) {
-        let status = JSON.parse(JSON.stringify(data)).message;
-        this.statusList.set(accName.toLowerCase(), status);
-      }
+    if (this.statusList.has(uuid) && data.message) {
+      let s = this.statusList.get(uuid);
+      s.status = JSON.parse(JSON.stringify(data)).message;
+      this.statusList.set(uuid, s);
     }
     this.isScanning = this.checkScanning();
   }
@@ -102,12 +103,11 @@ export class AccountantComponent implements OnInit {
 
   startScanning() {
     if (this.isScanning) {
-      this.apiService.stop();
+      this.apiService.stopAll();
       return;
     }
     let from = this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy');
     let to = this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy');
-    this.uuidToAccountant.clear();
     this.statusList.clear();
     this.bankerMap.forEach((value, key) => {
       value.child.forEach(accountant => {
@@ -119,9 +119,9 @@ export class AccountantComponent implements OnInit {
             "to_date": to,
             "more_post": { "login_name": window.sessionStorage.getItem('username') }
           }]
-          let uuid = this.apiService.sendSocketEvent('scan', args, false);
-          this.uuidToAccountant.set(uuid, accountant);
-          this.statusList.set(accName.toLowerCase(), "Sending");
+          let uuid = this.apiService.sendSocketEvent(undefined, accountant.id, accName, 'scan', args, 0);
+          let s: Status = {name: accName.toLowerCase(), status: 'Sending'};
+          this.statusList.set(uuid, s);
           this.isScanning = true;
         }
       });
@@ -186,7 +186,6 @@ export class AccountantComponent implements OnInit {
     let accId = data.accInfo.id;
     let banker = this.bankerMap.get(data.accInfo.banker);
 
-    // console.log(data);
     if (banker != undefined) {
       let account = banker.child.get(accId);
       let members = account.updateScanData(data);
@@ -216,16 +215,15 @@ export class AccountantComponent implements OnInit {
       this.turnOver.updateTurnOver();
 
       // clear this in the statusList
-      let statusName = (members.length > 0 ? members[0] : account.username);
-      this.statusList.delete(statusName.toLowerCase());
+      this.statusList.delete(message.uuid);
 
       // keep scanning to get member data
-      if (members.length < 3) {
+      if (this.isScanningMember && members.length < 3) {
         let tmpAccountant = account;
         
         for (let i = 1; i < members.length; i++) {
           tmpAccountant.child.forEach(e => {
-            if (e.username.toLowerCase() == e.username.toLowerCase()) {
+            if (e.username.toLowerCase() == members[i].toLowerCase()) {
               tmpAccountant = e;
               return;
             }
@@ -233,38 +231,45 @@ export class AccountantComponent implements OnInit {
         }
 
         // let acc = tmpAccountant.child[0];
-        tmpAccountant.child.forEach(acc => {        
-          let get_child_list: { [x: string]: any } = {};
-          let args = [{
-            "id": account.id,
-            "from_date": this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy'),
-            "to_date": this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy'),
-            "more_post": {}
-          }];
-          let more_post = {
-            "login_name": window.sessionStorage.getItem('username'),
-            "get_child_list": {}
-          };
-          get_child_list[acc.username.toLowerCase()] = true;
-          for (let i = members.length-1; i >= 0; i--) {
-            get_child_list[members[i].toLowerCase()] = true;
+        tmpAccountant.child.forEach(acc => {
+          if (acc.child.length <= 0) {
+            let get_child_list: { [x: string]: any } = {};
+            let args = [{
+              "id": account.id,
+              "from_date": this.datePipe.transform(this.fromDate.value, 'MM/dd/yyyy'),
+              "to_date": this.datePipe.transform(this.toDate.value, 'MM/dd/yyyy'),
+              "more_post": {}
+            }];
+            let more_post = {
+              "login_name": window.sessionStorage.getItem('username'),
+              "get_child_list": {}
+            };
+            get_child_list[acc.username.toLowerCase()] = true;
+            for (let i = members.length - 1; i >= 0; i--) {
+              get_child_list[members[i].toLowerCase()] = true;
+            }
+            more_post.get_child_list = get_child_list;
+            args[0].more_post = more_post;
+            let uuid = this.apiService.sendSocketEvent(undefined, account.id, acc.username, 'scan', args, 0);
+            let s: Status = {name: acc.username.toLowerCase(), status: 'Sending'};
+            this.statusList.set(uuid, s);
           }
-          more_post.get_child_list = get_child_list;
-          args[0].more_post = more_post;
-          let uuid = this.apiService.sendSocketEvent('scan', args, false);
-          this.statusList.set(acc.username.toLowerCase(), "Sending");
         });
       }
 
       this.isScanning = this.checkScanning();
+
+      // update master page if have data for master
+      if (members.length == 1) {
+        this.member.updateMember(this.bankerMap);
+      }
     }
   }
 
   checkScanning(): boolean {
     let result: boolean = false;
-    let status: Set<string> = new Set(PROCESSING_STATUS);
-    this.statusList.forEach((value, key) => {
-      if (status.has(value)) {
+    this.statusList.forEach((status, key) => {
+      if (PROCESSING_STATUS.has(status.status)) {
         result = true;
         return;
       }
