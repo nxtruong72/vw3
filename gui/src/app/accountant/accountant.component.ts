@@ -154,6 +154,9 @@ export class AccountantComponent implements OnInit {
     this.bankerMap.forEach((value, key) => {
       this.onChangeStatus(value, this.isCheckAll);
     })
+    if (this.isCheckAll == false) {
+      this.updateCheckBox();
+    }
   }
 
   onCheckBoxChange(item) {
@@ -333,8 +336,8 @@ export class AccountantComponent implements OnInit {
   }
 
   private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.customerList.filter(customer => customer.toLowerCase().indexOf(filterValue) === 0);
+    const filterValue = value.toUpperCase();
+    return this.customerList.filter(customer => customer.indexOf(filterValue) !== -1);
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
