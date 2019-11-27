@@ -1,14 +1,17 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from "@angular/router";
 import { ApiService } from "../core/api.service";
 import { Banker } from '../core/banker';
 import { Accountant } from '../core/accountant';
 import { FormControl } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar, MatAutocomplete, MatAutocompleteSelectedEvent, MatChipInputEvent } from '@angular/material';
 import { MemberComponent } from '../member/member.component';
 import { ReportComponent } from '../report/report.component';
 import { TurnoverComponent } from '../turnover/turnover.component';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 const PROCESSING_STATUS: Set<string> = new Set(["Sending", "Check session", "Logging", "Getting Data"]);
 
@@ -32,6 +35,17 @@ export class AccountantComponent implements OnInit {
   private dateInfo: Map<string, Object> = new Map();
   private chosenItem: string;
 
+  // for chosing the customer
+  private customerCtrl = new FormControl();
+  private customerList: string[] = [];
+  private customerChosenList: string[] = [];
+  private customerFilter: Observable<string[]>;
+  private visible = true;
+  private selectable = true;
+  private removable = true;
+  private addOnBlur = true;
+  private separatorKeysCodes: number[] = [ENTER, COMMA];
+
   // status of accountants when scanning
   private statusList: Map<string, Status> = new Map();
 
@@ -42,7 +56,10 @@ export class AccountantComponent implements OnInit {
   @ViewChild(ReportComponent) report;
   @ViewChild(TurnoverComponent) turnOver;
 
-  constructor(private snackBar: MatSnackBar, private router: Router, private apiService: ApiService) { }
+  @ViewChild('customerInput') customerInput: ElementRef<HTMLInputElement>;
+  @ViewChild('auto') matAutocomplete: MatAutocomplete;
+
+  constructor(private snackBar: MatSnackBar, private router: Router, private apiService: ApiService) {}
 
   ngOnInit() {
     if(!window.sessionStorage.getItem('token')) {
@@ -189,6 +206,7 @@ export class AccountantComponent implements OnInit {
         setMember.add(acc_name);
       })
       customerMap.set(cusName, setMember);
+      this.customerList.push(cusName);
     })
     this.bankerMap.forEach((banker, bankerId) => {
       banker.child.forEach(sup => {
@@ -200,8 +218,12 @@ export class AccountantComponent implements OnInit {
         })
       })
     })
-
     console.log(this.bankerMap);
+    console.log(this.customerList);
+    this.customerFilter = this.customerCtrl.valueChanges.pipe(
+      startWith(null),
+      map((customer: string | null) => customer ? this._filter(customer) : this.customerList.slice())
+    );
 
     this.report.updateTable();
   }
@@ -304,5 +326,67 @@ export class AccountantComponent implements OnInit {
 
   getObjectLength(obj) {
     return Object.keys(obj).length;
+  }
+
+  removeCustomer(customer: string) {
+    console.log()
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.customerList.filter(customer => customer.toLowerCase().indexOf(filterValue) === 0);
+  }
+
+  selected(event: MatAutocompleteSelectedEvent): void {
+    this.customerChosenList.push(event.option.viewValue);
+    this.customerInput.nativeElement.value = '';
+    this.customerCtrl.setValue(null);
+    this.updateCheckBox();
+  }
+
+  add(event: MatChipInputEvent): void {
+    const input = event.input;
+    const value = event.value;
+
+    if ((value || '').trim()) {
+      const idx = this.customerList.indexOf(value.toUpperCase());
+      const idx1 = this.customerChosenList.indexOf(value.toUpperCase());
+      if (idx >= 0 && idx1 < 0) {
+        this.customerChosenList.push(value.toUpperCase().trim());
+        this.updateCheckBox();
+        // Reset the input value
+        if (input) {
+          input.value = '';
+        }
+        this.customerCtrl.setValue(null);
+      }
+    }
+  }
+
+  remove(customer: string): void {
+    const index = this.customerChosenList.indexOf(customer);
+    if (index >= 0) {
+      this.customerChosenList.splice(index, 1);
+    }
+    this.updateCheckBox();
+  }
+
+  updateCheckBox() {
+    this.bankerMap.forEach((banker, bankerId) => {
+      banker.child.forEach((sup, supId) => {          
+        sup.isChecked = false;
+      })
+      banker.isChecked = false;
+    })
+    this.customerChosenList.forEach(cusName => {
+      this.bankerMap.forEach((banker, bankerId) => {
+        banker.child.forEach((sup, supId) => {          
+          if (sup.customers.has(cusName)) {
+            sup.isChecked = true;
+          }
+        })
+      })
+    })
+    this.isCheckAll = false;
   }
 }

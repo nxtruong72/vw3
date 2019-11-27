@@ -49,6 +49,34 @@
         </mat-card>
       </div>
 
+      <!-- Customer combobox -->
+      <mat-form-field class="chip-list">
+        <mat-chip-list #chipList aria-label="Customer selection">
+          <mat-chip
+            *ngFor="let customer of customerChosenList"
+            [selectable]="selectable"
+            [removable]="removable"
+            (removed)="remove(customer)">
+            {{customer}}
+            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+          </mat-chip>
+          <input
+            placeholder="Customer"
+            #customerInput
+            [formControl]="customerCtrl"
+            [matAutocomplete]="auto"
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            [matChipInputAddOnBlur]="addOnBlur"
+            (matChipInputTokenEnd)="add($event)">
+        </mat-chip-list>
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+          <mat-option *ngFor="let customer of customerFilter | async" [value]="customer">
+            {{customer}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
       <!-- Check all -->
       <div *ngIf="bankerMap.size > 0">
         <mat-checkbox class="tp-margin" [(ngModel)]="isCheckAll" (change)="onCheckAll()">Check all</mat-checkbox>
