@@ -3,7 +3,6 @@ import { Banker } from '../core/banker';
 import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { ApiService } from '../core/api.service';
 import { Accountant } from '../core/accountant';
-import { totalmem } from 'os';
 
 interface TurnOver {
   type: string,
