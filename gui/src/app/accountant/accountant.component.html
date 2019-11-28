@@ -63,12 +63,14 @@
           <input
             placeholder="Customer"
             #customerInput
+            #trigger="matAutocompleteTrigger"
             [formControl]="customerCtrl"
             [matAutocomplete]="auto"
             [matChipInputFor]="chipList"
             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
             [matChipInputAddOnBlur]="addOnBlur"
-            (matChipInputTokenEnd)="add($event)">
+            (matChipInputTokenEnd)="add($event)"
+            (click)="$event.stopPropagation(); trigger.openPanel()">
         </mat-chip-list>
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
           <mat-option *ngFor="let customer of customerFilter | async" [value]="customer">

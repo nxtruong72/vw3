@@ -227,6 +227,10 @@ export class ApiService {
     // return this.http.get('http://localhost:8080/file/account');
   }
 
+  getCurrency() {
+    return this.http.get("https://api.exchangerate-api.com/v4/latest/USD");
+  }
+
   getInitData() {
     return this.http.get('http://localhost:8080/file/test');
   }

@@ -3,12 +3,14 @@ import { Banker } from '../core/banker';
 import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { ApiService } from '../core/api.service';
 import { Accountant } from '../core/accountant';
+import { totalmem } from 'os';
 
 interface TurnOver {
   type: string,
   company: string,
   turnover: number,
-  totalAcc: number
+  totalMaster: number,
+  totalMember: number
 }
 
 @Component({
@@ -17,12 +19,13 @@ interface TurnOver {
   styleUrls: ['./turnover.component.scss']
 })
 export class TurnoverComponent implements OnInit {
-  private columnHeaders: string[] = [/*'type',*/ 'company', 'turnover', 'totalAcc'];
+  private columnHeaders: string[] = [/*'type',*/ 'company', 'turnover', 'totalMaster', 'totalMember'];
   private tableDisplay: any[] = [
     // { display: 'Type', id: 'type' },
     { display: 'Company', id: 'company' },
     { display: 'Turn Over', id: 'turnover' },
-    { display: 'Active Accounts', id: 'totalAcc' }
+    { display: 'Master', id: 'totalMaster' },
+    { display: 'Member', id: 'totalMember' }
   ];
   private customerTableHeader = ['position', 'acc_name', 'username'];
   private customerDisplay: any[] = [
@@ -35,13 +38,14 @@ export class TurnoverComponent implements OnInit {
   @ViewChild('customerPaginator', { read: MatPaginator }) customerPaginator: MatPaginator;
   @ViewChild('turnOverTable', { read: MatPaginator }) turnOverPaginator: MatPaginator;
 
+  private customerList: MatTableDataSource<Accountant>;
   private dataSource: MatTableDataSource<TurnOver>;
   private totalTurnover: number;
   private totalAccount: number;
   // using for rowspan
   private spanCache = [];
-
-  private customerList: MatTableDataSource<Accountant>;
+  // currency
+  private currency: number = 1;
 
   constructor(private apiService: ApiService) { }
 
@@ -60,33 +64,45 @@ export class TurnoverComponent implements OnInit {
       this.customerList = new MatTableDataSource(cusomterData);
       this.customerList.paginator = this.customerPaginator;
     });
+    this.apiService.getCurrency().subscribe(response => {
+      let json = JSON.parse(JSON.stringify(response));
+      this.currency = json.rates.VND;
+    });
   }
 
   updateTurnOver() {
-    let tmpData: TurnOver[] = [];
-    let mappingName = {
-      "sb": "SPORTBOOK",
-      "csn": "CASINO",
-      "cf": "GÀ",
-      "loto": "LOTO"
-    }
-    this.bankerMap.forEach((banker, bankerId) => {
-      let sum = 0;
-      if (banker.data) {
-        Object.keys(banker.data).forEach(type => {
-          if (banker.data[type].turnover) {
-            sum += Number(banker.data[type].turnover);
-          }
-        });
-      }
-      if (banker.name != '7$') {
-        tmpData.push({ type: "XXX", company: banker.name, turnover: sum, totalAcc: banker.total_account });
-      }
-    });
-    tmpData = this.sort(tmpData);
-    this.dataSource = new MatTableDataSource(tmpData);
-    this.dataSource.paginator = this.turnOverPaginator;
-    this.updateSpanCached();
+    // let tmpData: TurnOver[] = [];
+    // let mappingName = {
+    //   "sb": "SPORTBOOK",
+    //   "csn": "CASINO",
+    //   "cf": "GÀ",
+    //   "loto": "LOTO"
+    // }
+    // this.bankerMap.forEach((banker, bankerId) => {
+    //   let sum = 0;
+    //   let totalMember = 0;
+    //   if (banker.data) {
+    //     Object.keys(banker.data).forEach(type => {
+    //       if (banker.data[type].turnover) {
+    //         sum += Number(banker.data[type].turnover);
+    //       }
+    //     });
+    //     banker.child.forEach((sup, supId) => {
+    //       sup.child.forEach(master => {
+    //         master.child.forEach(agent => {
+    //           totalMember += agent.child.length;
+    //         })
+    //       })
+    //     })
+    //   }
+    //   if (banker.name != '7$') {
+    //     tmpData.push({ type: "XXX", company: banker.name, turnover: sum, totalMaster: banker.total_account, totalMember: totalMember });
+    //   }
+    // });
+    // tmpData = this.sort(tmpData);
+    // this.dataSource = new MatTableDataSource(tmpData);
+    // this.dataSource.paginator = this.turnOverPaginator;
+    // this.updateSpanCached();
   }
 
   sort(listData: TurnOver[]) {
@@ -135,6 +151,7 @@ export class TurnoverComponent implements OnInit {
     let superList: string[] = [];
     this.bankerMap.forEach((banker, bankerId) => {
       let sum = 0;
+      let totalMember = 0;
       banker.child.forEach((sup, supId) => {
         if (sup.customers.has(customerName)) {
           superList.push(sup.acc_name);
@@ -148,16 +165,25 @@ export class TurnoverComponent implements OnInit {
                   }
                 })
                 if (report.resultList.length == 0 || ok) {
-                  sum += Number(report.reportData.turnover);
+                  if (banker.name.toLowerCase() === 'ld789' || report.reportType.toLowerCase() === 'loto') {
+                    let tmp = (Number(report.reportData.turnover));
+                    tmp = ((tmp/1000) / this.currency);
+                    sum += tmp;
+                  } else {
+                    sum += Number(report.reportData.turnover);
+                  }
                 }
               })
             }
+            master.child.forEach(agent => {
+              totalMember += agent.child.length;
+            })
           })
         }
       })
       console.log(banker.name + ' -> ' + sum);
       if (banker.name != '7$') {
-        tmpData.push({ type: "XXX", company: banker.name, turnover: sum, totalAcc: banker.total_account });
+        tmpData.push({ type: "XXX", company: banker.name, turnover: Math.round(sum), totalMaster: banker.total_account, totalMember: totalMember });
       }
     })
     tmpData = this.sort(tmpData);

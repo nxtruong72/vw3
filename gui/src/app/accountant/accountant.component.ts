@@ -341,10 +341,14 @@ export class AccountantComponent implements OnInit {
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
-    this.customerChosenList.push(event.option.viewValue);
+    let value = event.option.viewValue.toUpperCase();
+    const idx = this.customerChosenList.indexOf(value);
+    if (idx === -1) {
+      this.customerChosenList.push(value);
+      this.updateCheckBox();
+    }
     this.customerInput.nativeElement.value = '';
     this.customerCtrl.setValue(null);
-    this.updateCheckBox();
   }
 
   add(event: MatChipInputEvent): void {
