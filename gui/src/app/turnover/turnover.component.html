@@ -20,9 +20,9 @@
       <mat-paginator #customerPaginator [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
     </div>
     <div class="col-md-8">
-      <!-- <mat-form-field>
-          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-        </mat-form-field> -->
+      <mat-form-field>
+        <input matInput (change)="onChangeCurrency($event.target.value)" placeholder="Currency" value="{{currency}}">
+      </mat-form-field>
       <table mat-table [dataSource]="dataSource" multiTemplateDataRows>
         <ng-container *ngFor="let column of tableDisplay; let i = index" matColumnDef="{{column.id}}">
           <th mat-header-cell *matHeaderCellDef> {{column.display}} </th>
@@ -36,7 +36,7 @@
         <tr mat-header-row *matHeaderRowDef="columnHeaders"></tr>
         <tr mat-row *matRowDef="let row; columns: columnHeaders"></tr>
       </table>
-      <mat-paginator #turnOverTable [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
+      <!-- <mat-paginator #turnOverTable [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator> -->
     </div>
   </div>
 </div>

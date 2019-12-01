@@ -35,7 +35,7 @@ export class TurnoverComponent implements OnInit {
 
   @Input() bankerMap:  Map<string, Banker>;
   @ViewChild('customerPaginator', { read: MatPaginator }) customerPaginator: MatPaginator;
-  @ViewChild('turnOverTable', { read: MatPaginator }) turnOverPaginator: MatPaginator;
+  // @ViewChild('turnOverTable', { read: MatPaginator }) turnOverPaginator: MatPaginator;
 
   private customerList: MatTableDataSource<Accountant>;
   private dataSource: MatTableDataSource<TurnOver>;
@@ -44,7 +44,7 @@ export class TurnoverComponent implements OnInit {
   // using for rowspan
   private spanCache = [];
   // currency
-  private currency: number = 1;
+  private currency: number = 23300;
 
   constructor(private apiService: ApiService) { }
 
@@ -65,7 +65,7 @@ export class TurnoverComponent implements OnInit {
     });
     this.apiService.getCurrency().subscribe(response => {
       let json = JSON.parse(JSON.stringify(response));
-      this.currency = json.rates.VND;
+      this.currency = Math.round(json.rates.VND);
     });
   }
 
@@ -148,51 +148,78 @@ export class TurnoverComponent implements OnInit {
     let tmpData: TurnOver[] = [];
     let customerName = account.acc_name;
     let superList: string[] = [];
+    let totalTurnover = 0;
+    let totalMaster = 0;
+    let totalMember = 0;
     this.bankerMap.forEach((banker, bankerId) => {
       let sum = 0;
-      let totalMember = 0;
+      let members = 0;
       banker.child.forEach((sup, supId) => {
         if (sup.customers.has(customerName)) {
+          let sumSup = this.sumTurnover(banker.name, sup, customerName);
           superList.push(sup.acc_name);
-          sup.child.forEach(master => {
-            if (master.reportAccountant && master.reportAccountant.length > 0) {
-              master.reportAccountant.forEach(report => {
-                let ok = false;
-                report.resultList.forEach(result => {
-                  if (result.memberName.toUpperCase() == customerName) {
-                    ok = true;
-                  }
-                })
-                if (report.resultList.length == 0 || ok) {
-                  if (banker.name.toLowerCase() === 'ld789' || report.reportType.toLowerCase() === 'loto') {
-                    let tmp = (Number(report.reportData.turnover));
-                    tmp = ((tmp/1000) / this.currency);
-                    sum += tmp;
-                  } else {
-                    sum += Number(report.reportData.turnover);
-                  }
-                }
-              })
-            }
+          sum += sumSup;
+          sup.child.forEach(master => {     
+            if (sumSup === 0) {
+              sum += this.sumTurnover(banker.name, master, customerName);
+            }       
             master.child.forEach(agent => {
-              totalMember += agent.child.length;
+              members += agent.child.length;
             })
           })
         }
       })
       console.log(banker.name + ' -> ' + sum);
       if (banker.name != '7$') {
-        tmpData.push({ type: "XXX", company: banker.name, turnover: Math.round(sum), totalMaster: banker.total_account, totalMember: totalMember });
+        tmpData.push({ type: "XXX", company: banker.name, turnover: Math.round(sum), totalMaster: banker.total_account, totalMember: members });
+        totalTurnover += sum;
+        totalMaster += banker.total_account;
+        totalMember += members;
       }
     })
     tmpData = this.sort(tmpData);
+    tmpData.push({ type: "XXX", company: "Total", turnover: Math.round(totalTurnover), totalMaster: totalMaster, totalMember: totalMember });
     this.dataSource = new MatTableDataSource(tmpData);
-    this.dataSource.paginator = this.turnOverPaginator;
+    // this.dataSource.paginator = this.turnOverPaginator;
     this.updateSpanCached();
     console.log(superList);
   }
 
+  sumTurnover(bankerName: string, accountant: Accountant, customerName: string): number {
+    let sum = 0;
+    
+    if (accountant.reportAccountant && accountant.reportAccountant.length > 0) {
+      accountant.reportAccountant.forEach(report => {
+        let ok = false;
+        report.resultList.forEach(result => {
+          if (result.memberName.toUpperCase() == customerName) {
+            ok = true;
+          }
+        });
+        if (report.resultList.length == 0 || ok) {
+          if (bankerName.toLowerCase() === 'ld789' || report.reportType.toLowerCase() === 'loto') {
+            let tmp = (Number(report.reportData.turnover));
+            tmp = (tmp / this.currency);
+            sum += tmp;
+            // console.log(accountant.username.toUpperCase() + ' -> ' + tmp);
+          } else {
+            sum += Number(report.reportData.turnover);
+          }
+        }
+      })
+    }
+
+    return sum;
+  }
+
   applyCustomerFilter(filterValue: string) {
     this.customerList.filter = filterValue.trim().toLowerCase();
+  }
+
+  onChangeCurrency(currency: string) {
+    let num = Number(currency);
+    if (num) {
+      this.currency = num;
+    }
   }
 }
